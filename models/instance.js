@@ -2,25 +2,17 @@ var Player = require('./player');
 
 var Instance = function(id, options) {
     this.id = id;
-    this.players = [];
+    this.players = {};
     this.iio;
 
     this.addPlayer = function(id, name) {
         var player = new Player(id, name);
-        this.players.push(player);
+        this.players[id] = player;
         return player;
     }
 
     this.removePlayer = function(id) {
-        var index = this.find(id);
-        if(index != -1) this.players.splice(index, 1);
-    }
-
-    this.find = function(id) {
-        for(var i = 0, len = this.players.length; i < len; i++) {
-            if(this.players[i].id == id) return i;
-        }
-        return -1;
+        delete this.players[id]
     }
 
     this.data = function() {
@@ -41,12 +33,10 @@ var Instance = function(id, options) {
             })
 
             socket.on('move', function(data) {
-                // console.log(data);
-                var player = self.players[self.find(socket.id)]
+                var player = self.players[socket.id]
                 player.move(data)
 
                 self.iio.volatile.emit('moved', player)
-                //send to the instance
             });
 
             socket.on('fire', function(data) {
