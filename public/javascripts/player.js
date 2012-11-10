@@ -73,7 +73,7 @@ function Player(options) {
     }
 
     this.moved = function() {
-        socket.emit('move', {x:this.x, y:this.y, rotation:this.rotation})
+        socket.emit('move', {x:this.x, y:this.y, rotation:this.rotation, ts: Math.round(new Date().getTime())})
     }
 
     this.move = function(move) {

@@ -42,10 +42,11 @@ var Instance = function(id, options) {
 
             socket.on('move', function(data) {
                 var player = self.players[self.find(socket.id)]
-                player.move(data)
-
-                self.iio.emit('moved', player)
-                //send to the instance
+                if(data.ts > player.lastUpdate) {
+                    player.lastUpdate = data.ts;
+                    player.move(data);
+                    self.iio.emit('moved', player);
+                }
             });
 
             socket.on('fire', function(data) {
