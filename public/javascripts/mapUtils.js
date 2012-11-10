@@ -8,7 +8,7 @@ function parseMap() {
         bitmap.x = 0;
         bitmap.y = 0;
 
-        stage.addChild(bitmap)
+        stage.addChildAt(bitmap,0)
 
         for(var y=0;y<map.length;y++) {
             var row = map[y].split('');
@@ -17,11 +17,11 @@ function parseMap() {
                 var tile = map[y][x];
                 if(tile=='0') {
                     var sprite = new createjs.Shape();
-                    sprite.graphics.beginFill('#FFF').rect(0,0,tileSize,tileSize)
+                    sprite.graphics.beginFill('#000').rect(0,0,tileSize,tileSize)
                     sprite.x = x * tileSize
                     sprite.y = y * tileSize
                     walls.push({x:x,y:y,sprite: sprite})
-                    stage.addChild(sprite)
+                    stage.addChildAt(sprite,1)
                 }
             }
         }
