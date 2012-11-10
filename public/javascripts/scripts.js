@@ -68,13 +68,16 @@ function join(instance) {
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         me.moved()
     }).bind('click',function(e) {
-
         new Bullet({
-            x:me.x,
+            x:me.x, //dualWield ? (Math.round(Math.random()) == 1 ? me.x-20 : me.x+17) : me.x,
             y:me.y,
             endX: e.offsetX,
             endY: e.offsetY
         })
+    })
+
+    $('body').bind('mousedown', function(e) {
+        e.preventDefault()
     })
 
 
