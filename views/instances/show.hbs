@@ -1,11 +1,21 @@
 <script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
+<script src='/javascripts/scripts.js'></script>
+<script src='/javascripts/mapUtils.js'></script>
+
+<script src='/javascripts/player.js'></script>
+<script src='/javascripts/light/light.js'></script>
+<script src='/javascripts/light/lightingEngine.js'></script>
+
+<script src='/assets/map.js'></script>
+
 
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script>
     var socket = io.connect('http://' + window.location.host + window.location.pathname);
     socket.on('connect', function () {
-      console.log('connected')
+        socket.emit('join', name)
+        console.log('connected')
     });
 
     socket.on('instance', function(data) {
@@ -13,13 +23,15 @@
     });
 
     socket.on('addPlayer', function(data) {
-        data.x = 100;
-        data.y = 100
-        players.push(new Player(data))
+        if(data.id!= socket.socket.sessionid) players[data.id] = new Player(data)
+    })
+
+    socket.on('removePlayer', function(data) {
+        players[data.id].remove()
     })
 
     socket.on('moved', function(data) {
-        players[findPlayer(data.id)].updatePosition(data.x, data.y, data.rotation)
+        players[data.id].updatePosition(data.x, data.y, data.rotation)
     })
 
 </script>
