@@ -1,8 +1,7 @@
 var config = require('./config/application');
-var express = require('express')
 var http = require('http');
 var path = require('path');
-
+var express = require('express')
 var app = express();
 
 app.configure(function(){
@@ -21,6 +20,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+var ratchet = require('ratchetio');
 app.configure('production', function(){
   app.use(ratchet.errorHandler(config.ratchet_key));
 });
