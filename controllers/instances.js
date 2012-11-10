@@ -16,6 +16,7 @@ var instances = {
         app.io.of('/instance/' + instance.name)
         .on('connection', function (socket) {
             instance.addPlayer(socket.id);
+            console.log('herp')
 
         });
 

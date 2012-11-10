@@ -5,7 +5,11 @@
 <script>
     var socket = io.connect('http://' + window.location.host + window.location.pathname);
     socket.on('connect', function () {
-
+      console.log('connected')
     });
 
 </script>
+<div id='container'>
+    <canvas id='canvas-main'></canvas>
+    <canvas id='canvas-lighting'></canvas>
+</div>

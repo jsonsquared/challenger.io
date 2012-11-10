@@ -1,7 +1,5 @@
 function Light(canvas, options) {
 
-    console.log(options)
-
     this.ctx = canvas.getContext('2d')
     if(typeof options == 'undefined') options = {}
     this.intensity = options.intensity || 1;

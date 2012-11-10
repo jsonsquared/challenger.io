@@ -9,7 +9,7 @@ app.configure(function(){
     app.set('views', __dirname + '/views');
     app.set('view engine', 'hbs');
     app.use(express.favicon());
-    app.use(express.logger('dev'));
+    // app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(app.router);
@@ -27,7 +27,6 @@ app.configure('production', function(){
 
 app.io = require('socket.io').listen(app.listen(config.port));
 app.io.set('log level', 1);
-
 
 var Instance = require('./models/instance')
 app.instances = {};
