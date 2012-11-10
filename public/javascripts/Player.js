@@ -9,7 +9,6 @@ function Player(options) {
     this.me = options.me || false;
     this.light = {}; // blank - only used if the player is this user
 
-
     // easel object
     this.container = new createjs.Container();
     this.playerContainer = new createjs.Container();
@@ -59,31 +58,21 @@ function Player(options) {
         socket.emit('move', {x:this.x, y:this.y, rotation:this.rotation})
     }
 
-    this.moveUp = function() {
-        if(!blocked(this.x-tileSize*.5, this.y - moveDistance - tileSize*1.5,1)) {
-            this.y-=moveDistance;
-            this.moved()
-        }
-    }
-
-    this.moveDown = function() {
-        if(!blocked(this.x, this.y + moveDistance + tileSize*.5,0)) {
-            this.y+=moveDistance;
-            this.moved()
-        }
-    }
-
-    this.moveLeft = function() {
-        if(!blocked(this.x - moveDistance - tileSize * 1.5, this.y-tileSize*.5,1)) {
-            this.x-=moveDistance;
-            this.moved()
-        }
-    }
-
-    this.moveRight = function() {
-        if(!blocked(this.x + moveDistance + tileSize*.5, this.y,0)) {
-            this.x+=moveDistance;
-            this.moved()
+    this.move = function(move) {
+        var final = {
+            x:move.x || this.x,
+            y:move.y || this.y
+        };
+        if(!blocked(final.x, final.y)) {
+            this.x = final.x
+            this.y = final.y;
+            this.moved();
+        } else if(move.x && !blocked(move.x, this.y)) {
+            this.x = move.x
+            this.moved();
+        } else if(move.y && !blocked(this.x, move.y)) {
+            this.y = move.y;
+            this.moved();
         }
     }
 

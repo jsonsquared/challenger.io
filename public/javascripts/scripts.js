@@ -50,8 +50,6 @@ function join(instance) {
     //     new Player({name:'test2', x:400, y:200, rotation:50})
     // ]
 
-
-    console.log(instance.players)
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
     }
@@ -77,10 +75,17 @@ function join(instance) {
     })
 
     setInterval(function() {
-        if(input.keyboard[87]) { me.moveUp() } // W
-        if(input.keyboard[65]) { me.moveLeft() } // A
-        if(input.keyboard[83]) { me.moveDown() } // S
-        if(input.keyboard[68]) { me.moveRight() } // D
+        // if(input.keyboard[87]) { me.moveUp() } // W
+        // if(input.keyboard[65]) { me.moveLeft() } // A
+        // if(input.keyboard[83]) { me.moveDown() } // S
+        // if(input.keyboard[68]) { me.moveRight() } // D
+        var move = {};
+        if(input.keyboard[87]) { move.y = me.y - moveDistance }
+        if(input.keyboard[65]) { move.x = me.x - moveDistance }
+        if(input.keyboard[83]) { move.y = me.y + moveDistance }
+        if(input.keyboard[68]) { move.x = me.x + moveDistance }
+        if(move.x || move.y) me.move(move)
+
     },inputInterval)
 
     window.tick = function() {
