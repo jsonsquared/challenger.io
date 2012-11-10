@@ -12,7 +12,7 @@
 
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script>
-    var socket = io.connect('http://' + window.location.host + window.location.pathname);
+    var socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
     socket.on('connect', function () {
         socket.emit('join', name)
         console.log('connected')
@@ -36,6 +36,14 @@
 
     socket.on('fired', function(data) {
         if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+    })
+
+    socket.on('damage', function(data) {
+        console.log('damaged', data);
+    })
+
+    socket.on('died', function(data) {
+        console.log('died', data);
     })
 
 </script>

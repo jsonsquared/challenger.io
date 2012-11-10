@@ -4,6 +4,7 @@ var Instance = function(id, options) {
     this.id = id;
     this.players = {};
     this.iio;
+    this.kills = 0;
 
     this.addPlayer = function(id, name) {
         var player = new Player(id, name);
@@ -40,13 +41,24 @@ var Instance = function(id, options) {
             });
 
             socket.on('fire', function(data) {
-                console.log('fire', data);
                 self.iio.emit('fired', data)
-                //player.fire
-                //send bulletdata
-                //send repercussions
-                //send start/end of line, if/what you hit
             });
+
+            socket.on('hit', function(data) {
+                console.log('hit', data);
+                // supposedly data.bullet hit data.hitPlayer
+                // validate that at some point
+                var player = self.players[data.hitPlayer.id];
+
+                player.takeDamage();
+                self.iio.emit('damage', player)
+
+                if(player.isDead()) {
+                    player.die();
+                    self.kills++;
+                    self.iio.emit('died', player)
+                }
+            })
 
             socket.on('pickup', function(data) {
                 console.log('pickup', data);

@@ -42,9 +42,9 @@ $(function() {
 function playerHit(bullet) {
     for(var i = 0, len = Object.keys(players).length; i < len; i++) {
         var key = Object.keys(players)[i];
-        if(bullet.owner != key) {
+        if(bullet.owner != key && bullet.removed == false) {
             var player = players[key];
-            if(player.touching(bullet)) return true;
+            if(player.touching(bullet)) return player;
         }
     }
     return false;
