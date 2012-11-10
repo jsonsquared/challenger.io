@@ -32,32 +32,40 @@ function Player(options) {
         this.shape.y = this.light.y = y || this.y;
     }
 
+    this.moved = function() {
+        socket.emit('move', {x:this.x, y:this.y, rotation:this.rotation})
+    }
+
     this.moveUp = function() {
         if(!blocked(this.x-tileSize*.5, this.y - moveDistance - tileSize*1.5,1)) {
             this.y-=moveDistance;
+            this.moved()
         }
     }
 
     this.moveDown = function() {
         if(!blocked(this.x, this.y + moveDistance + tileSize*.5,0)) {
             this.y+=moveDistance;
+            this.moved()
         }
     }
 
     this.moveLeft = function() {
         if(!blocked(this.x - moveDistance - tileSize * 1.5, this.y-tileSize*.5,1)) {
             this.x-=moveDistance;
+            this.moved()
         }
     }
 
     this.moveRight = function() {
         if(!blocked(this.x + moveDistance + tileSize*.5, this.y,0)) {
             this.x+=moveDistance;
+            this.moved()
         }
     }
 
     this.fire = function() {
-
+        socket.emit('fire')
     }
 
     this.pickUp = function() {

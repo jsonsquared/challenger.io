@@ -49,6 +49,7 @@ $(function() {
 
         // The resulting direction
         players[0].rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+        players[0].moved()
     })
 
     setInterval(function() {
