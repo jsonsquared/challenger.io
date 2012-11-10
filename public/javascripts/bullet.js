@@ -20,6 +20,20 @@ function Bullet(options) {
 
     stage.addChild(this.sprite)
 
+    this.spriteSheet = new createjs.SpriteSheet({
+        images: [assets.bullet],
+        frames: {width:8, height:16, regX:4, regY:8},
+        animations: {
+            alive:{frames:[0], frequency:5}
+        }
+    });
+
+    this.sprite = new createjs.BitmapAnimation(this.spriteSheet);
+    this.sprite.scaleX = this.sprite.scaleY = .75
+    this.sprite.gotoAndPlay('alive')
+
+    stage.addChild(this.sprite)
+
     $(document).bind('tick', function() {
         if(!self.removed) {
             self.delta = self.speed / self.length
