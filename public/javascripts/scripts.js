@@ -5,7 +5,7 @@ var walls = [];
 var garbage = [];
 var players = {};
 var inputInterval = 20;
-var natural_light = .25;
+var natural_light = .75;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
