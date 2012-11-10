@@ -1,6 +1,6 @@
 {
   "name": "nko3-challenger-io",
-  "version": "0.0.0-4",
+  "version": "0.0.0-5",
   "description": "challenger.io",
   "main": "server.js",
   "scripts": {
@@ -15,7 +15,6 @@
     "socket.io": "0.9.11",
     "hbs": "",
     "ratchetio": "0.0.3"
-
   },
   "devDependencies": {
     "jitsu": "",
