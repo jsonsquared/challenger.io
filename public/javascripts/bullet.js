@@ -2,7 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.speed = 20;
+    this.speed = 5;
     this.delta = 1;
 
     this.trajectoryX = options.endX - options.x;
@@ -10,15 +10,13 @@ function Bullet(options) {
 
     this.length = Math.sqrt(Math.pow(this.trajectoryX,2) + (Math.pow(this.trajectoryY,2)))
 
-    this.owner = 0;
+    this.owner = options.owner;
     this.spawnTime = new Date();
 
     this.sprite = new createjs.Shape();
     this.sprite.graphics.beginFill('#FFF').drawEllipse(0,0,5,5);
     this.sprite.x = options.x;
     this.sprite.y = options.y;
-
-    this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:10, flicker:-1}))
 
     stage.addChild(this.sprite)
 
@@ -32,10 +30,9 @@ function Bullet(options) {
             if(!blocked(self.sprite.x, self.sprite.y, 1) && !playerHit(self)) {
                 self.sprite.x += x
                 self.sprite.y += y
-                self.light.x = self.sprite.x
-                self.light.y = self.sprite.y
 
             } else {
+                console.log('remove bullet sprite')
                 stage.removeChild(self.sprite)
                 self.removed = true;
                 self.remove();
@@ -45,13 +42,12 @@ function Bullet(options) {
     })
 
     this.remove = function() {
-        lightingEngine.removeLight(this.light);
         this.onRemove();
     }
 
     this.onRemove = function() {};
 
     this.data = function() {
-        return {startX: options.y, startY: options.x, endX: options.endX, endY: options.endY};
+        return {startX: options.x, startY: options.y, endX: options.endX, endY: options.endY, owner: this.owner};
     }
 }
