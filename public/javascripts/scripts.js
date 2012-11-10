@@ -29,10 +29,6 @@ $(function() {
 
     testlight = new Light(canvas_lighting, {intensity:50});
 
-    players = {
-        0: new Player({name:'mcleod', x:6 * tileSize,y:6 * tileSize})
-    }
-
     crosshair = new createjs.Shape();
     crosshair.graphics.f('#F0F').de(0,0,20,20,30);
     stage.addChild(crosshair)
@@ -60,6 +56,14 @@ $(function() {
     },inputInterval)
 
 });
+
+function join() {
+    players = [
+      new Player({name:'test1', x:200, y:200, rotation:20, me:true}),
+      new Player({name:'test2', x:300, y:200, rotation:20}),
+      new Player({name:'test2', x:400, y:200, rotation:50})
+    ]
+}
 
 window.tick = function() {
     stage.update();

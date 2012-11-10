@@ -3,7 +3,9 @@ function Player(options) {
     this.name = options.name || 'Unnamed Player';
     this.x = options.x || 0;
     this.y = options.y || 0;
+    this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
+    this.me = options.me || false;
 
     this.shape = new createjs.Container();
 
@@ -19,10 +21,13 @@ function Player(options) {
 
     this.shape.x = this.x;
     this.shape.y = this.y;
-    this.shape.scaleX = 1;
-    this.shape.scaleY = 1;
+    this.shape.rotation = this.rotation
 
-    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
+    if(this.me) {
+        this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
+    } else {
+        this.light = {}
+    }
 
     stage.addChild(this.shape)
 
