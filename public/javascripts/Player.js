@@ -7,42 +7,52 @@ function Player(options) {
     this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
     this.me = options.me || false;
+    this.light = {}; // blank - only used if the player is this user
 
-    this.shape = new createjs.Container();
+
+    // easel object
+    this.container = new createjs.Container();
+    this.playerContainer = new createjs.Container();
 
     this.gun = new createjs.Shape();
     this.gun.graphics.f('#FFF').de(0-tileSize/2,(0-tileSize/2)-2,25,4,0);
     this.gun.x = tileSize/2;
     this.gun.y = tileSize/2;
-    this.shape.addChild(this.gun)
+    this.playerContainer.addChild(this.gun)
 
     this.circle = new createjs.Shape();
     this.circle.graphics.f(this.color).de(0-tileSize/2,0-tileSize/2,tileSize,tileSize,0);
-    this.shape.addChild(this.circle)
+    this.playerContainer.addChild(this.circle)
 
-    this.shape.x = this.x;
-    this.shape.y = this.y;
-    this.shape.rotation = this.rotation
+    this.nameLabel = new createjs.Text(this.name, "12px Arial", "#FFF");
+    this.nameLabel.x = 0;
+    this.nameLabel.y = -35;
+    this.nameLabel.rotation = 0;
+    this.nameLabel.lineWidth = 100;
+    this.nameLabel.textAlign = 'center'
+    //txt.outline = true;
+    this.container.addChild(this.nameLabel);
 
-    this.light = {};
+    this.container.x = this.x;
+    this.container.y = this.y;
+    this.playerContainer.rotation = this.rotation
 
-    // if(this.me) {
-    //     this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
-    // } else {
-    //     this.light = {}
-    // }
+    this.container.addChild(this.playerContainer)
 
     this.isMe = function() {
         this.me = true;
         this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
     }
 
-    stage.addChild(this.shape)
+    stage.addChild(this.container)
 
     this.updatePosition = function(x, y, rotation) {
-        this.shape.rotation = rotation || this.rotation
-        this.shape.x = this.light.x = x || this.x;
-        this.shape.y = this.light.y = y || this.y;
+        this.x = x || this.x;
+        this.y = y || this.y;
+        this.rotation = rotation || this.rotation
+        this.playerContainer.rotation = this.rotation
+        this.container.x = this.light.x = this.x;
+        this.container.y = this.light.y = this.y;
     }
 
     this.moved = function() {
@@ -89,4 +99,9 @@ function Player(options) {
 
     }
 
+
+    this.remove = function() {
+        stage.removeChild(this.container)
+        delete this;
+    }
 }
