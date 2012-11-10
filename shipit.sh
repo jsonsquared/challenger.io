@@ -1,8 +1,7 @@
 #!/bin/bash
 echo "Deploying!"
 ./node_modules/.bin/jitsu login --username nko3-challenger-io --password +wxBxrtv2dHBKEA5
-./node_modules/.bin/jitsu deploy
-
+./node_modules/.bin/jitsu deploy --confirm
 
 # Ratchet.io
 ACCESS_TOKEN=18a7fb80ec994e2cbdd54660fabdb8c5
