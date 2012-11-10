@@ -5,8 +5,8 @@ var Instance = function(id, options) {
     this.players = [];
     this.iio;
 
-    this.addPlayer = function(id) {
-        var player = new Player(id);
+    this.addPlayer = function(id, name) {
+        var player = new Player(id, name);
         this.players.push(player);
         return player;
     }
@@ -31,18 +31,20 @@ var Instance = function(id, options) {
         var self = this;
         this.iio = io.of('/instance/' + this.id);
         this.iio.on('connection', function (socket) {
+
             var player = self.addPlayer(socket.id);
 
-            socket.emit('instance', self.data());
-            self.iio.emit('addPlayer', player);
+            socket.on('join', function(name) {
+                player.name = name;
+                socket.emit('instance', self.data());
+                self.iio.emit('addPlayer', player);
+            })
 
             socket.on('move', function(data) {
-                console.log('move', data);
                 var player = self.players[self.find(socket.id)]
                 player.move(data)
 
                 self.iio.emit('moved', player)
-                //player.move
                 //send to the instance
             });
 
