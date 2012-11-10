@@ -40,14 +40,24 @@ function Player(options) {
     }
 
 
-    this.nameLabel = new createjs.Text(this.name, "12px Arial", "#FFF");
+    this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#000")
+
+    this.nameOutline.outline=true;
+    this.nameOutline.x = 0;
+    this.nameOutline.y = -34;
+    this.nameOutline.rotation = 0;
+    this.nameOutline.lineWidth = 1000;
+    this.nameOutline.textAlign = 'center'
+    this.container.addChild(this.nameOutline);
+    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#ff6021")
     this.nameLabel.x = 0;
     this.nameLabel.y = -35;
     this.nameLabel.rotation = 0;
     this.nameLabel.lineWidth = 100;
     this.nameLabel.textAlign = 'center'
-    //txt.outline = true;
     this.container.addChild(this.nameLabel);
+
+
 
     this.container.x = this.x;
     this.container.y = this.y;
@@ -74,9 +84,14 @@ function Player(options) {
     }
 
     this.moved = function() {
+        var deltaX = crosshairX - me.container.x
+        var deltaY = crosshairY - me.container.y
+        crosshair.x = crosshairX;
+        crosshair.y = crosshairY
+
+        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
     }
-
 
     this.move = function(move) {
         var final = {

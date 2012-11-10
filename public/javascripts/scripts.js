@@ -12,6 +12,11 @@ var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 
+var assets = {
+    'map'   :  '/assets/images/map.jpg',
+    'bullet':  '/assets/images/bullet.png',
+};
+
 $(function() {
     canvas_main = document.getElementById("canvas-main");
     canvas_lighting = document.getElementById("canvas-lighting");
@@ -20,7 +25,6 @@ $(function() {
 
     canvas_main.width = canvas_lighting.width = map[0].length * tileSize
     canvas_main.height = canvas_lighting.height = map.length * tileSize
-    parseMap();
 
     createjs.Ticker.addListener(window);
     createjs.Ticker.setFPS(30);
@@ -37,6 +41,7 @@ $(function() {
     crosshair.graphics.f('#F0F').de(0,0,20,20,30);
     stage.addChild(crosshair)
 
+    parseMap();
 });
 
 function playerHit(bullet) {
@@ -71,14 +76,8 @@ function join(instance) {
     $(canvas_main).bind('mousemove', function(e) {
         crosshairX = e.offsetX - 10;
         crosshairY = e.offsetY - 10;
-
-        var deltaX = crosshairX - me.container.x
-        var deltaY = crosshairY - me.container.y
-        crosshair.x = crosshairX;
-        crosshair.y = crosshairY
-
         // The resulting direction
-        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+
         me.moved()
     }).bind('click',function(e) {
         me.fire(e);

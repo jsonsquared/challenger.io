@@ -2,7 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.speed = 10;
+    this.speed = 16;
     this.delta = 1;
 
     this.trajectoryX = options.endX - options.x;
@@ -13,12 +13,24 @@ function Bullet(options) {
     this.owner = options.owner;
     this.spawnTime = new Date();
 
-    this.sprite = new createjs.Shape();
-    this.sprite.graphics.beginFill('#FFF').drawEllipse(0,0,5,5);
+    this.spriteSheet = new createjs.SpriteSheet({
+        images: [assets.bullet.img],
+        frames: {width:8, height:16, regX:4, regY:16},
+        animations: {
+            alive:{frames:[0], frequency:5}
+        }
+    });
+
+    this.sprite = new createjs.BitmapAnimation(this.spriteSheet);
+    this.sprite.scaleX = this.sprite.scaleY = .75
+    this.sprite.gotoAndPlay('alive')
+
+    this.sprite.rotation = players[this.owner].rotation - 90
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
-    stage.addChild(this.sprite)
+
+    stage.addChildAt(this.sprite,2)
     this.removed = false;
 
     $(document).bind('tick', function() {
@@ -28,7 +40,7 @@ function Bullet(options) {
             var y = self.delta * self.trajectoryY
 
 
-            if(blocked(self.sprite.x, self.sprite.y, 1)) {
+            if(blocked(self.sprite.x, self.sprite.y, 2)) {
                 // hit a wall
                 self.remove();
             } else if(hitPlayer = playerHit(self)) {
@@ -40,7 +52,7 @@ function Bullet(options) {
                 self.sprite.y += y
             }
         }
-    })
+    });
 
     this.remove = function() {
         stage.removeChild(this.sprite)
