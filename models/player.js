@@ -9,6 +9,8 @@ var Player = function(id, name) {
     this.rotation = 0;
 
     this.lastUpdate = 0;
+    this.killedBy;
+    this.killCount = 0;
 
     this.dead = false;
     this.health = this.TOTAL_HEALTH;
@@ -20,14 +22,15 @@ var Player = function(id, name) {
         this.rotation = data.rotation || this.rotation;
     }
 
-    this.takeDamage = function() {
+    this.takeDamage = function(killer) {
         this.health -= 14;
         if(this.isDead()) {
-            this.die();
+            this.die(killer);
         }
     }
 
-    this.die = function() {
+    this.die = function(killer) {
+        this.killedBy = killer;
         this.dead = true;
         this.x = -10000;
         this.y = -10000;

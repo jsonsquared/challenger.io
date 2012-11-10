@@ -47,10 +47,11 @@ var Instance = function(id, options) {
             socket.on('hit', function(data) {
                 // supposedly data.bullet hit data.hitPlayer
                 // validate that at some point
+                var killer = self.players[data.bullet.owner];
                 var player = self.players[data.hitPlayer.id];
 
                 if(player) {
-                    player.takeDamage();
+                    player.takeDamage(killer.id);
                     self.iio.emit('damage', player)
 
                     if(player.isDead()) {
@@ -64,6 +65,7 @@ var Instance = function(id, options) {
                             }, 3000)
                         }
 
+                        killer.killCount++;
                         self.kills++;
                         self.iio.emit('score', self.data())
                     }
