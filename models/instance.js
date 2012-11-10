@@ -3,9 +3,12 @@ var Player = require('./player');
 var Instance = function(id, options) {
     this.id = id;
     this.players = [];
+    this.iio;
 
     this.addPlayer = function(id) {
-        this.players.push(new Player(id));
+        var player = new Player(id);
+        this.players.push(player);
+        return player;
     }
 
     this.removePlayer = function(id) {
@@ -18,6 +21,50 @@ var Instance = function(id, options) {
             if(this.players[i].id == id) return i;
         }
         return -1;
+    }
+
+    this.data = function() {
+        return {id: this.id, players: this.players}
+    }
+
+    this.attachPacketHandlers = function(io) {
+        var self = this;
+        this.iio = io.of('/instance/' + this.id);
+        this.iio.on('connection', function (socket) {
+            var player = self.addPlayer(socket.id);
+
+            socket.emit('instance', self.data());
+            self.iio.emit('addPlayer', player);
+
+            socket.on('move', function(data) {
+                console.log('move', data);
+                //player.move
+                //send to the instance
+            });
+
+            socket.on('fire', function(data) {
+                console.log('fire', data);
+                //player.fire
+                //send bulletdata
+                //send repercussions
+                //send start/end of line, if/what you hit
+            });
+
+            socket.on('pickup', function(data) {
+                console.log('pickup', data);
+                //
+            });
+
+            socket.on('drop', function(data) {
+                console.log('drop', data);
+            });
+
+            socket.on('disconnect', function(data) {
+                console.log('disconnect', player)
+                self.removePlayer(player.id);
+                self.iio.emit('removePlayer', player);
+            })
+        })
     }
 };
 module.exports = Instance;

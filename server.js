@@ -31,6 +31,7 @@ app.io.set('log level', 1);
 var Instance = require('./models/instance')
 app.instances = {};
 app.instances['zomg-games-123'] = new Instance('zomg-games-123');
+app.instances['zomg-games-123'].attachPacketHandlers(app.io)
 
 var routes = require('./config/routes');
 routes.init(app);

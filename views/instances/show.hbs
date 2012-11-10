@@ -7,6 +7,11 @@
     socket.on('connect', function () {
       console.log('connected')
     });
+
+    socket.on('instance', function(data) {
+        console.log(data);
+    });
+
 </script>
 <div id='container'>
     <canvas id='canvas-main'></canvas>

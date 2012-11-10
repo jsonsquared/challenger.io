@@ -1,5 +1,6 @@
 var app;
 var instances = {
+
     init: function(application) {
         app = application;
         return this;
@@ -12,28 +13,8 @@ var instances = {
     show: function(req, res) {
         if(!req.param('id') || !app.instances[req.param('id')]) res.status(404).end();
         var instance = app.instances[req.param('id')];
-
-        app.io.of('/instance/' + instance.id)
-        .on('connection', function (socket) {
-            instance.addPlayer(socket.id);
-
-            socket.on('move', function(data) {
-                console.log('move', data);
-            });
-
-            socket.on('fire', function(data) {
-                console.log('fire', data);
-            });
-
-            socket.on('pickup', function(data) {
-                console.log('pickup', data);
-            });
-
-            socket.on('drop', function(data) {
-                console.log('drop', data);
-            });
-        });
-        res.render('instances/show', {title: "Welcome to game " + instance});
+        res.render('instances/show', {title: "Welcome to game " + instance.id});
     }
 };
+
 module.exports = instances;
