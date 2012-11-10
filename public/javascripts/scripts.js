@@ -76,14 +76,8 @@ function join(instance) {
     $(canvas_main).bind('mousemove', function(e) {
         crosshairX = e.offsetX - 10;
         crosshairY = e.offsetY - 10;
-
-        var deltaX = crosshairX - me.container.x
-        var deltaY = crosshairY - me.container.y
-        crosshair.x = crosshairX;
-        crosshair.y = crosshairY
-
         // The resulting direction
-        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+
         me.moved()
     }).bind('click',function(e) {
         me.fire(e);
