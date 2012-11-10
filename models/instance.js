@@ -33,7 +33,6 @@ var Instance = function(id, options) {
         this.iio.on('connection', function (socket) {
             var player = self.addPlayer(socket.id);
 
-            socket.emit('player', player);
             socket.emit('instance', self.data());
             self.iio.emit('addPlayer', player);
 
