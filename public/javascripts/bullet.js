@@ -2,7 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.speed = 20;
+    this.speed = 2;
     this.delta = 1;
 
     this.trajectoryX = options.endX - options.x;
@@ -21,17 +21,20 @@ function Bullet(options) {
     stage.addChild(this.sprite)
 
     $(document).bind('tick', function() {
-        self.delta = self.speed / self.length
-        var x = self.delta * self.trajectoryX
-        var y = self.delta * self.trajectoryY
+        if(!self.removed) {
+            self.delta = self.speed / self.length
+            var x = self.delta * self.trajectoryX
+            var y = self.delta * self.trajectoryY
 
-        if(!blocked(self.sprite.x, self.sprite.y, 1)) {
-            self.sprite.x += x
-            self.sprite.y += y
-        } else {
-            stage.removeChild(self.sprite)
-            self.remove();
-            delete self;
+            if(!blocked(self.sprite.x, self.sprite.y, 1)) {
+                self.sprite.x += x
+                self.sprite.y += y
+            } else {
+                stage.removeChild(self.sprite)
+                self.removed = true;
+                self.remove();
+                delete self;
+            }
         }
     })
 
