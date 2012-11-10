@@ -16,8 +16,23 @@ var instances = {
         app.io.of('/instance/' + instance.id)
         .on('connection', function (socket) {
             instance.addPlayer(socket.id);
-        });
 
+            socket.on('move', function(data) {
+                console.log('move', data);
+            });
+
+            socket.on('fire', function(data) {
+                console.log('fire', data);
+            });
+
+            socket.on('pickup', function(data) {
+                console.log('pickup', data);
+            });
+
+            socket.on('drop', function(data) {
+                console.log('drop', data);
+            });
+        });
         res.render('instances/show', {title: "Welcome to game " + instance});
     }
 };
