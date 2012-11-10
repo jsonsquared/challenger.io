@@ -1,5 +1,5 @@
 var tileSize = 16;
-var moveDistance = 5;
+var moveDistance = 2;
 var stage, canvas;
 var walls = [];
 var garbage = [];

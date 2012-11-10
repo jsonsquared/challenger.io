@@ -2,7 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.speed = 5;
+    this.speed = 10;
     this.delta = 1;
 
     this.trajectoryX = options.endX - options.x;
