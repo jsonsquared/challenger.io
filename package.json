@@ -1,6 +1,6 @@
 {
   "name": "nko3-challenger-io",
-  "version": "0.0.0-1",
+  "version": "0.0.0-3",
   "description": "challenger.io",
   "main": "server.js",
   "scripts": {
