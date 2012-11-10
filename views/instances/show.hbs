@@ -34,6 +34,10 @@
         players[data.id].updatePosition(data.x, data.y, data.rotation)
     })
 
+    socket.on('fired', function(data) {
+        if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+    })
+
 </script>
 <div id='container'>
     <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
