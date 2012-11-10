@@ -13,7 +13,10 @@ var instances = {
     show: function(req, res) {
         if(!req.param('id') || !app.instances[req.param('id')]) res.status(404).end();
         var instance = app.instances[req.param('id')];
-        res.render('instances/show', {title: "Welcome to game " + instance.id});
+        res.render('instances/show', {
+            title: "Welcome to game " + instance.id,
+            name:req.param('name')
+        });
     }
 };
 
