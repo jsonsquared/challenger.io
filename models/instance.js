@@ -41,10 +41,11 @@ var Instance = function(id, options) {
             })
 
             socket.on('move', function(data) {
+                // console.log(data);
                 var player = self.players[self.find(socket.id)]
                 player.move(data)
 
-                self.iio.emit('moved', player)
+                self.iio.volatile.emit('moved', player)
                 //send to the instance
             });
 

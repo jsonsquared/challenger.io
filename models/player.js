@@ -6,6 +6,8 @@ var Player = function(id, name) {
     this.y = 0;
     this.rotation = 0;
 
+    this.lastUpdate = 0;
+
     this.move = function(data) {
         this.x = data.x || this.x;
         this.y = data.y || this.y;
