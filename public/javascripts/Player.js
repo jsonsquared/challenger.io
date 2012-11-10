@@ -15,17 +15,6 @@ function Player(options) {
     this.playerContainer = new createjs.Container();
     this.dualWield = true;
 
-    // this.gun = new createjs.Shape();
-    // this.gun.graphics.f('#FFF').de(0-tileSize/2,(0-tileSize/2)-2,25,4,0);
-    // this.gun.x = tileSize/2;
-    // this.gun.y = tileSize/2;
-    // this.playerContainer.addChild(this.gun)
-
-    // this.circle = new createjs.Shape();
-    // this.circle.graphics.f(this.color).de(0-tileSize/2,0-tileSize/2,tileSize,tileSize,0);
-    // this.circle.alpha = .5
-    // this.playerContainer.addChild(this.circle)
-
     this.img = new Image();
     this.img.src = '/assets/images/fed.png'
     this.img.onload = function() {
@@ -42,6 +31,7 @@ function Player(options) {
 
         self.bitmap = new createjs.BitmapAnimation(self.spriteSheet);
         self.bitmap.rotation = 270
+        self.bitmap.scaleX = self.bitmap.scaleY = .75
         self.bitmap.gotoAndPlay('alive')
 
         self.playerContainer.addChild(self.bitmap)
@@ -109,7 +99,8 @@ function Player(options) {
             x:me.x,
             y:me.y,
             endX: e.offsetX,
-            endY: e.offsetY
+            endY: e.offsetY,
+            owner:me.id
         })
         socket.emit('fire', b.data());
 
