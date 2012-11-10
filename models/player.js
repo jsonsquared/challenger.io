@@ -31,6 +31,7 @@ var Player = function(id, name) {
 
     this.die = function(killer) {
         this.killedBy = killer;
+        this.health = 0;
         this.dead = true;
         this.x = -10000;
         this.y = -10000;
