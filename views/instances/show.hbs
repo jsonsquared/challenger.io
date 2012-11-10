@@ -13,7 +13,8 @@
 
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script>
-    var socket = io.connect('http://' + window.location.host + window.location.pathname);
+
+    var socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
 
     preload(assets, function(files) {
         console.log(files)
@@ -44,8 +45,29 @@
         })
     })
 
+    socket.on('damage', function(data) {
+        console.log('damaged', data);
+        if(data.id == me.id) {$("#health").html(data.health);}
+    })
+
+    socket.on('died', function(data) {
+        console.log('died', data);
+    })
+
+    socket.on('score', function(data) {
+        $("#score").html(data.score)
+    })
+
+    socket.on('respawn', function(data) {
+        console.log('respawn!')
+    })
+
 </script>
+<h2 id="score">0</h2>
+<h3 id="health">100</h3>
+
 <div id='container'>
+
     <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
     <div id='hp'>
         <div id='hp-value'>35%</div>

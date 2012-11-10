@@ -29,7 +29,9 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
+
     stage.addChildAt(this.sprite,2)
+    this.removed = false;
 
     $(document).bind('tick', function() {
         if(!self.removed) {
@@ -37,21 +39,27 @@ function Bullet(options) {
             var x = self.delta * self.trajectoryX
             var y = self.delta * self.trajectoryY
 
-            if(!blocked(self.sprite.x, self.sprite.y, 2) && !playerHit(self)) {
+
+            if(blocked(self.sprite.x, self.sprite.y, 2)) {
+                // hit a wall
+                self.remove();
+            } else if(hitPlayer = playerHit(self)) {
+                // hit a player
+                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data()})
+                self.remove();
+            } else {
                 self.sprite.x += x
                 self.sprite.y += y
-            } else {
-                console.log('remove bullet sprite')
-                stage.removeChild(self.sprite)
-                self.removed = true;
-                self.remove();
-                delete self;
             }
         }
     });
 
     this.remove = function() {
+        stage.removeChild(this.sprite)
+        this.removed = true;
+        console.log('remove bullet sprite')
         this.onRemove();
+        delete this;
     }
 
     this.onRemove = function() {};

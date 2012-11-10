@@ -148,4 +148,8 @@ function Player(options) {
         stage.removeChild(this.container)
         delete this;
     }
+
+    this.data = function() {
+        return {id: this.id, name: this.name};
+    }
 }
