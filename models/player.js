@@ -1,6 +1,6 @@
-var Player = function(id) {
+var Player = function(id, name) {
     this.id = id;
-    this.name = 'player';
+    this.name = name;
     this.team = 0;
     this.x = 0;
     this.y = 0;
