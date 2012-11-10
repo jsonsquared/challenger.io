@@ -1,5 +1,5 @@
 var Player = function(id, name) {
-    this.TOTAL_HEALTH = 25;
+    this.TOTAL_HEALTH = 100;
 
     this.id = id;
     this.name = name;
@@ -21,7 +21,7 @@ var Player = function(id, name) {
     }
 
     this.takeDamage = function() {
-        this.health -= 6;
+        this.health -= 14;
         if(this.isDead()) {
             this.die();
         }
@@ -38,13 +38,8 @@ var Player = function(id, name) {
     }
 
     this.respawn = function(io) {
-        // if(this.respawnTimer) return;
-        // this.respawnTimer = setTimeout(function() {
-            // this.respawnTimer = null;
-            this.health = this.TOTAL_HEALTH;
-            this.dead = false;
-            // io.emit('respawn');
-        // }, 3000);
+        this.health = this.TOTAL_HEALTH;
+        this.dead = false;
     }
 };
 module.exports = Player;

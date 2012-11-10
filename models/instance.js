@@ -45,7 +45,6 @@ var Instance = function(id, options) {
             });
 
             socket.on('hit', function(data) {
-                // console.log('hit', data);
                 // supposedly data.bullet hit data.hitPlayer
                 // validate that at some point
                 var player = self.players[data.hitPlayer.id];
