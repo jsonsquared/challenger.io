@@ -5,18 +5,31 @@ function Player(options) {
     this.y = options.y || 0;
     this.color = options.color || '#F00';
 
-    this.sprite = new createjs.Container();
+    this.shape = new createjs.Container();
+
+    this.gun = new createjs.Shape();
+    this.gun.graphics.f('#FFF').de(0-tileSize/2,(0-tileSize/2)-2,25,4,0);
+    this.gun.x = tileSize/2;
+    this.gun.y = tileSize/2;
+    this.shape.addChild(this.gun)
+
     this.circle = new createjs.Shape();
     this.circle.graphics.f(this.color).de(0-tileSize/2,0-tileSize/2,tileSize,tileSize,0);
-    this.sprite.addChild(this.circle);
+    this.shape.addChild(this.circle)
 
-    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100}))-1]
+    this.shape.x = this.x;
+    this.shape.y = this.y;
+    this.shape.scaleX = 1;
+    this.shape.scaleY = 1;
 
-    stage.addChild(this.sprite)
+    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:0}))-1]
 
-    this.updatePosition = function(x,y) {
-        this.sprite.x = this.light.x = x || this.x;
-        this.sprite.y = this.light.y = y || this.y;
+    stage.addChild(this.shape)
+
+    this.updatePosition = function(x, y, rotation) {
+        this.shape.rotation = rotation || this.rotation
+        this.shape.x = this.light.x = x || this.x;
+        this.shape.y = this.light.y = y || this.y;
     }
 
     this.moveUp = function() {

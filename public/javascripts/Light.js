@@ -39,6 +39,7 @@ function Light(canvas, options) {
     this.flicker = options.flicker || 3;
 
     this.render = function(x,y) {
+        console.log(this.flicker)
         // draw 50 circles, each one larger than the last
         this.ctx.globalCompositeOperation = 'destination-out'
         this.ctx.fillStyle="rgba(100,100,100,.04)";

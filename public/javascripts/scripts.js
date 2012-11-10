@@ -2,11 +2,11 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
-// var lights = [];
 var players = false;
 var inputInterval = 20;
 var natural_light = .25;
 var canvas_main, canvas_lighting;
+var crosshair, crosshairX, crosshairY;
 
 $(function() {
     canvas_main = document.getElementById("canvas-main");
@@ -32,6 +32,24 @@ $(function() {
     players = {
         0: new Player({name:'mcleod', x:6 * tileSize,y:6 * tileSize})
     }
+
+    crosshair = new createjs.Shape();
+    crosshair.graphics.f('#F0F').de(0,0,20,20,30);
+    stage.addChild(crosshair)
+
+    $(canvas_main).bind('mousemove', function(e) {
+        // console.log(e.offsetX, e.offsetY)
+        crosshairX = e.offsetX - 10;
+        crosshairY = e.offsetY - 10;
+
+        var deltaX = crosshairX - players[0].shape.x
+        var deltaY = crosshairY - players[0].shape.y
+        crosshair.x = crosshairX;
+        crosshair.y = crosshairY
+
+        // The resulting direction
+        players[0].rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+    })
 
     setInterval(function() {
         if(input.keyboard[87]) { players[0].moveUp() } // W
