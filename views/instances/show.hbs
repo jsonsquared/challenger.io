@@ -63,6 +63,7 @@
             me.x = Math.random() * (canvas_main.width - tileSize*2) + tileSize
             me.y = Math.random() * (canvas_main.height - tileSize*2) + tileSize
             // socket.emit('move', me.payload)
+            $("#health").html(data.health);
             console.log('respawn', data)
         })
 

@@ -49,7 +49,7 @@ function Player(options) {
     this.nameOutline.lineWidth = 300;
     this.nameOutline.textAlign = 'center'
     this.container.addChild(this.nameOutline);
-    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#ff6021")
+    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#fff")
     this.nameLabel.x = 0;
     this.nameLabel.y = -35;
     this.nameLabel.rotation = 0;
