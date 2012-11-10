@@ -8,7 +8,7 @@ function Bullet(options) {
     this.trajectoryX = options.endX - options.x;
     this.trajectoryY = options.endY - options.y;
 
-    this.length = Math.sqrt(Math.pow(options.endX,2) + (Math.pow(options.endY,2)))
+    this.length = Math.sqrt(Math.pow(this.trajectoryX,2) + (Math.pow(this.trajectoryY,2)))
 
     this.owner = 0;
     this.spawnTime = new Date();
@@ -22,13 +22,11 @@ function Bullet(options) {
     console.log(this.length)
 
     $(document).bind('tick', function() {
-
-        self.delta = 1;//self.trajectoryX / self.trajectoryY
-        var x = (self.trajectoryX * self.speed * self.delta)
-        var y = (self.trajectoryY * self.speed * self.delta)
-        self.sprite.x += x / self.length
-        self.sprite.y += y / self.length
-
+        self.delta = self.speed / self.length
+        var x = self.delta * self.trajectoryX
+        var y = self.delta * self.trajectoryY
+        self.sprite.x += x
+        self.sprite.y += y
     })
 
 }
