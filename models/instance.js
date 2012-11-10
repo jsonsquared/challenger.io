@@ -50,6 +50,7 @@ var Instance = function(id, options) {
 
             socket.on('fire', function(data) {
                 console.log('fire', data);
+                self.iio.emit('fired', data)
                 //player.fire
                 //send bulletdata
                 //send repercussions
