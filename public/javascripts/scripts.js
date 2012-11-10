@@ -69,7 +69,7 @@ function join(instance) {
         me.moved()
     }).bind('click',function(e) {
 
-        BULLET = new Bullet({
+        new Bullet({
             x:me.x,
             y:me.y,
             endX: e.offsetX,

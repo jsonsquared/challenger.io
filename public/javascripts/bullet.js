@@ -1,34 +1,34 @@
 function Bullet(options) {
+    var self = this;
     options = options || {}
 
-    this.speed = .02;
+    this.speed = 20;
     this.delta = 1;
 
-    this.startX = options.x;
-    this.startY = options.y;
+    this.trajectoryX = options.endX - options.x;
+    this.trajectoryY = options.endY - options.y;
 
-    this.x = this.startX;
-    this.y = this.startY;
-
-    this.trajectoryX = options.endX - this.startX;
-    this.trajectoryY = options.endY - this.startY;
+    this.length = Math.sqrt(Math.pow(options.endX,2) + (Math.pow(options.endY,2)))
 
     this.owner = 0;
     this.spawnTime = new Date();
 
     this.sprite = new createjs.Shape();
     this.sprite.graphics.beginFill('#FFF').drawEllipse(0,0,5,5);
-    this.sprite.x = this.x;
-    this.sprite.y = this.y;
+    this.sprite.x = options.x;
+    this.sprite.y = options.y;
 
     stage.addChild(this.sprite)
+    console.log(this.length)
 
-    var self = this;
     $(document).bind('tick', function() {
-        self.x += (self.trajectoryX * self.speed * self.delta)
-        self.y += (self.trajectoryY * self.speed * self.delta)
-        self.sprite.x = self.x
-        self.sprite.y = self.y
+
+        self.delta = 1;//self.trajectoryX / self.trajectoryY
+        var x = (self.trajectoryX * self.speed * self.delta)
+        var y = (self.trajectoryY * self.speed * self.delta)
+        self.sprite.x += x / self.length
+        self.sprite.y += y / self.length
+
     })
 
 }
