@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>mcleod</title>
+  <meta name="generator" content="TextMate http://macromates.com/">
+  <meta name="author" content="Jason McLeod">
+  <!-- Date: 2012-11-09 -->
+
+  <script src="/lib/jquery.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="/lib/input.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/utils/UID.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/utils/Ticker.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/geom/Rectangle.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/geom/Matrix2D.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/DisplayObject.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/Container.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/Stage.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/events/MouseEvent.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/Shape.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/SpriteSheet.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/BitmapAnimation.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/Graphics.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/display/Bitmap.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/utils/SpriteSheetUtils.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/filters/Filter.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/filters/BoxBlurFilter.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/filters/ColorFilter.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/filters/ColorMatrix.js"></script>
+  <script type="text/javascript" src="/lib/easeljs/filters/ColorMatrixFilter.js"></script>
+  <script type="text/javascript" src="/lib/tweenjs/Tween.js"></script>
+  <script type="text/javascript" src="/lib/tweenjs/Ease.js"></script>
+
+  <script src='Player.js'></script>
+
+  <style>
+    body, html {
+        margin:0px;
+        padding:0px;
+        background:#eee;
+    }
+    #container {
+        height:704px;
+        width:1024px;
+        background:black;
+        margin:0 auto;
+    }
+  </style>
+
+  <script>
+    var map = [
+        '00000000000000000000000000000000',
+        '0                              0',
+        '0                              0',
+        '0   0  000000000000000000  0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0                      0   0',
+        '0   0  000000000000000000  0   0',
+        '0                              0',
+        '00000000000000000000000000000000'
+    ]
+
+    var tileSize = 32;
+    var moveDistance = 3;
+    var stage, canvas;
+    var walls = [];
+    var players = false;
+
+    function parseMap() {
+
+        for(var y=0;y<map.length;y++) {
+            var row = map[y].split('');
+            for(var x=0;x<row.length;x++) {
+
+                var tile = map[y][x];
+                if(tile=='0') {
+                    var sprite = new createjs.Shape();
+                    sprite.graphics.beginFill('#FFF').rect(0,0,tileSize,tileSize)
+                    sprite.x = x * tileSize
+                    sprite.y = y * tileSize
+                    walls.push({x:x,y:y,sprite: sprite})
+                    stage.addChild(sprite)
+                }
+            }
+        }
+    }
+
+
+    function blocked(x, y, method) {
+        var tileX = method == 1 ? Math.ceil(x/tileSize) : Math.floor(x/tileSize)
+        var tileY = method == 1 ? Math.ceil(y/tileSize) : Math.floor(y/tileSize)
+        if(tileY < 0 || tileY > map.length-1 || tileX < 0 || tileX > map[0].length-1) return false
+
+        return map[tileY][tileX] == '0'
+    }
+    $(function() {
+        canvas = document.getElementById("canvas-main");
+        stage = new createjs.Stage(canvas);
+        stage.autoClear = true;
+
+        canvas.width = map[0].length * tileSize
+        canvas.height = map.length * tileSize
+        parseMap();
+
+        createjs.Ticker.addListener(window);
+        createjs.Ticker.setFPS(30);
+
+        players = {
+            0: new Player({name:'mcleod', x:6 * tileSize,y:6 * tileSize})
+        }
+
+        setInterval(function() {
+            if(input.keyboard[87]) { players[0].moveUp() } // W
+            if(input.keyboard[65]) { players[0].moveLeft() } // A
+            if(input.keyboard[83]) { players[0].moveDown() } // S
+            if(input.keyboard[68]) { players[0].moveRight() } // D
+        },15)
+
+    });
+
+    window.tick = function() {
+        stage.update();
+
+
+        if(players) {
+            for(var p in players) {
+                players[p].sprite.x = players[p].x
+                players[p].sprite.y = players[p].y
+            }
+        }
+    }
+
+  </script>
+
+</head>
+<body>
+    <div id='container'>
+        <canvas id='canvas-main'></canvas>
+        <canvas id='canvas-lighting'></canvas>
+    </div>
+</body>
+</html>
