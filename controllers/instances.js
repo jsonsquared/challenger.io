@@ -13,8 +13,9 @@ var instances = {
         if(!req.param('id') || !app.instances[req.param('id')]) res.status(404).end();
         var instance = app.instances[req.param('id')];
 
-        app.io.of('/instance/' + instance.name)
+        app.io.of('/instance/' + instance.id)
         .on('connection', function (socket) {
+            console.log(socket);
             instance.addPlayer(socket.id);
             console.log('herp')
 
