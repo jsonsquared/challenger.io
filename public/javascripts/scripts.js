@@ -2,9 +2,9 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
-var players = [];
+var players = {};
 var inputInterval = 20;
-var natural_light = .25;
+var natural_light = .75;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
@@ -50,9 +50,12 @@ function join(instance) {
     //     new Player({name:'test2', x:400, y:200, rotation:50})
     // ]
 
-    for(var p in instance.players) {
-        players.push(new Player(instance.players[p]))
 
+    console.log(instance.players)
+    for(var p in instance.players) {
+        players[instance.players[p].id] = new Player(instance.players[p])
+    }
+    for(var p in players) {
         if(players[p].id == socket.socket.sessionid) {
             players[p].isMe();
             me = players[p]
@@ -60,12 +63,11 @@ function join(instance) {
     }
 
     $(canvas_main).bind('mousemove', function(e) {
-        // console.log(e.offsetX, e.offsetY)
         crosshairX = e.offsetX - 10;
         crosshairY = e.offsetY - 10;
 
-        var deltaX = crosshairX - me.shape.x
-        var deltaY = crosshairY - me.shape.y
+        var deltaX = crosshairX - me.container.x
+        var deltaY = crosshairY - me.container.y
         crosshair.x = crosshairX;
         crosshair.y = crosshairY
 
