@@ -43,24 +43,31 @@
         socket.on('fired', function(data) {
             if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
         })
+
+        socket.on('damage', function(data) {
+            console.log('damaged', data);
+            if(data.id == me.id) {$("#health").html(data.health);}
+        })
+
+        socket.on('died', function(data) {
+            players[data.id].updatePosition(data.x, data.y, data.rotation)
+            // if(data.id == me.id)
+            console.log('died', data);
+        })
+
+        socket.on('score', function(data) {
+            $("#score").html(data.score)
+        })
+
+        socket.on('respawn', function(data) {
+            me.x = Math.random() * (canvas_main.width - tileSize*2) + tileSize
+            me.y = Math.random() * (canvas_main.height - tileSize*2) + tileSize
+            // socket.emit('move', me.payload)
+            console.log('respawn', data)
+        })
+
     })
 
-    socket.on('damage', function(data) {
-        console.log('damaged', data);
-        if(data.id == me.id) {$("#health").html(data.health);}
-    })
-
-    socket.on('died', function(data) {
-        console.log('died', data);
-    })
-
-    socket.on('score', function(data) {
-        $("#score").html(data.score)
-    })
-
-    socket.on('respawn', function(data) {
-        console.log('respawn!')
-    })
 
 </script>
 <h2 id="score">0</h2>
