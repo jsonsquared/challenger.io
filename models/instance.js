@@ -1,3 +1,4 @@
+var sanitize = require('validator').sanitize
 var Player = require('./player');
 
 var Instance = function(id, options) {
@@ -22,6 +23,7 @@ var Instance = function(id, options) {
 
     this.attachPacketHandlers = function(io) {
         var self = this;
+
         this.iio = io.of('/instance/' + this.id);
         this.iio.on('connection', function (socket) {
 
@@ -85,6 +87,12 @@ var Instance = function(id, options) {
                 console.log('disconnect', player)
                 self.removePlayer(player.id);
                 self.iio.emit('removePlayer', player);
+            })
+
+            socket.on('say', function(data) {
+                data.text = sanitize(data.text).trim().entityEncode().xss();
+                console.log(data.id, 'said', data.text);
+                self.iio.emit('said', data);
             })
         })
     }
