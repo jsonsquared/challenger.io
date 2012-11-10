@@ -1,6 +1,6 @@
 {
   "name": "nko3-challenger-io",
-  "version": "0.0.0",
+  "version": "0.0.0-5",
   "description": "challenger.io",
   "main": "server.js",
   "scripts": {
@@ -11,6 +11,14 @@
     "url": "git@github.com:nko3/challenger-io.git"
   },
   "dependencies": {
+    "express": "3.0.2",
+    "socket.io": "0.9.11",
+    "hbs": "",
+    "ratchetio": "0.0.3"
+  },
+  "devDependencies": {
+    "jitsu": "",
+    "supervisor": ""
   },
   "engines": {
     "node": "0.8.x"
