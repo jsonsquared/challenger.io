@@ -1,5 +1,6 @@
 <script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
+<script src='/javascripts/preload.js'></script>
 <script src='/javascripts/scripts.js'></script>
 <script src='/javascripts/mapUtils.js'></script>
 
@@ -13,29 +14,34 @@
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script>
     var socket = io.connect('http://' + window.location.host + window.location.pathname);
-    socket.on('connect', function () {
-        socket.emit('join', name)
-        console.log('connected')
-    });
 
-    socket.on('instance', function(data) {
-        join(data)
-    });
+    preload(assets, function(files) {
+        console.log(files)
 
-    socket.on('addPlayer', function(data) {
-        if(data.id!= socket.socket.sessionid) players[data.id] = new Player(data)
-    })
+        socket.on('connect', function () {
+            socket.emit('join', name)
+            console.log('connected')
+        });
 
-    socket.on('removePlayer', function(data) {
-        players[data.id].remove()
-    })
+        socket.on('instance', function(data) {
+            join(data)
+        });
 
-    socket.on('moved', function(data) {
-        if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
-    })
+        socket.on('addPlayer', function(data) {
+            if(data.id!= socket.socket.sessionid) players[data.id] = new Player(data)
+        })
 
-    socket.on('fired', function(data) {
-        if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+        socket.on('removePlayer', function(data) {
+            players[data.id].remove()
+        })
+
+        socket.on('moved', function(data) {
+            if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
+        })
+
+        socket.on('fired', function(data) {
+            if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+        })
     })
 
 </script>
