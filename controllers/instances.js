@@ -15,10 +15,7 @@ var instances = {
 
         app.io.of('/instance/' + instance.id)
         .on('connection', function (socket) {
-            console.log(socket);
             instance.addPlayer(socket.id);
-            console.log('herp')
-
         });
 
         res.render('instances/show', {title: "Welcome to game " + instance});

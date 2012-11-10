@@ -5,7 +5,7 @@ var Instance = function(id, options) {
     this.players = [];
 
     this.addPlayer = function(id) {
-        players.push(new Player(id));
+        this.players.push(new Player(id));
     }
 
     this.removePlayer = function(id) {
