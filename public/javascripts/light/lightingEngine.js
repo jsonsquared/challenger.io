@@ -25,6 +25,16 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
 
     }
 
+    this.addLight = function(light) {
+        this.lights.push(light)
+        this.lights[this.lights.length-1].id = this.lights.length-1
+        return this.lights[this.lights.length-1]
+    }
+
+    this.removeLight = function(light) {
+        delete this.lights[light.id]
+    }
+
     // this.update(lightingCanvas, outputCanvas, natural_light)
     this.render(natural_light);
 }
