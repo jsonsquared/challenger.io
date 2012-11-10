@@ -22,7 +22,7 @@ function Player(options) {
     this.shape.scaleX = 1;
     this.shape.scaleY = 1;
 
-    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:0}))-1]
+    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
 
     stage.addChild(this.shape)
 
