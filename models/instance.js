@@ -45,27 +45,29 @@ var Instance = function(id, options) {
             });
 
             socket.on('hit', function(data) {
-                console.log('hit', data);
+                // console.log('hit', data);
                 // supposedly data.bullet hit data.hitPlayer
                 // validate that at some point
                 var player = self.players[data.hitPlayer.id];
 
-                player.takeDamage();
-                self.iio.emit('damage', player)
+                if(player) {
+                    player.takeDamage();
+                    self.iio.emit('damage', player)
 
-                if(player.isDead()) {
-                    self.iio.emit('died', player)
-                    if(!player.respawning) {
-                        player.respawning = true;
-                        setTimeout(function() {
-                            player.respawn();
-                            self.iio.sockets[player.id].emit('respawn', player)
-                            player.respawning = false;
-                        }, 3000)
+                    if(player.isDead()) {
+                        self.iio.emit('died', player)
+                        if(!player.respawning) {
+                            player.respawning = true;
+                            setTimeout(function() {
+                                player.respawn();
+                                self.iio.sockets[player.id].emit('respawn', player)
+                                player.respawning = false;
+                            }, 3000)
+                        }
+
+                        self.kills++;
+                        self.iio.emit('score', self.data())
                     }
-
-                    self.kills++;
-                    self.iio.emit('score', self.data())
                 }
             })
 
