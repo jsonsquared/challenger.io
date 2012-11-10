@@ -2,6 +2,7 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
+var garbage = [];
 var players = {};
 var inputInterval = 20;
 var natural_light = .75;
@@ -69,12 +70,16 @@ function join(instance) {
         me.moved()
     }).bind('click',function(e) {
 
-        new Bullet({
+        var b = new Bullet({
             x:me.x,
             y:me.y,
             endX: e.offsetX,
             endY: e.offsetY
         })
+
+        b.onRemove = function() {
+            garbage.push(b);
+        };
     })
 
 
@@ -100,6 +105,11 @@ function join(instance) {
         }
 
         lightingEngine.render(natural_light);
+
+        // garbage collection
+        garbage.map(function(el, i, ary) {
+            delete garbage.pop();
+        })
     }
 
 }
