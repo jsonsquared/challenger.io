@@ -6,9 +6,11 @@ var garbage = [];
 var players = {};
 var inputInterval = 20;
 var natural_light = .75;
+var pushFrequency = 50;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
+var lastPush = {x:-1, y:-1, rotation:-1};
 
 $(function() {
     canvas_main = document.getElementById("canvas-main");
@@ -88,7 +90,13 @@ function join(instance) {
         e.preventDefault()
     })
 
-
+    setInterval(function() {
+        if(lastPush.x != me.payload.x || lastPush.y != me.payload.y || lastPush.rotation != me.payload.rotation) {
+            socket.emit('move', me.payload)
+            lastPush = me.payload;
+            // console.log('sending')
+        }
+    },pushFrequency)
 
 
     setInterval(function() {
