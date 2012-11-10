@@ -44,11 +44,6 @@ function findPlayer(id) {
     return -1;
 }
 function join(instance) {
-    // players = [
-    //     new Player({name:'test1', x:200, y:200, rotation:20, me:true}),
-    //     new Player({name:'test2', x:300, y:200, rotation:20}),
-    //     new Player({name:'test2', x:400, y:200, rotation:50})
-    // ]
 
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
@@ -72,23 +67,30 @@ function join(instance) {
         // The resulting direction
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         me.moved()
+    }).bind('click',function(e) {
+
+        BULLET = new Bullet({
+            x:me.x,
+            y:me.y,
+            endX: e.offsetX,
+            endY: e.offsetY
+        })
     })
 
+
+
+
     setInterval(function() {
-        // if(input.keyboard[87]) { me.moveUp() } // W
-        // if(input.keyboard[65]) { me.moveLeft() } // A
-        // if(input.keyboard[83]) { me.moveDown() } // S
-        // if(input.keyboard[68]) { me.moveRight() } // D
         var move = {};
         if(input.keyboard[87]) { move.y = me.y - moveDistance }
         if(input.keyboard[65]) { move.x = me.x - moveDistance }
         if(input.keyboard[83]) { move.y = me.y + moveDistance }
         if(input.keyboard[68]) { move.x = me.x + moveDistance }
         if(move.x || move.y) me.move(move)
-
     },inputInterval)
 
     window.tick = function() {
+        $(document).trigger('tick')
         stage.update();
 
         if(players) {
