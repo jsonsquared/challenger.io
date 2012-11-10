@@ -1,10 +1,10 @@
 function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
 
     this.lightingCtx = lightingCanvas.getContext('2d');
-    this.outputCtx = outputCanvas.getContext('2d')
+    this.outputCtx = outputCanvas.getContext('2d');
+    this.lights = [];
 
-    this.render = function() {
-
+    this.render = function(natural_light) {
 
         // fill the lighting canvas with black
         this.lightingCtx.fillStyle='rgba(0,0,0,1)'
@@ -16,8 +16,8 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
         this.lightingCtx.globalCompositeOperation = 'destination-out'
         this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
 
-        for(var l in lights) {
-            lights[l].render();
+        for(var l in this.lights) {
+            this.lights[l].render();
         }
 
         this.outputCtx.globalCompositeOperation = 'source-over';
@@ -26,7 +26,7 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
     }
 
     // this.update(lightingCanvas, outputCanvas, natural_light)
-    this.render();
+    this.render(natural_light);
 }
 
 function Light(canvas, options) {

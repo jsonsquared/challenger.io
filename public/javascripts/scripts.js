@@ -2,10 +2,11 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
-var lights = [];
+// var lights = [];
 var players = false;
 var inputInterval = 20;
-var canvas_main, canvas_lighting
+var natural_light = .25;
+var canvas_main, canvas_lighting;
 
 $(function() {
     canvas_main = document.getElementById("canvas-main");
@@ -50,5 +51,5 @@ window.tick = function() {
         }
     }
 
-    lightingEngine.render(canvas_lighting,canvas_main);
+    lightingEngine.render(natural_light);
 }

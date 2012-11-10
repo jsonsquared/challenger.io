@@ -10,16 +10,13 @@ function Player(options) {
     this.circle.graphics.f(this.color).de(0-tileSize/2,0-tileSize/2,tileSize,tileSize,0);
     this.sprite.addChild(this.circle);
 
-    this.light = lights[lights.push(new Light(canvas_lighting, {intensity:50}))-1]
-    // this.light = lights[lights.length-1]
-    // this.lightSource = new Light(canvas_lighting, {intensity:50});
+    this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100}))-1]
 
     stage.addChild(this.sprite)
 
     this.updatePosition = function(x,y) {
         this.sprite.x = this.light.x = x || this.x;
         this.sprite.y = this.light.y = y || this.y;
-        // this.lightSource.draw(this.x, this.y)
     }
 
     this.moveUp = function() {
