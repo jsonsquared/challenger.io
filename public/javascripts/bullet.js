@@ -2,6 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
+    this.size = 8;
     this.speed = 2;
     this.delta = 1;
 
@@ -26,7 +27,8 @@ function Bullet(options) {
             var x = self.delta * self.trajectoryX
             var y = self.delta * self.trajectoryY
 
-            if(!blocked(self.sprite.x, self.sprite.y, 1)) {
+
+            if(!blocked(self.sprite.x, self.sprite.y, 1) && !playerHit(self)) {
                 self.sprite.x += x
                 self.sprite.y += y
             } else {
@@ -43,4 +45,8 @@ function Bullet(options) {
     }
 
     this.onRemove = function() {};
+
+    this.data = function() {
+        return {startX: options.y, startY: options.x, endX: options.endX, endY: options.endY};
+    }
 }

@@ -76,8 +76,19 @@ function Player(options) {
         }
     }
 
-    this.fire = function() {
-        socket.emit('fire')
+    this.fire = function(e) {
+        var b = new Bullet({
+            x:me.x,
+            y:me.y,
+            endX: e.offsetX,
+            endY: e.offsetY
+        })
+        socket.emit('fire', b.data());
+
+        b.onRemove = function() {
+            garbage.push(b);
+        };
+
     }
 
     this.pickUp = function() {
@@ -88,6 +99,13 @@ function Player(options) {
 
     }
 
+    this.touching = function(otherObject) {
+        if (this.y + tileSize - 1 < otherObject.sprite.y + 1) return false;
+        if (this.y + 1 > otherObject.sprite.y + tileSize - 1) return false;
+        if (this.x + tileSize - 1 < otherObject.sprite.x + 1) return false;
+        if (this.x + 1 > otherObject.sprite.x + tileSize - 1) return false;
+        return true;
+    }
 
     this.remove = function() {
         stage.removeChild(this.container)

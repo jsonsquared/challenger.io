@@ -37,6 +37,18 @@ $(function() {
 
 });
 
+function playerHit(bullet) {
+    Object.keys(players).map(function(key) {
+        if(key != me.id) {
+            var player = players[key];
+            if(player.touching(bullet)) {
+                console.log('hit a guy');
+                return true;
+            }
+        }
+    });
+    return false;
+}
 
 function findPlayer(id) {
     for(var i = 0, len = players.length; i < len; i++) {
@@ -69,17 +81,17 @@ function join(instance) {
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         me.moved()
     }).bind('click',function(e) {
+        me.fire(e);
+        // var b = new Bullet({
+        //     x:me.x,
+        //     y:me.y,
+        //     endX: e.offsetX,
+        //     endY: e.offsetY
+        // })
 
-        var b = new Bullet({
-            x:me.x,
-            y:me.y,
-            endX: e.offsetX,
-            endY: e.offsetY
-        })
-
-        b.onRemove = function() {
-            garbage.push(b);
-        };
+        // b.onRemove = function() {
+        //     garbage.push(b);
+        // };
     })
 
 
