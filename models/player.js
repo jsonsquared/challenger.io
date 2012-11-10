@@ -5,5 +5,11 @@ var Player = function(id) {
     this.x = 0;
     this.y = 0;
     this.rotation = 0;
+
+    this.move = function(data) {
+        this.x = data.x || this.x;
+        this.y = data.y || this.y;
+        this.rotation = data.rotation || this.rotation;
+    }
 };
 module.exports = Player;

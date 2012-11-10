@@ -38,6 +38,10 @@ var Instance = function(id, options) {
 
             socket.on('move', function(data) {
                 console.log('move', data);
+                var player = self.players[self.find(socket.id)]
+                player.move(data)
+
+                self.iio.emit('moved', player)
                 //player.move
                 //send to the instance
             });

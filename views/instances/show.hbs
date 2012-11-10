@@ -9,8 +9,18 @@
     });
 
     socket.on('instance', function(data) {
-        console.log(data);
+        join(data)
     });
+
+    socket.on('addPlayer', function(data) {
+        data.x = 100;
+        data.y = 100
+        players.push(new Player(data))
+    })
+
+    socket.on('moved', function(data) {
+        players[findPlayer(data.id)].updatePosition(data.x, data.y, data.rotation)
+    })
 
 </script>
 <div id='container'>

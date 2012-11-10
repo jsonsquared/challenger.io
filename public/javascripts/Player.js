@@ -1,8 +1,9 @@
 function Player(options) {
 
+    this.id = options.id || 0;
     this.name = options.name || 'Unnamed Player';
-    this.x = options.x || 0;
-    this.y = options.y || 0;
+    this.x = options.x || 100;
+    this.y = options.y || 200;
     this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
     this.me = options.me || false;
@@ -23,10 +24,17 @@ function Player(options) {
     this.shape.y = this.y;
     this.shape.rotation = this.rotation
 
-    if(this.me) {
+    this.light = {};
+
+    // if(this.me) {
+    //     this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
+    // } else {
+    //     this.light = {}
+    // }
+
+    this.isMe = function() {
+        this.me = true;
         this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
-    } else {
-        this.light = {}
     }
 
     stage.addChild(this.shape)

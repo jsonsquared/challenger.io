@@ -2,11 +2,12 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
-var players = false;
+var players = [];
 var inputInterval = 20;
 var natural_light = .25;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
+var me;
 
 $(function() {
     canvas_main = document.getElementById("canvas-main");
@@ -33,46 +34,64 @@ $(function() {
     crosshair.graphics.f('#F0F').de(0,0,20,20,30);
     stage.addChild(crosshair)
 
+});
+
+
+function findPlayer(id) {
+    for(var i = 0, len = players.length; i < len; i++) {
+        if(players[i].id == id) return i;
+    }
+    return -1;
+}
+function join(instance) {
+    // players = [
+    //     new Player({name:'test1', x:200, y:200, rotation:20, me:true}),
+    //     new Player({name:'test2', x:300, y:200, rotation:20}),
+    //     new Player({name:'test2', x:400, y:200, rotation:50})
+    // ]
+
+    for(var p in instance.players) {
+        players.push(new Player(instance.players[p]))
+
+        if(players[p].id == socket.socket.sessionid) {
+            players[p].isMe();
+            me = players[p]
+        }
+    }
+
     $(canvas_main).bind('mousemove', function(e) {
         // console.log(e.offsetX, e.offsetY)
         crosshairX = e.offsetX - 10;
         crosshairY = e.offsetY - 10;
 
-        var deltaX = crosshairX - players[0].shape.x
-        var deltaY = crosshairY - players[0].shape.y
+        var deltaX = crosshairX - me.shape.x
+        var deltaY = crosshairY - me.shape.y
         crosshair.x = crosshairX;
         crosshair.y = crosshairY
 
         // The resulting direction
-        players[0].rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
-        players[0].moved()
+        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+        me.moved()
     })
 
     setInterval(function() {
-        if(input.keyboard[87]) { players[0].moveUp() } // W
-        if(input.keyboard[65]) { players[0].moveLeft() } // A
-        if(input.keyboard[83]) { players[0].moveDown() } // S
-        if(input.keyboard[68]) { players[0].moveRight() } // D
+        if(input.keyboard[87]) { me.moveUp() } // W
+        if(input.keyboard[65]) { me.moveLeft() } // A
+        if(input.keyboard[83]) { me.moveDown() } // S
+        if(input.keyboard[68]) { me.moveRight() } // D
     },inputInterval)
 
-});
+    window.tick = function() {
+        stage.update();
 
-function join() {
-    players = [
-      new Player({name:'test1', x:200, y:200, rotation:20, me:true}),
-      new Player({name:'test2', x:300, y:200, rotation:20}),
-      new Player({name:'test2', x:400, y:200, rotation:50})
-    ]
-}
-
-window.tick = function() {
-    stage.update();
-
-    if(players) {
-        for(var p in players) {
-            players[p].updatePosition()
+        if(players) {
+            for(var p in players) {
+                players[p].updatePosition()
+            }
         }
+
+        lightingEngine.render(natural_light);
     }
 
-    lightingEngine.render(natural_light);
 }
+
