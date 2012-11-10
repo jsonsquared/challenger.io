@@ -38,15 +38,13 @@ $(function() {
 });
 
 function playerHit(bullet) {
-    Object.keys(players).map(function(key) {
-        if(key != me.id) {
+    for(var i = 0, len = Object.keys(players).length; i < len; i++) {
+        var key = Object.keys(players)[i];
+        if(me.id != key) {
             var player = players[key];
-            if(player.touching(bullet)) {
-                console.log('hit a guy');
-                return true;
-            }
+            if(player.touching(bullet)) return true;
         }
-    });
+    }
     return false;
 }
 
