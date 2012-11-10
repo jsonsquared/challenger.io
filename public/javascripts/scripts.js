@@ -82,16 +82,10 @@ function join(instance) {
         me.moved()
     }).bind('click',function(e) {
         me.fire(e);
-        // var b = new Bullet({
-        //     x:me.x,
-        //     y:me.y,
-        //     endX: e.offsetX,
-        //     endY: e.offsetY
-        // })
+    })
 
-        // b.onRemove = function() {
-        //     garbage.push(b);
-        // };
+    $('body').bind('mousedown', function(e) {
+        e.preventDefault()
     })
 
 

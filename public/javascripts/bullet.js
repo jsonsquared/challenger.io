@@ -2,8 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.size = 8;
-    this.speed = 2;
+    this.speed = 20;
     this.delta = 1;
 
     this.trajectoryX = options.endX - options.x;
@@ -19,6 +18,8 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
+    this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:10, flicker:-1}))
+
     stage.addChild(this.sprite)
 
     $(document).bind('tick', function() {
@@ -31,6 +32,9 @@ function Bullet(options) {
             if(!blocked(self.sprite.x, self.sprite.y, 1) && !playerHit(self)) {
                 self.sprite.x += x
                 self.sprite.y += y
+                self.light.x = self.sprite.x
+                self.light.y = self.sprite.y
+
             } else {
                 stage.removeChild(self.sprite)
                 self.removed = true;
@@ -41,6 +45,7 @@ function Bullet(options) {
     })
 
     this.remove = function() {
+        lightingEngine.removeLight(this.light);
         this.onRemove();
     }
 
