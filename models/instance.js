@@ -17,7 +17,7 @@ var Instance = function(id, options) {
     }
 
     this.data = function() {
-        return {id: this.id, players: this.players}
+        return {id: this.id, players: this.players, score: this.kills}
     }
 
     this.attachPacketHandlers = function(io) {
@@ -54,9 +54,18 @@ var Instance = function(id, options) {
                 self.iio.emit('damage', player)
 
                 if(player.isDead()) {
-                    player.die();
-                    self.kills++;
                     self.iio.emit('died', player)
+                    if(!player.respawning) {
+                        player.respawning = true;
+                        setTimeout(function() {
+                            player.respawn();
+                            self.iio.sockets[player.id].emit('respawn', player)
+                            player.respawning = false;
+                        }, 3000)
+                    }
+
+                    self.kills++;
+                    self.iio.emit('score', self.data())
                 }
             })
 

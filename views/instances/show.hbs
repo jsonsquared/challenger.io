@@ -40,14 +40,27 @@
 
     socket.on('damage', function(data) {
         console.log('damaged', data);
+        if(data.id == me.id) {$("#health").html(data.health);}
     })
 
     socket.on('died', function(data) {
         console.log('died', data);
     })
 
+    socket.on('score', function(data) {
+        $("#score").html(data.score)
+    })
+
+    socket.on('respawn', function(data) {
+        console.log('respawn!')
+    })
+
 </script>
+<h2 id="score">0</h2>
+<h3 id="health">100</h3>
+
 <div id='container'>
+
     <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
 
     <canvas id='canvas-main'></canvas>
