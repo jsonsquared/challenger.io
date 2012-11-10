@@ -18,15 +18,33 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
+    // this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:10, flicker:-1}))-1]
+    this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:10, flicker:-1}))
+
     stage.addChild(this.sprite)
-    console.log(this.length)
 
     $(document).bind('tick', function() {
         self.delta = self.speed / self.length
         var x = self.delta * self.trajectoryX
         var y = self.delta * self.trajectoryY
-        self.sprite.x += x
-        self.sprite.y += y
+
+        if(!blocked(self.sprite.x, self.sprite.y, 1)) {
+            self.sprite.x += x
+            self.sprite.y += y
+            self.light.x = self.sprite.x
+            self.light.y = self.sprite.y
+        } else {
+            stage.removeChild(self.sprite)
+            self.remove();
+            delete self;
+        }
     })
 
+    this.remove = function() {
+        console.log('adasd')
+        lightingEngine.removeLight(this.light);
+        this.onRemove();
+    }
+
+    this.onRemove = function() {};
 }

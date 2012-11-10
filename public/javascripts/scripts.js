@@ -2,9 +2,10 @@ var tileSize = 32;
 var moveDistance = 5;
 var stage, canvas;
 var walls = [];
+var garbage = [];
 var players = {};
 var inputInterval = 20;
-var natural_light = .75;
+var natural_light = .25;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
@@ -68,12 +69,17 @@ function join(instance) {
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         me.moved()
     }).bind('click',function(e) {
-        new Bullet({
+
+        var b = new Bullet({
             x:me.x, //dualWield ? (Math.round(Math.random()) == 1 ? me.x-20 : me.x+17) : me.x,
             y:me.y,
             endX: e.offsetX,
             endY: e.offsetY
         })
+
+        b.onRemove = function() {
+            garbage.push(b);
+        };
     })
 
     $('body').bind('mousedown', function(e) {
@@ -103,6 +109,11 @@ function join(instance) {
         }
 
         lightingEngine.render(natural_light);
+
+        // garbage collection
+        garbage.map(function(el, i, ary) {
+            delete garbage.pop();
+        })
     }
 
 }
