@@ -25,9 +25,13 @@ app.configure('production', function(){
   app.use(ratchet.errorHandler(config.ratchet_key));
 });
 
+app.io = require('socket.io').listen(app.listen(config.port));
+app.io.set('log level', 1);
+
+
+var Instance = require('./models/instance')
+app.instances = {};
+app.instances['zomg-games-123'] = new Instance('zomg-games-123');
+
 var routes = require('./config/routes');
 routes.init(app);
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
