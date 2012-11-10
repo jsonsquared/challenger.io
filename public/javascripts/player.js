@@ -9,6 +9,7 @@ function Player(options) {
     this.color = options.color || '#F00';
     this.me = options.me || false;
     this.light = {}; // blank - only used if the player is this user
+    this.payload = {}
 
     // easel object
     this.container = new createjs.Container();
@@ -73,8 +74,9 @@ function Player(options) {
     }
 
     this.moved = function() {
-        socket.emit('move', {x:this.x, y:this.y, rotation:this.rotation, ts: Math.round(new Date().getTime())})
+        this.payload = {x:this.x, y:this.y, rotation:this.rotation}
     }
+
 
     this.move = function(move) {
         var final = {
@@ -95,6 +97,7 @@ function Player(options) {
     }
 
     this.fire = function(e) {
+
         var b = new Bullet({
             x:me.x,
             y:me.y,
