@@ -31,8 +31,7 @@
     })
 
     socket.on('moved', function(data) {
-        //if(data.id!=me.id)
-        players[data.id].updatePosition(data.x, data.y, data.rotation)
+        if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
     })
 
     socket.on('fired', function(data) {
