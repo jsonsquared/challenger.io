@@ -11,6 +11,7 @@ function Player(options) {
     this.me = options.me || false;
     this.light = {}; // blank - only used if the player is this user
     this.payload = {}
+    this.killCount = options.killCount || 0;
 
     this.reloading = false;
 

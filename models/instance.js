@@ -111,6 +111,8 @@ var Instance = function(id, options) {
 
                         killer.killCount++;
                         killer.killSpree++;
+                        self.iio.emit('kill', {id: killer.id, killCount: killer.killCount})
+
                         if(killer.onKillingSpree()) {
                             self.iio.emit('said', {name: 'Server', text: killer.killSpreeLevel()} )
                             self.iio.emit('spree', killer.killSpreeLevel())
