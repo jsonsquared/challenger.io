@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Deploying!"
+# echo "Deploying!"
 ./node_modules/.bin/jitsu login --username nko3-challenger-io --password +wxBxrtv2dHBKEA5
 ./node_modules/.bin/jitsu deploy --confirm
 
@@ -10,9 +10,9 @@ LOCAL_USERNAME=`whoami`
 REVISION=`git log -n 1 --pretty=format:"%H"`
 COMMENT=`git log -1 --pretty=%B`
 
-curl --data-urlencode https://submit.ratchet.io/api/1/deploy/ \
+curl https://submit.ratchet.io/api/1/deploy/ \
   -F access_token=$ACCESS_TOKEN \
   -F environment=production \
   -F revision=$REVISION \
   -F local_username=$LOCAL_USERNAME \
-  -F comment=$COMMENT
+  -F "comment=$COMMENT"
