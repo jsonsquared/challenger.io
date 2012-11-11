@@ -108,9 +108,13 @@ var Instance = function(id, options) {
             })
 
             socket.on('say', function(data) {
-                data.text = sanitize(data.text).trim().entityEncode().xss();
-                console.log(data.id, 'said', data.text);
-                self.iio.emit('said', data);
+                var player = self.players[socket.id];
+                var str = sanitize(data).trim();
+                var str = sanitize(str).entityEncode();
+                var str = sanitize(str).xss
+
+                console.log(player.name, 'said', str);
+                self.iio.emit('said', {name: player.name, text: str});
             })
         })
     }
