@@ -116,3 +116,13 @@ body {
     text-align:center;
     position:relative;
 }
+
+.instance {
+    position: relative;
+}
+
+.instance .join {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

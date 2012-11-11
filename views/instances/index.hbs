@@ -1,19 +1,34 @@
-{{#if error}}
-<div class="error">
-    <li>{{ error }}</li>
-</div>
-{{/if}}
+<div class="container">
+    <div class="row">
+        <div class="span8 offset4">
 
-<div id="instance_list">
-    {{#each instances }}
-        <div class="instance">
-            <h4>{{this.id}}</h4>
-            <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
-            {{#if this.full}}
-                <p>Server is full!</p>
-            {{else}}
-                <a href="/instance/{{this.id}}">Join!</a>
-            {{/if}}
+            <h1 class="page-header">challenger.io <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
         </div>
-    {{/each}}
+    </div>
+
+    {{#if error}}
+    <div class="error">
+        <li>{{ error }}</li>
+    </div>
+    {{/if}}
+
+    <div class="row">
+        <div class="span8 offset4">
+            <div class="well">
+                <div id="instance_list">
+                    {{#each instances }}
+                        <div class="instance">
+                            <h4>{{this.id}}</h4>
+                            <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
+                            {{#if this.full}}
+                                <a class="join btn btn-primary disabled" href="#">Full!</a>
+                            {{else}}
+                                <a class="join btn btn-primary" href="/instance/{{this.id}}">Join!</a>
+                            {{/if}}
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
