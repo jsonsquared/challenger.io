@@ -1,5 +1,5 @@
 var RESPAWN_TIME = 3000;
-var RELOAD_TIME = 1500;
+var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
 var KILL_TOTAL = 3;
 var config = require('../config/application')
@@ -21,6 +21,7 @@ var Instance = function(id) {
     }
 
     this.removePlayer = function(id) {
+        this.kills = this.kills - this.players[id].killCount;
         delete this.players[id]
     }
 
