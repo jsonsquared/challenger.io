@@ -51,7 +51,6 @@ function updateLeaderboard() {
 
     for(var i = 0, len = leaderboard.length; i < len; i++) {
         var player = leaderboard[i];
-        console.log(player)
         $("#leaderboard table tbody").append('<tr><td>'+ player.name +'</td><td>'+ player.killCount +'</td></tr>')
     }
 }
