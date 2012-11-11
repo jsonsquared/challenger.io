@@ -7,6 +7,7 @@ var players = {};
 var inputInterval = 20;
 var natural_light = .75;
 var pushFrequency = 50;
+var rateOfFire = 130;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
@@ -95,7 +96,6 @@ function join(instance) {
         }
     },pushFrequency)
 
-
     setInterval(function() {
         var move = {};
         if(input.keyboard[87]) { move.y = me.y - moveDistance }
@@ -104,6 +104,25 @@ function join(instance) {
         if(input.keyboard[68]) { move.x = me.x + moveDistance }
         if(move.x || move.y) me.move(move)
     },inputInterval)
+
+    setInterval(function() {
+        if(input.mouse[0]) {
+            me.fire({offsetX:crosshairX, offsetY: crosshairY})
+        }
+    },rateOfFire)
+
+    $(document).bind('keydown', function(e) {
+        if(e.keyCode==13) {
+            if($('input:focus').length==0) {
+                $('#chat-input').focus();
+            } else {
+                var msg = $('#chat-input').val()
+                console.log(msg)
+                socket.emit('say', msg)
+                $('#chat-input').blur().val('')
+            }
+        }
+    })
 
     window.tick = function() {
         $(document).trigger('tick')

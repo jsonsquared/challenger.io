@@ -29,9 +29,12 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
-
     stage.addChildAt(this.sprite,2)
     this.removed = false;
+
+    this.sound = new Audio("/assets/sounds/single.mp3");
+    this.sound.volume =( Math.random()/2 + .5);
+    this.sound.play();
 
     $(document).bind('tick', function() {
         if(!self.removed) {
@@ -55,9 +58,10 @@ function Bullet(options) {
     });
 
     this.remove = function() {
+        this.sound.pause();
+        delete this.sound;
         stage.removeChild(this.sprite)
         this.removed = true;
-        console.log('remove bullet sprite')
         this.onRemove();
         delete this;
     }

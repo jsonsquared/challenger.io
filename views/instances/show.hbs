@@ -45,7 +45,7 @@
         })
 
         socket.on('damage', function(data) {
-            console.log('damaged', data);
+            // console.log('damaged', data);
             if(data.id == me.id) {$("#health").html(data.health);}
         })
 
@@ -67,23 +67,42 @@
             console.log('respawn', data)
         })
 
+        socket.on('said', function(data) {
+            if($('#chat li').length>7) $('#chat li:first').remove()
+            $('#chat ul').append('<li><strong>' + data.name + '</strong>: ' + data.text + '</li>')
+        })
+
+        socket.on('reload', function(data) {
+            me.reload();
+        })
+
+        socket.on('reloaded', function(data) {
+            me.reloading = false;
+        })
+
+
     })
 
 
 </script>
-<h2 id="score">0</h2>
-<h3 id="health">100</h3>
+<!-- <h2 id="score">0</h2> -->
 
 <div id='container'>
 
     <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
     <div id='hp'>
-        <div id='hp-value'>35%</div>
+        <div id='health'>35%</div>
         <div id='hp-meter'>
             <div class='meter-container'></div>
             <div class='meter-value'></div>
         </div>
     </div>
     <canvas id='canvas-main'></canvas>
+    <div id='chat'>
+        <input id='chat-input' placeholder='Type a message here to chat'>
+        <ul>
+
+        </ul>
+    </id>
     <canvas id='canvas-lighting'></canvas>
 </div>

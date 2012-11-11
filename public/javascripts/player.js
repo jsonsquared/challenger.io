@@ -11,6 +11,8 @@ function Player(options) {
     this.light = {}; // blank - only used if the player is this user
     this.payload = {}
 
+    this.reloading = false;
+
     // easel object
     this.container = new createjs.Container();
     this.playerContainer = new createjs.Container();
@@ -39,7 +41,6 @@ function Player(options) {
         console.log('added sprite to playerContainer')
     }
 
-
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#000")
 
     this.nameOutline.outline=true;
@@ -57,8 +58,6 @@ function Player(options) {
     this.nameLabel.textAlign = 'center'
     this.container.addChild(this.nameLabel);
 
-
-
     this.container.x = this.x;
     this.container.y = this.y;
     this.playerContainer.rotation = this.rotation
@@ -67,9 +66,9 @@ function Player(options) {
 
     this.isMe = function() {
         this.me = true;
+        this.container.removeChild(this.nameOutline)
+        this.container.removeChild(this.nameLabel)
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:-1}))
-
-        // this.light = lightingEngine.lights[lightingEngine.lights.push(new Light(canvas_lighting, {intensity:100, flicker:-1}))-1]
     }
 
     stage.addChild(this.container)
@@ -113,11 +112,13 @@ function Player(options) {
 
     this.fire = function(e) {
 
+        if(this.reloading) return false;
+
         var b = new Bullet({
             x:me.x,
             y:me.y,
-            endX: e.offsetX,
-            endY: e.offsetY,
+            endX: e.offsetX + (Math.random()*8)-2,
+            endY: e.offsetY+ (Math.random()*8)-2,
             owner:me.id
         })
         socket.emit('fire', b.data());
@@ -142,6 +143,12 @@ function Player(options) {
         if (this.x + tileSize - 1 < otherObject.sprite.x + 1) return false;
         if (this.x + 1 > otherObject.sprite.x + tileSize - 1) return false;
         return true;
+    }
+
+    this.reload = function() {
+        var sound = new Audio("/assets/sounds/reload.mp3")
+        sound.play();
+        this.reloading = true;
     }
 
     this.remove = function() {
