@@ -57,18 +57,18 @@ var Instance = function(id, options) {
 
             socket.on('fire', function(data) {
                 var shooter = self.players[data.owner];
-
+                data.ownerClip = shooter.clip;
                 if(!shooter.isEmpty()) {
                     shooter.shotFired();
                     self.iio.emit('fired', data)
                 }
                 if(shooter.isEmpty()) {
                     if(!shooter.reloading) {
-                        self.iio.sockets[shooter.id].emit('reload', player)
+                        self.iio.sockets[shooter.id].emit('reload', shooter)
                         shooter.reloading = true;
                         setTimeout(function() {
                             shooter.reload();
-                            self.iio.sockets[shooter.id].emit('reloaded', player)
+                            if(self.iio.sockets[shooter.id]) self.iio.sockets[shooter.id].emit('reloaded', shooter)
                             shooter.reloading = false;
                         }, RELOAD_TIME)
                     }
