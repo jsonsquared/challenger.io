@@ -13,6 +13,8 @@ app.configure(function(){
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
+    app.use(express.cookieParser('g4m3z4l1f3'));
+    app.use(express.session({key: 'challengerio'}));
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
 });
