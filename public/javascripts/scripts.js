@@ -38,6 +38,20 @@ $(function() {
     parseMap();
 });
 
+function updateLeaderboard() {
+    var leaderboard = [];
+    for(var i = 0, len = Object.keys(players).length; i < len; i++) {
+        leaderboard.push(players[Object.keys(players)[i]]);
+    }
+
+    leaderboard.sort(function(a, b) { return a.kills - b.kills});
+
+    for(var i = 0, len = leaderboard.length; i < len; i++) {
+        var player = leaderboard[i];
+        $("#leaderboard table tbody").append('<tr><td>'+ player.name +'</td><td>'+ player.kills +'</td></tr>')
+    }
+}
+
 function playerHit(bullet) {
     for(var i = 0, len = Object.keys(players).length; i < len; i++) {
         var key = Object.keys(players)[i];

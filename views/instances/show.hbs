@@ -38,7 +38,13 @@
 
         socket.on('removePlayer', function(data) {
             players[data.id].remove()
-        });
+            updateLeaderboard();
+        })
+
+        socket.on('removePlayer', function(data) {
+            players[data.id].remove()
+            updateLeaderboard();
+        })
 
         socket.on('moved', function(data) {
             if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
@@ -57,6 +63,7 @@
             players[data.id].updatePosition(data.x, data.y, data.rotation)
             // if(data.id == me.id)
             console.log('died', data);
+            updateLeaderboard();
         });
 
         socket.on('score', function(data) {
@@ -97,6 +104,12 @@
             <div class='meter-container'></div>
             <div class='meter-value'></div>
         </div>
+    </div>
+    <div id="leaderboard">
+        <table>
+            <thead><th><td>Player</td><td>Kills</td></thead>
+            <tbody></tbody>
+        </table>
     </div>
     <canvas id='canvas-main'></canvas>
     <div id='chat'>
