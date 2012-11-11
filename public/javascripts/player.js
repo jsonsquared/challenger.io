@@ -99,7 +99,6 @@ function Player(options) {
         this.ammoMeter.update({value:(this.clip/25)*100, text: 'Ammo: ' + clip + ' / 25' })
     }
 
-
     this.moved = function() {
         var deltaX = crosshair.sprite.x - me.container.x
         var deltaY = crosshair.sprite.y - me.container.y
@@ -113,14 +112,14 @@ function Player(options) {
             x:move.x || this.x,
             y:move.y || this.y
         };
-        if(!blocked(final.x, final.y)) {
+        if(!blocked(final.x, final.y) && !halfBlocked(final.x, final.y)) {
             this.x = final.x
             this.y = final.y;
             this.moved();
-        } else if(move.x && !blocked(move.x, this.y)) {
+        } else if(move.x && !blocked(move.x, this.y) && !halfBlocked(move.x, this.y)) {
             this.x = move.x
             this.moved();
-        } else if(move.y && !blocked(this.x, move.y)) {
+        } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
             this.y = move.y;
             this.moved();
         }
