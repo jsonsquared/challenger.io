@@ -60,6 +60,7 @@ function join(instance) {
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
     }
+
     for(var p in players) {
         if(players[p].id == socket.socket.sessionid) {
             players[p].isMe();
@@ -115,6 +116,10 @@ function join(instance) {
                 socket.emit('say', msg)
                 $('#chat-input').blur().val('')
             }
+        }
+
+        if(e.keyCode == 82) {
+            socket.emit('manual_reload')
         }
     })
 
