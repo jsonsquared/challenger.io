@@ -10,7 +10,7 @@ LOCAL_USERNAME=`whoami`
 REVISION=`git log -n 1 --pretty=format:"%H"`
 COMMENT=`git log -1 --pretty=%B`
 
-curl https://submit.ratchet.io/api/1/deploy/ \
+curl --data-urlencode https://submit.ratchet.io/api/1/deploy/ \
   -F access_token=$ACCESS_TOKEN \
   -F environment=production \
   -F revision=$REVISION \
