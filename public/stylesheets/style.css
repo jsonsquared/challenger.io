@@ -3,6 +3,7 @@ body, html {
     margin:0px;
     padding:0px;
     background:#222;
+    color: #efefef;
 }
 #container {
     height:704px;

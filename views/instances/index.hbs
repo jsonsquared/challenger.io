@@ -1,1 +1,19 @@
-{{ instances }}
+<div class="flash">
+    {{ flash }}
+</div>
+
+<form method="post" action="/instance">
+    <input type="text" name="name" />
+
+    <div id="instance_list">
+        {{#each instances }}
+            <div class="instance">
+                <h4>{{this.id}}</h4>
+                <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
+                <input type="hidden" name="instance" value="{{this.id}}" />
+                <input type="submit" name="submit" value="join!" />
+            </div>
+        {{/each}}
+    </div>
+
+</form

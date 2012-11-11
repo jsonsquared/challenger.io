@@ -23,7 +23,7 @@
         crosshair = new Crosshair();
 
         socket.on('connect', function () {
-            socket.emit('join', name)
+            socket.emit('join', "{{name}}")
             console.log('connected')
         });
 

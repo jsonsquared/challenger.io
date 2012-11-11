@@ -33,10 +33,10 @@ app.io.set('log level', 1);
 
 var Instance = require('./models/instance')
 app.instances = {};
-app.instances['zomg-games-123'] = new Instance('zomg-games-123', {map:map});
-app.instances['zomg-games-123'].attachPacketHandlers(app.io)
 
-console.log(TILE_SIZE)
+var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0), {map:map});
+instance.attachPacketHandlers(app.io)
+app.instances[instance.id] = instance;
 
 var routes = require('./config/routes');
 routes.init(app);
