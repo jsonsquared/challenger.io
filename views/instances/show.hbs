@@ -7,6 +7,7 @@
 <script src='/javascripts/bullet.js'></script>
 <script src='/javascripts/crosshair.js'></script>
 <script src='/javascripts/progressbar.js'></script>
+<script src='/javascripts/messages.js'></script>
 <script src='/javascripts/player.js'></script>
 <script src='/javascripts/light/light.js'></script>
 <script src='/javascripts/light/lightingEngine.js'></script>
@@ -37,7 +38,8 @@
         crosshair = new Crosshair();
 
         socket.on('connect', function () {
-            getName();
+            // getName();
+            socket.emit('join', 'test')
         });
 
         socket.on('instance', function(data) {
@@ -80,6 +82,7 @@
 
         socket.on('kill', function(data) {
             players[data.id].killCount = data.killCount;
+            if(data.id == me.id) new Message('Player Killed: ' + players[data.id].name)
             updateLeaderboard();
         })
 
@@ -119,7 +122,7 @@
 <!-- <h2 id="score">0</h2> -->
 
 <div id='container'>
-
+    <div id='messages'></div>
     <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
     <div id='hp'>
         <div id='health'>35%</div>
