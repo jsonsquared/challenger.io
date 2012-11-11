@@ -1,7 +1,7 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
-var KILL_TOTAL = 3;
+var KILL_TOTAL = 2000;
 var config = require('../config/application')
 var Player = require('./player');
 var map = require('../lib/mapUtils').parse()
@@ -134,14 +134,14 @@ var Instance = function(id) {
                         self.kills++;
                         self.iio.emit('score', self.data())
 
-                        if(self.gameover()) {
-                            self.iio.emit('gameover')
-                            self.state = 'stopped';
-                            setTimeout(function() {
-                                self.state = 'running';
-                                self.iio.emit('new_game', self.data())
-                            }, WAIT_TIME)
-                        }
+                        // if(self.gameover()) {
+                        //     self.iio.emit('gameover')
+                        //     self.state = 'stopped';
+                        //     setTimeout(function() {
+                        //         self.state = 'running';
+                        //         self.iio.emit('new_game', self.data())
+                        //     }, WAIT_TIME)
+                        // }
                     }
                 }
             })
