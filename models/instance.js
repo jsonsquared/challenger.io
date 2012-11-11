@@ -116,14 +116,14 @@ var Instance = function(id) {
                                 player.setPosition(self.randomSpawn())
                                 player.respawn();
 
-                                self.iio.sockets[player.id].emit('respawn', player)
+                                if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
                             }, RESPAWN_TIME)
                         }
 
                         killer.killCount++;
                         killer.killSpree++;
-                        self.iio.emit('kill', {id: killer.id, killCount: killer.killCount})
+                        self.iio.emit('kill', {id: killer.id, killCount: killer.killCount, killee: player.id})
 
                         if(killer.onKillingSpree()) {
                             self.iio.emit('said', {name: 'Server', text: killer.killSpreeLevel()} )
