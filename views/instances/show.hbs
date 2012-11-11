@@ -60,8 +60,7 @@
         socket.on('damage', function(data) {
             console.log('damaged', data);
             if(data.id == me.id) me.updateHealth(data.health)
-
-
+            if(data.hitBy == me.id) players[data.id].floatText('-' + data.lastHit)
         });
 
         socket.on('died', function(data) {
