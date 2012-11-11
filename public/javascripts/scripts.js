@@ -17,7 +17,9 @@ var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 var USE_SOUNDS = false;
- var hijackRightClick = false;
+var hijackRightClick = false;
+
+var fireInterval, inputInterval, pushInterval
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -138,14 +140,16 @@ function join(instance) {
         e.preventDefault()
     })
 
-    setInterval(function() {
+    clearInterval(pushInterval)
+    pushInterval = setInterval(function() {
         if(lastPush.x != me.payload.x || lastPush.y != me.payload.y || lastPush.rotation != me.payload.rotation) {
             socket.emit('move', me.payload)
             lastPush = me.payload;
         }
     },pushFrequency)
 
-    setInterval(function() {
+    clearInterval(inputInterval)
+    inputInterval = setInterval(function() {
         var move = {};
         if($('input:focus').length==0) {
             if(input.keyboard[87]) { move.y = me.y - moveDistance }
@@ -156,7 +160,8 @@ function join(instance) {
         }
     },inputInterval)
 
-    setInterval(function() {
+    clearInterval(fireInterval)
+    fireInterval = setInterval(function() {
 
         if(input.mouse[0]) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
