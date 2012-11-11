@@ -12,6 +12,7 @@ var Player = function(id, name) {
     this.lastUpdate = 0;
     this.killedBy;
     this.killCount = 0;
+    this.killSpree = 0;
 
     this.dead = false;
     this.health = this.TOTAL_HEALTH;
@@ -34,6 +35,7 @@ var Player = function(id, name) {
 
     this.die = function(killer) {
         this.killedBy = killer;
+        this.killSpree = 0;
         this.health = 0;
         this.dead = true;
         this.x = -10000;
@@ -64,6 +66,27 @@ var Player = function(id, name) {
     this.setPosition = function(obj) {
         this.x = obj.x;
         this.y = obj.y;
+    }
+
+    this.onKillingSpree = function() {
+        return this.killSpree >= 2;
+    }
+
+    this.killSpreeLevel = function() {
+        var str = this.name + ' got a ';
+        if(this.killSpree == 2) {
+            return str + 'double kill';
+        } else if(this.killSpree == 3) {
+            return str + 'triple kill';
+        } else if(this.killSpree == 4) {
+            return str + 'multi kill';
+        } else if(this.killSpree == 5) {
+            return str + 'ultra kill';
+        } else if(this.killSpree == 6) {
+            return str + 'monster kill';
+        } else if(this.killSpree > 6) {
+            return this.name + ' is a killing machine';
+        }
     }
 };
 module.exports = Player;

@@ -100,6 +100,12 @@ var Instance = function(id, options) {
                         }
 
                         killer.killCount++;
+                        killer.killSpree++;
+                        if(killer.onKillingSpree()) {
+                            self.iio.emit('said', {name: 'Server', text: killer.killSpreeLevel()} )
+                            self.iio.emit('spree', killer.killSpreeLevel())
+                        }
+
                         self.kills++;
                         self.iio.emit('score', self.data())
                     }
@@ -108,7 +114,6 @@ var Instance = function(id, options) {
 
             socket.on('pickup', function(data) {
                 console.log('pickup', data);
-                //
             });
 
             socket.on('drop', function(data) {
