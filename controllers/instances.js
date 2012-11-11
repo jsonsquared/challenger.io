@@ -40,7 +40,7 @@ var instances = {
     show: function(req, res) {
         if(!req.param('id') || !app.instances[req.param('id')]) res.redirect('/instance');
         var instance = app.instances[req.param('id')];
-        if(instance.full()) {
+        if(!instance || instance.full()) {
             res.redirect('/instance' + '?error=Server is full, please pick another');
         }
 
