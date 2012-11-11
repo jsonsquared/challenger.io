@@ -25,7 +25,7 @@ var instances = {
             totalPlayers += Object.keys(instance.players).length;
         }
 
-        if(totalPlayers / Object.keys(app.instances).length > config.instance.playerLimit / 2) {
+        if(totalPlayers / Object.keys(app.instances).length > config.instance.player_limit / 2) {
             var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0));
             app.instances[instance.id] = instance;
         }
