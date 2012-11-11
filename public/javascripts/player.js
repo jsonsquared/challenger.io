@@ -88,7 +88,6 @@ function Player(options) {
     }
 
     this.updateHealth = function(health) {
-        console.log(health)
         $("#health").html(health);
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
