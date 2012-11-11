@@ -68,8 +68,7 @@ var Instance = function(id, options) {
                         shooter.reloading = true;
                         setTimeout(function() {
                             shooter.reload();
-                            console.log(shooter)
-                            self.iio.sockets[shooter.id].emit('reloaded', shooter)
+                            if(self.iio.sockets[shooter.id]) self.iio.sockets[shooter.id].emit('reloaded', shooter)
                             shooter.reloading = false;
                         }, RELOAD_TIME)
                     }
