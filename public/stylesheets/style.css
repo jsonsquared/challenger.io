@@ -10,6 +10,7 @@ body, html {
     width:1024px;
     background:black;
     margin:0 auto;
+    position:relative;
 }
 #canvas-main {
   cursor: none;
@@ -30,25 +31,49 @@ body, html {
 }
 
 #chat {
-  height:134px;
-  background:#fff;
-  color:#111;
-  font-size:11px;
-  width:600px;
-  overflow:hidden;
+    height:134px;
+    background:#fff;
+    color:#111;
+    font-size:11px;
+    width:600px;
+    overflow:hidden;
 }
 #chat-input {
-  outline:none;
-  width:1016px;
-  border:none;
-  padding:4px;
-  border-bottom:1px solid #aaa;
+    outline:none;
+    width:1016px;
+    border:none;
+    padding:4px;
+    border-bottom:1px solid #aaa;
 }
 #chat ul {
-  list-style:none;
-  margin:0px;
-  padding:2px;
+    list-style:none;
+    margin:0px;
+    padding:2px;
 }
 #chat-input:focus {
-  background:#aaa;
+    background:#aaa;
 }
+
+.progressbar {
+    position:absolute;
+    width:100px;
+    height:20px;
+    background:black;
+    font-size:12px;
+    -moz-box-shadow: 0px 0px 4px #000;
+    -webkit-box-shadow: 0px 0px 4px #000;
+    box-shadow: 0px 0px 4px #000;
+    border:2px solid black;
+}
+
+.progressbar .meter {
+    height:100%;
+    background:#A00;
+    width:50%;
+}
+.progressbar .label {
+    font-weight:bold;
+    text-align:center;
+    position:relative;
+    top:-17px;
+  }
