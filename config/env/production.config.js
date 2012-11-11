@@ -3,6 +3,6 @@ module.exports = {
     ratchet_key: process.env.ratchet_key,
     instance: {
         tile_size: 16,
-        player_limit: 16,
+        player_limit: 4,
     }
 };
