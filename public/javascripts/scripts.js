@@ -17,6 +17,7 @@ var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 var USE_SOUNDS = false;
+var hijackRightClick = true
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -133,6 +134,14 @@ function join(instance) {
             recoil+=2
         }
     },rateOfFire)
+
+    $(document).unbind("contextmenu").bind("contextmenu",function(e) {
+        if(hijackRightClick) {
+            socket.emit('manual_reload')
+            return false
+        }
+    })
+
 
     $(document).bind('keydown', function(e) {
         if(e.keyCode==13) {
