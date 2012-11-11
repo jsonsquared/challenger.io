@@ -153,14 +153,11 @@ function Player(options) {
         this.reloading = true;
     }
 
-    this.respawn = function(health) {
-        var point = spawnPoints[Math.round(Math.random() * (spawnPoints.length-1))]
-
-        me.x = point.x * tileSize
-        me.y = point.y * tileSize
-        console.log(me.x, me.y, point)
-        // socket.emit('move', me.payload)
-        $("#health").html(health);
+    this.respawn = function(data) {
+        this.updatePosition(data.x, data.y, 0)
+        this.moved()
+        socket.emit('move', me.payload)
+        $("#health").html(data.health);
 
     }
 
