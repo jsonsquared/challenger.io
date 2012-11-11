@@ -43,18 +43,18 @@ function Player(options) {
         console.log('added sprite to playerContainer')
     }
 
-    this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#000")
+    this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
 
     this.nameOutline.outline=true;
     this.nameOutline.x = 0;
-    this.nameOutline.y = -34;
+    this.nameOutline.y = -25;
     this.nameOutline.rotation = 0;
     this.nameOutline.lineWidth = 300;
     this.nameOutline.textAlign = 'center'
     this.container.addChild(this.nameOutline);
-    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 12px arial", "#fff")
+    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#fff")
     this.nameLabel.x = 0;
-    this.nameLabel.y = -35;
+    this.nameLabel.y = -25;
     this.nameLabel.rotation = 0;
     this.nameLabel.lineWidth = 300;
     this.nameLabel.textAlign = 'center'
@@ -66,21 +66,36 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
-    this.damageText = [];
-    this.floatingDamage = function(amount) {
+    this.floatingText = [];
+    this.floatText = function(amount) {
+
         var self = this;
         var treatment = amount > 11 ? {color:'#F00', font: 'bold 20px arial'} : {color:'#F00', font: 'bold 12px arial'}
-        var thisText = this.damageText[this.damageText.push(new createjs.Text('-' + amount, treatment.font, treatment.color))-1]
-        thisText.x = 0;
-        thisText.y = -20;
-        thisText.rotation = 0;
-        thisText.lineWidth = 50;
-        thisText.textAlign = 'center'
 
-        this.container.addChild(thisText)
+        var thisTextContainer = this.floatingText[this.floatingText.push(new createjs.Container())-1]
 
-        createjs.Tween.get(thisText).to({y:range(-30,-60), x:range(-20,20)},500,createjs.Ease.quintOut).to({alpha:0},200).call(function() {
-            self.container.removeChild(thisText)
+        var text = new createjs.Text(amount, treatment.font, treatment.color)
+        text.lineWidth = 50;
+        text.textAlign = 'center'
+
+        var outline = new createjs.Text(amount, treatment.font, '#000')
+        outline.outline = true
+        outline.y = 1;
+        outline.x = 1;
+        outline.lineWidth = 50;
+        outline.textAlign = 'center'
+
+
+        thisTextContainer.addChild(outline)
+        thisTextContainer.addChild(text)
+
+        thisTextContainer.x = 0;
+        thisTextContainer.y = -25;
+
+        this.container.addChild(thisTextContainer)
+
+        createjs.Tween.get(thisTextContainer).to({y:range(-30,-60), x:range(-20,20)},500,createjs.Ease.quintOut).to({alpha:0},200).call(function() {
+            self.container.removeChild(thisTextContainer)
         })
     }
 
