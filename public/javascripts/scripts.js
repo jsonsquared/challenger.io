@@ -47,7 +47,8 @@ function updateLeaderboard() {
 
     $("#leaderboard table tbody").html('');
 
-    leaderboard = leaderboard.sort(function(a, b) { return a.killCount - b.killCount});
+    leaderboard = leaderboard.sort(function(a, b) { return b.killCount - a.killCount});
+
     for(var i = 0, len = leaderboard.length; i < len; i++) {
         var player = leaderboard[i];
         console.log(player)
