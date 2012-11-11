@@ -17,7 +17,8 @@ var instances = {
             instances.push({
                 id: instance.id,
                 score: instance.kills,
-                players: Object.keys(instance.players).length
+                players: Object.keys(instance.players).length,
+                full: instance.full()
             });
             totalPlayers += Object.keys(instance.players).length;
         }
@@ -28,7 +29,8 @@ var instances = {
             instances.push({
                 id: instance.id,
                 score: instance.kills,
-                players: Object.keys(instance.players).length
+                players: Object.keys(instance.players).length,
+                full: instance.full()
             });
         }
 
