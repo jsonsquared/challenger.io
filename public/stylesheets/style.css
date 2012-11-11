@@ -103,52 +103,16 @@ body {
     border: black;
     color: #efefef;
 }
-
-
-/*body, html {
-  font-family:helvetica, arial, sans-serif;
-    margin:0px;
-    padding:0px;
-    background:#222;
-    color: #efefef;
-}
-#knockout-vote {
-  position:absolute;
-  right:0px;
-  top:0px;
-  margin-left:470px;
-}
-
-#hp {
-  padding:4px;
-  color:white;
-}
-
-#chat {
-    height:134px;
-    background:#fff;
-    color:#111;
-    font-size:11px;
-    width:600px;
-    overflow:hidden;
-    position:relative;
-
-}
-#chat-input {
-    outline:none;
-    width:1016px;
-    border:none;
-    padding:4px;
-    border-bottom:1px solid #aaa;
+#messages {
+    z-index:2;
     position:absolute;
-    bottom:0px;
+    top:720px;
+    left:306px;
+    height:200px;
+    width:400px;
 }
-#chat ul {
-    list-style:none;
-    margin:0px;
-    padding:2px;
+.message {
+    width:100%;
+    text-align:center;
+    position:relative;
 }
-#chat-input:focus {
-    background:#aaa;
-}
-

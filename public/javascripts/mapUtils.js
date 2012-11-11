@@ -17,11 +17,12 @@ function parseMap() {
                 var tile = map[y][x];
                 if(tile=='0') {
                     var sprite = new createjs.Shape();
-                    sprite.graphics.beginFill('#333').rect(0,0,tileSize,tileSize)
-                    sprite.x = x * tileSize
-                    sprite.y = y * tileSize
+                    sprite.graphics.beginFill('#aaa').rect(0,0,tileSize,tileSize)
+                    sprite.x = x * tileSize;
+                    sprite.y = y * tileSize;
+                    sprite.alpha = .5
                     walls.push({x:x,y:y,sprite: sprite})
-                    stage.addChildAt(sprite,1)
+                    //stage.addChildAt(sprite,1)
                 }
 
                 if(tile=='1') {
@@ -29,8 +30,9 @@ function parseMap() {
                     sprite.graphics.beginFill('#777').rect(0,0,tileSize,tileSize)
                     sprite.x = x * tileSize
                     sprite.y = y * tileSize
+                    sprite.alpha = .5
                     halfWalls.push({x:x, y:y, sprite:sprite})
-                    stage.addChildAt(sprite,1)
+                    //stage.addChildAt(sprite,1)
                 }
 
 

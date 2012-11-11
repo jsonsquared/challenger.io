@@ -7,6 +7,7 @@
 <script src='/javascripts/bullet.js'></script>
 <script src='/javascripts/crosshair.js'></script>
 <script src='/javascripts/progressbar.js'></script>
+<script src='/javascripts/messages.js'></script>
 <script src='/javascripts/player.js'></script>
 <script src='/javascripts/light/light.js'></script>
 <script src='/javascripts/light/lightingEngine.js'></script>
@@ -34,14 +35,11 @@
     }
 
     preload(assets, function(files) {
-        console.log(files)
 
         crosshair = new Crosshair();
 
-    socket.on('connect', function () {
-            // getName();
-            socket.emit('join', 'test')
-            $('#me').html('test');
+        socket.on('connect', function () {
+            getName();
         });
 
         socket.on('instance', function(data) {
@@ -74,7 +72,6 @@
         });
 
         socket.on('damage', function(data) {
-            console.log('damaged', data);
             if(data.id == me.id) me.updateHealth(data.health)
             if(data.hitBy == me.id) players[data.id].floatText('-' + data.lastHit)
         });
@@ -85,6 +82,7 @@
 
         socket.on('kill', function(data) {
             players[data.id].killCount = data.killCount;
+            if(data.id == me.id) new Message('Player Killed: ' + players[data.id].name)
             updateLeaderboard();
         })
 
@@ -94,7 +92,6 @@
 
         socket.on('respawn', function(data) {
             me.respawn(data);
-            console.log('respawn', data)
         });
 
         socket.on('said', function(data) {

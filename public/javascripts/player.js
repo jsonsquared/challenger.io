@@ -23,7 +23,6 @@ function Player(options) {
     this.img = new Image();
     this.img.src = '/assets/images/fed.png'
     this.img.onload = function() {
-        console.log('loaded')
         var img = this
         self.spriteSheet = new createjs.SpriteSheet({
             images: [img],
@@ -40,7 +39,6 @@ function Player(options) {
         self.bitmap.gotoAndPlay('alive')
 
         self.playerContainer.addChild(self.bitmap)
-        console.log('added sprite to playerContainer')
     }
 
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
@@ -84,7 +82,6 @@ function Player(options) {
         outline.x = 1;
         outline.lineWidth = 50;
         outline.textAlign = 'center'
-
 
         thisTextContainer.addChild(outline)
         thisTextContainer.addChild(text)
@@ -160,11 +157,14 @@ function Player(options) {
 
         if(this.reloading) return false;
 
+        var recoilFactor = range(-4,4)
+        recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
+
         var b = new Bullet({
             x:me.x,
             y:me.y,
-            endX: e.offsetX + (Math.random()*8)-2,
-            endY: e.offsetY+ (Math.random()*8)-2,
+            endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
+            endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
             owner:me.id
         })
         socket.emit('fire', b.data());
@@ -202,6 +202,8 @@ function Player(options) {
             },200);
         }
 
+        try { self.reloadBar.remove();} catch(err) { }
+
         this.reloadBar = new ProgressBar({value:0,text:'Reloading'});
         this.reloadBar.element.css({left:430, top:600, width:150})
         this.reloadBar.element.find('.meter').animate({width:'100%'}, 1500, function() {
@@ -212,6 +214,7 @@ function Player(options) {
     }
 
     this.reloaded = function(clip) {
+        recoil = 0;
         this.reloading = false;
         this.updateClip(clip)
     }
@@ -221,7 +224,6 @@ function Player(options) {
         this.moved()
         socket.emit('move', me.payload)
         me.updateHealth(data.health)
-        // $("#health").html(data.health);
 
     }
 
