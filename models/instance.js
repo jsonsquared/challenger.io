@@ -1,3 +1,7 @@
+var RESPAWN_TIME = 3000;
+var RELOAD_TIME = 1500;
+
+var sanitize = require('validator').sanitize
 var Player = require('./player');
 
 var Instance = function(id, options) {
@@ -22,6 +26,7 @@ var Instance = function(id, options) {
 
     this.attachPacketHandlers = function(io) {
         var self = this;
+
         this.iio = io.of('/instance/' + this.id);
         this.iio.on('connection', function (socket) {
 
@@ -41,7 +46,22 @@ var Instance = function(id, options) {
             });
 
             socket.on('fire', function(data) {
-                self.iio.emit('fired', data)
+                var shooter = self.players[data.owner];
+
+                if(!shooter.isEmpty()) {
+                    shooter.shotFired();
+                    self.iio.emit('fired', data)
+                }
+                if(shooter.isEmpty()) {
+                    if(!shooter.reloading) {
+                        shooter.reloading = true;
+                        setTimeout(function() {
+                            shooter.reload();
+                            self.iio.sockets[shooter.id].emit('reload', player)
+                            shooter.reloading = false;
+                        }, RELOAD_TIME)
+                    }
+                }
             });
 
             socket.on('hit', function(data) {
@@ -62,7 +82,7 @@ var Instance = function(id, options) {
                                 player.respawn();
                                 self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
-                            }, 3000)
+                            }, RESPAWN_TIME)
                         }
 
                         killer.killCount++;
@@ -85,6 +105,12 @@ var Instance = function(id, options) {
                 console.log('disconnect', player)
                 self.removePlayer(player.id);
                 self.iio.emit('removePlayer', player);
+            })
+
+            socket.on('say', function(data) {
+                data.text = sanitize(data.text).trim().entityEncode().xss();
+                console.log(data.id, 'said', data.text);
+                self.iio.emit('said', data);
             })
         })
     }
