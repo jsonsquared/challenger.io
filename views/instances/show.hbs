@@ -17,6 +17,20 @@
 <script>
 
     var socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
+    var name = false;
+
+    function getName() {
+        name = prompt('Enter a name')
+        if(name && name != 'null') {
+            connect()
+        } else {
+            getName();
+        }
+    }
+
+    function connect() {
+        socket.emit('join', name)
+    }
 
     preload(assets, function(files) {
         console.log(files)
@@ -24,9 +38,7 @@
         crosshair = new Crosshair();
 
         socket.on('connect', function () {
-            socket.emit('join', "{{name}}")
-            console.log('connected')
-
+            getName();
         });
 
         socket.on('instance', function(data) {
