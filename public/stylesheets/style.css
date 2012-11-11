@@ -58,6 +58,7 @@ body {
 
 #meters {
     float:left;
+    height:58px;
 }
 
 #me {
@@ -69,7 +70,8 @@ body {
 #meta {
     position: absolute;
     text-align: left;
-    right: 345px;
+    right: 283px;
+    width:100px;
 }
 
 #meta h4 {
@@ -136,6 +138,7 @@ body {
     right: 5px;
 }
 
+
 td.leaderboard-hp {
     padding: 0px;
 }
@@ -149,4 +152,26 @@ div.leaderboard-hp {
     background: #787979;
     border-radius: 5px;
     color: #EFEFEF;
+}
+
+#enter h4 {
+  margin:0px;
+}
+#enter input {
+  width:97%;
+  margin: 12px 0px;
+  padding: 5px;
+  font-size: 20px;
+}
+
+#enter .enter-form {
+  width:50%;
+  margin:0 auto;
+}
+#join-button {
+  width:93%;
+}
+
+#kills span, #deaths span {
+  float:right;
 }

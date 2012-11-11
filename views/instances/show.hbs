@@ -20,18 +20,9 @@
     var socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
     var name = false;
 
-    function getName() {
-        name = prompt('Enter a name')
-        if(name && name != 'null') {
-            $('#me').html(name);
-            connect()
-        } else {
-            getName();
-        }
-    }
-
-    function connect() {
+    function connect(name) {
         socket.emit('join', name)
+        $('#me').text(name)
     }
 
     preload(assets, function(files) {
@@ -39,7 +30,8 @@
         crosshair = new Crosshair();
 
         socket.on('connect', function () {
-            getName();
+            //getName();
+            // connect()
         });
 
         socket.on('instance', function(data) {
@@ -124,7 +116,7 @@
 
 </script>
 
-<div class="container">
+<div class="container" id='game-container'>
     <h1 class="page-header" style='margin-top:10px'>challenger.io <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
 
     <div id="info">
@@ -135,14 +127,14 @@
         <h2 id="me"></h2>
 
         <div id="meta">
-            <h4 id="kills">Kills: <span></span></h4>
-            <h4 id="deaths">Deaths: <span></span></h4>
+            <h4 id="kills">Kills: <span>0</span></h4>
+            <h4 id="deaths">Deaths: <span>0</span></h4>
         </div>
         <div style="clear: both"></div>
     </div>
 
     <div id="game">
-        <div class="page-header" style="margin-top: -5px"></div>
+        <div class="page-header" style="margin:1px -12px 6px 1px !important"></div>
         <div class="well" style="width: 1025px; padding: 5px;">
             <canvas id='canvas-main'></canvas>
             <canvas id='canvas-lighting'></canvas>
@@ -168,6 +160,39 @@
             <div class="well">
                 <ul class="unstyled" ></ul>
                 <input id='chat-input' placeholder='Press Enter to Chat'>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container" id='enter-container'>
+    <div class="row">
+        <div class="span8 offset4">
+
+            <h1 class="page-header">challenger.io <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span8 offset4">
+            <div class="well">
+                <div id='enter'>
+                    <div class='enter-form'>
+                        <h4>Enter a name for yourself</h4>
+                        <input id='name'><br>
+                        <a href='#' id='join-button' class='btn btn-primary'>Join Game</a>
+                        <br><br><br>
+                        <h4>How to play</h4>
+                        <ul class='unstyled'>
+                            <li>Point 1</li>
+                            <li>Point 2</li>
+                            <li>Point 3</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

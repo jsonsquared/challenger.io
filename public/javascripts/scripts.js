@@ -40,7 +40,31 @@ $(function() {
     lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
 
     parseMap();
+
+    $('#game-container').hide();
+
+
+    $('#name').bind('keypress', function(e) {
+        if(e.keyCode == 13) checkName()
+    }).focus();
+
+    $('#join-button').bind('click', function() {
+        checkName()
+        $('#name').blur();
+        $(canvas_main).focus()
+    });
+
 });
+
+function checkName() {
+    if($('#name').val() > '') {
+        connect($('#name').val());
+        $('#enter-container').remove();
+        $('#game-container').show();
+    } else {
+        $('#name').css({border:'2px solid red'});
+    }
+}
 
 function updateLeaderboard() {
     leaderboard = [];
@@ -107,11 +131,11 @@ function join(instance) {
 
     $('body').bind('mousedown', function(e) {
         e.preventDefault()
-    })
-
-    $('body').bind('mouseup', function(e) {
+    }).bind('mouseup', function(e) {
         e.preventDefault()
         recoil = 0;
+    }).bind('mousewheel', function(e) {
+        e.preventDefault()
     })
 
     setInterval(function() {
