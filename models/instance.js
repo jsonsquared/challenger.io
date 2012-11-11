@@ -75,6 +75,16 @@ var Instance = function(id, options) {
                 }
             });
 
+            socket.on('manual_reload', function(data) {
+                self.iio.sockets[socket.id].emit('reload', player)
+                player.reloading = true;
+                setTimeout(function() {
+                    player.reload();
+                    socket.emit('reloaded', player)
+                    player.reloading = false;
+                }, RELOAD_TIME)
+            })
+
             socket.on('hit', function(data) {
                 // supposedly data.bullet hit data.hitPlayer
                 // validate that at some point
