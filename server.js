@@ -2,7 +2,10 @@ var config = require('./config/application');
 var http = require('http');
 var path = require('path');
 var express = require('express')
+var map = require('./lib/mapUtils').parse()
 var app = express();
+
+global.TILE_SIZE = 16;
 
 app.configure(function(){
     app.set('port', config.port);
@@ -30,8 +33,10 @@ app.io.set('log level', 1);
 
 var Instance = require('./models/instance')
 app.instances = {};
-app.instances['zomg-games-123'] = new Instance('zomg-games-123');
+app.instances['zomg-games-123'] = new Instance('zomg-games-123', {map:map});
 app.instances['zomg-games-123'].attachPacketHandlers(app.io)
+
+console.log(TILE_SIZE)
 
 var routes = require('./config/routes');
 routes.init(app);
