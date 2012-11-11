@@ -35,7 +35,6 @@ function parseMap() {
                     stage.addChildAt(sprite,1)
                 }
 
-
                 if(tile=='S') {
                     spawnPoints.push({x:x, y:y})
                 }
