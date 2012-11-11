@@ -111,6 +111,7 @@ body {
     color: #efefef;
     left:1px;
 }
+
 #messages {
     z-index:2;
     position:absolute;

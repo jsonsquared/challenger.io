@@ -77,13 +77,16 @@
         });
 
         socket.on('died', function(data) {
+            players[data.id].deaths = data.deaths;
             players[data.id].updatePosition(data.x, data.y, data.rotation)
+            me.updateCounts();
         });
 
         socket.on('kill', function(data) {
             players[data.id].killCount = data.killCount;
-            if(data.id == me.id) new Message('Player Killed: ' + players[killee.id].name)
+            if(data.id == me.id) new Message('Player Killed: ' + players[data.killee].name)
             updateLeaderboard();
+            me.updateCounts();
         })
 
         socket.on('score', function(data) {
@@ -131,8 +134,8 @@
         <h2 id="me"></h2>
 
         <div id="meta">
-            <h4>Kills: <span></span></h4>
-            <h4>Deaths: <span></span></h4>
+            <h4 id="kills">Kills: <span></span></h4>
+            <h4 id="deaths">Deaths: <span></span></h4>
         </div>
         <div style="clear: both"></div>
     </div>
@@ -149,7 +152,12 @@
         <div id="leaderboard">
             <h5>Leaderboard</h5>
             <table class="table table-condensed table-striped">
-                <thead><th>Rank</th></th><th>Player</th><th>Kills</th></thead>
+                <thead>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Kills</th>
+                    <th>Deaths</th>
+                </thead>
                 <tbody></tbody>
             </table>
         </div>

@@ -12,6 +12,7 @@ function Player(options) {
     this.light = {}; // blank - only used if the player is this user
     this.payload = {}
     this.killCount = options.killCount || 0;
+    this.deaths = options.deaths || 0;
     this.clip = options.clip;
     this.reloading = false;
 
@@ -125,6 +126,11 @@ function Player(options) {
         this.clip = clip;
         $("#clip").html(clip);
         this.ammoMeter.update({value:(this.clip/25)*100, text: 'Ammo: ' + clip + ' / 25' })
+    }
+
+    this.updateCounts = function() {
+        $('#kills span').html(this.killCount);
+        $('#deaths span').html(this.deaths);
     }
 
     this.moved = function() {

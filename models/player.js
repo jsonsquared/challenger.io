@@ -17,6 +17,7 @@ var Player = function(id, name) {
     this.hitBy;
     this.killCount = 0;
     this.killSpree = 0;
+    this.deaths = 0;
 
     this.dead = false;
     this.health = this.TOTAL_HEALTH;
@@ -41,6 +42,7 @@ var Player = function(id, name) {
     }
 
     this.die = function(killer) {
+        this.deaths++;
         this.hitBy = killer;
         this.killSpree = 0;
         this.health = 0;
