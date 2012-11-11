@@ -41,6 +41,7 @@
 
         socket.on('removePlayer', function(data) {
             players[data.id].remove()
+            delete players[data.id]
             updateLeaderboard();
         })
 
