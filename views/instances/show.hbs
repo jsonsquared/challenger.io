@@ -84,7 +84,7 @@
         })
 
         socket.on('score', function(data) {
-            $("#score").html(data.score)
+            $("#total_score h2 span").html(data.score)
         });
 
         socket.on('respawn', function(data) {
@@ -148,6 +148,10 @@
             <canvas id='canvas-lighting'></canvas>
         </div>
         <div id="messages"></div>
+    </div>
+
+    <div id="total_score">
+        <h2>Total <span>0</span></h2>
     </div>
 
     <div id="sidebar">

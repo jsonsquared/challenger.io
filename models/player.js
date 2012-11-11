@@ -3,7 +3,7 @@ var MAX_DAMAGE = 14;
 
 var Player = function(id, name) {
     this.TOTAL_HEALTH = 100;
-    this.CLIP_SIZE = 25;
+    this.CLIP_SIZE = 32;
 
     this.id = id;
     this.name = name;

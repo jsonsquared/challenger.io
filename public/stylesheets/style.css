@@ -175,3 +175,10 @@ div.leaderboard-hp {
 #kills span, #deaths span {
   float:right;
 }
+
+#total_score {
+    position: absolute;
+    text-align: center;
+    top: 70px;
+    right: 88px;
+}
