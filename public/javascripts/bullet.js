@@ -44,18 +44,22 @@ function Bullet(options) {
             var x = self.delta * self.trajectoryX
             var y = self.delta * self.trajectoryY
 
-
             if(blocked(self.sprite.x, self.sprite.y, 2)) {
                 // hit a wall
-                self.remove();
+               self.remove();
             } else if(hitPlayer = playerHit(self)) {
                 // hit a player
                 if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data()})
-                self.remove();
+               self.remove();
             } else {
                 self.sprite.x += x
                 self.sprite.y += y
             }
+
+            if(self.sprite.x < tileSize || self.sprite.y < tileSize || self.sprite.x > canvas_main.width - tileSize || self.sprite.y > canvas_main.height - tileSize) {
+                self.remove();
+            }
+
         }
     });
 
