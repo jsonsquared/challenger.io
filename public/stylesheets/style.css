@@ -92,16 +92,20 @@ body {
 }
 
 #chat .well {
-    height: 184px;
+    height: 170px;
 }
 
 #chat-input {
     padding:4px;
     position:absolute;
-    bottom:0px;
+    bottom:1px;
     background: #131517;
     border: black;
+    border-top:1px solid #333;
+    margin-left:0px;
+    width:260px;
     color: #efefef;
+    left:1px;
 }
 #messages {
     z-index:2;
