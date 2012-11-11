@@ -49,8 +49,6 @@ var Player = function(id, name) {
     }
 
     this.respawn = function(x, y) {
-        this.x = x;
-        this.y = y;
         this.health = this.TOTAL_HEALTH;
         this.dead = false;
     }
@@ -61,6 +59,11 @@ var Player = function(id, name) {
 
     this.reload = function() {
         this.clip = this.CLIP_SIZE;
+    }
+
+    this.setPosition = function(obj) {
+        this.x = obj.x;
+        this.y = obj.y;
     }
 };
 module.exports = Player;

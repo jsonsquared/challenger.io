@@ -1,6 +1,6 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1500;
-
+var config = require('../config/application')
 var Player = require('./player');
 
 var Instance = function(id, options) {
@@ -24,6 +24,13 @@ var Instance = function(id, options) {
         return {id: this.id, players: this.players, score: this.kills}
     }
 
+    this.randomSpawn = function() {
+        var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
+        var x = point.x * config.instance.tile_size + (config.instance.tile_size/2);
+        var y = point.y * config.instance.tile_size + (config.instance.tile_size/2);
+        return {x: x, y: y}
+    }
+
     this.attachPacketHandlers = function(io) {
         var self = this;
 
@@ -33,10 +40,9 @@ var Instance = function(id, options) {
             var player = self.addPlayer(socket.id);
 
             socket.on('join', function(name) {
-                var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
+
                 player.name = name;
-                player.x = point.x * TILE_SIZE + (TILE_SIZE/2);
-                player.y = point.y * TILE_SIZE + (TILE_SIZE/2);
+                player.setPosition(self.randomSpawn())
 
                 socket.emit('instance', self.data());
                 self.iio.emit('addPlayer', player);
@@ -85,11 +91,9 @@ var Instance = function(id, options) {
                             player.respawning = true;
                             setTimeout(function() {
 
-                                var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
-                                var x = point.x * TILE_SIZE + (TILE_SIZE/2);
-                                var y = point.y * TILE_SIZE + (TILE_SIZE/2);
+                                player.setPosition(self.randomSpawn())
+                                player.respawn();
 
-                                player.respawn(x, y);
                                 self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
                             }, RESPAWN_TIME)
