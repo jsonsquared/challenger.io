@@ -94,6 +94,13 @@
             me.reloaded(data.clip);
         });
 
+        socket.on('gameover', function() {
+            console.log('gameover');
+        });
+
+        socket.on('new_game', function(data) {
+            console.log('new_game', data)
+        });
 
     })
 
