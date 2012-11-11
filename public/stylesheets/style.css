@@ -144,3 +144,9 @@ div.leaderboard-hp {
     margin: 0px;
     padding: 0px;
 }
+
+#knockout-vote {
+    background: #787979;
+    border-radius: 5px;
+    color: #EFEFEF;
+}
