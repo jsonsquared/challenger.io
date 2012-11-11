@@ -14,7 +14,7 @@ var Player = function(id, name) {
 
     this.lastUpdate = 0;
     this.lastHit = 0;
-    this.killedBy;
+    this.hitBy;
     this.killCount = 0;
     this.killSpree = 0;
 
@@ -32,6 +32,7 @@ var Player = function(id, name) {
 
     this.takeDamage = function(killer) {
         var damage = Math.floor(Math.random() * (MAX_DAMAGE - MIN_DAMAGE + 1)) + MIN_DAMAGE;
+        this.hitBy = killer;
         this.lastHit = damage;
         this.health -= damage;
         if(this.isDead()) {
@@ -40,7 +41,7 @@ var Player = function(id, name) {
     }
 
     this.die = function(killer) {
-        this.killedBy = killer;
+        this.hitBy = killer;
         this.killSpree = 0;
         this.health = 0;
         this.dead = true;
