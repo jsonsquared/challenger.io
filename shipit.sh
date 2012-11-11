@@ -14,5 +14,5 @@ curl https://submit.ratchet.io/api/1/deploy/ \
   -F access_token=$ACCESS_TOKEN \
   -F environment=production \
   -F revision=$REVISION \
-  -F local_username=$LOCAL_USERNAME
+  -F local_username=$LOCAL_USERNAME \
   -F comment=$COMMENT
