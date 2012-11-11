@@ -13,6 +13,7 @@ var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
+var USE_SOUNDS = false;
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
