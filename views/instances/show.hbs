@@ -6,6 +6,7 @@
 
 <script src='/javascripts/bullet.js'></script>
 <script src='/javascripts/crosshair.js'></script>
+<script src='/javascripts/progressbar.js'></script>
 <script src='/javascripts/player.js'></script>
 <script src='/javascripts/light/light.js'></script>
 <script src='/javascripts/light/lightingEngine.js'></script>
@@ -33,52 +34,52 @@
 
         socket.on('addPlayer', function(data) {
             if(data.id!= socket.socket.sessionid) players[data.id] = new Player(data)
-        })
+        });
 
         socket.on('removePlayer', function(data) {
             players[data.id].remove()
-        })
+        });
 
         socket.on('moved', function(data) {
             if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
-        })
+        });
 
         socket.on('fired', function(data) {
             if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
-        })
+        });
 
         socket.on('damage', function(data) {
             // console.log('damaged', data);
             if(data.id == me.id) {$("#health").html(data.health);}
-        })
+        });
 
         socket.on('died', function(data) {
             players[data.id].updatePosition(data.x, data.y, data.rotation)
             // if(data.id == me.id)
             console.log('died', data);
-        })
+        });
 
         socket.on('score', function(data) {
             $("#score").html(data.score)
-        })
+        });
 
         socket.on('respawn', function(data) {
             me.respawn(data);
             console.log('respawn', data)
-        })
+        });
 
         socket.on('said', function(data) {
             if($('#chat li').length>7) $('#chat li:first').remove()
             $('#chat ul').append('<li><strong>' + data.name + '</strong>: ' + data.text + '</li>')
-        })
+        });
 
         socket.on('reload', function(data) {
             me.reload();
-        })
+        });
 
         socket.on('reloaded', function(data) {
             me.reloading = false;
-        })
+        });
 
 
     })
