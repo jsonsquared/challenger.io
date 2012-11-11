@@ -27,3 +27,27 @@ body, html {
   padding:4px;
   color:white;
 }
+
+#chat {
+  height:134px;
+  background:#fff;
+  color:#111;
+  font-size:11px;
+  width:600px;
+  overflow:hidden;
+}
+#chat-input {
+  outline:none;
+  width:1016px;
+  border:none;
+  padding:4px;
+  border-bottom:1px solid #aaa;
+}
+#chat ul {
+  list-style:none;
+  margin:0px;
+  padding:2px;
+}
+#chat-input:focus {
+  background:#aaa;
+}

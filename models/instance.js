@@ -54,10 +54,11 @@ var Instance = function(id, options) {
                 }
                 if(shooter.isEmpty()) {
                     if(!shooter.reloading) {
+                        self.iio.sockets[shooter.id].emit('reload', player)
                         shooter.reloading = true;
                         setTimeout(function() {
                             shooter.reload();
-                            self.iio.sockets[shooter.id].emit('reload', player)
+                            self.iio.sockets[shooter.id].emit('reloaded', player)
                             shooter.reloading = false;
                         }, RELOAD_TIME)
                     }
@@ -108,6 +109,8 @@ var Instance = function(id, options) {
             })
 
             socket.on('say', function(data) {
+                // console.log(this)
+                console.log(self.players)
                 var player = self.players[this.id];
                 var str = qs.escape(data)
 
