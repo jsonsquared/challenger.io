@@ -105,7 +105,7 @@ function Player(options) {
         this.container.removeChild(this.nameLabel)
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:-1}))
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
-        this.ammoMeter = new ProgressBar({width:200, left:205, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 25'})
+        this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 25'})
     }
 
     stage.addChild(this.container)
