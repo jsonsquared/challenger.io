@@ -9,7 +9,11 @@
         <div class="instance">
             <h4>{{this.id}}</h4>
             <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
-            <a href="/instance/{{this.id}}">Join!</a>
+            {{#if this.full}}
+                <p>Server is full!</p>
+            {{else}}
+                <a href="/instance/{{this.id}}">Join!</a>
+            {{/if}}
         </div>
     {{/each}}
 </div>
