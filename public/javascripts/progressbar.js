@@ -27,6 +27,7 @@ ProgressBar = function(options) {
 
     this.update = function(options) {
         options = options || this
+
         this.element.find('.meter').stop().animate({width: options.value + '%'})
         this.element.find('.label').text(options.text)
     }
