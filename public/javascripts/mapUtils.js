@@ -22,7 +22,7 @@ function parseMap() {
                     sprite.y = y * tileSize;
                     sprite.alpha = .5
                     walls.push({x:x,y:y,sprite: sprite})
-                    // stage.addChildAt(sprite,1)
+                    stage.addChildAt(sprite,1)
                 }
 
                 if(tile=='1') {
@@ -32,7 +32,7 @@ function parseMap() {
                     sprite.y = y * tileSize
                     sprite.alpha = .5
                     halfWalls.push({x:x, y:y, sprite:sprite})
-                    // stage.addChildAt(sprite,1)
+                    stage.addChildAt(sprite,1)
                 }
 
 
