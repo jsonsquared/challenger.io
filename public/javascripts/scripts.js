@@ -5,6 +5,7 @@ var walls = [];
 var spawnPoints = [];
 var garbage = [];
 var players = {};
+var leaderboard = [];
 var inputInterval = 20;
 var natural_light = .75;
 var pushFrequency = 50;
@@ -39,16 +40,18 @@ $(function() {
 });
 
 function updateLeaderboard() {
-    var leaderboard = [];
+    leaderboard = [];
     for(var i = 0, len = Object.keys(players).length; i < len; i++) {
         leaderboard.push(players[Object.keys(players)[i]]);
     }
 
-    leaderboard.sort(function(a, b) { return a.kills - b.kills});
+    $("#leaderboard table tbody").html('');
 
+    leaderboard = leaderboard.sort(function(a, b) { return a.killCount - b.killCount});
     for(var i = 0, len = leaderboard.length; i < len; i++) {
         var player = leaderboard[i];
-        $("#leaderboard table tbody").append('<tr><td>'+ player.name +'</td><td>'+ player.kills +'</td></tr>')
+        console.log(player)
+        $("#leaderboard table tbody").append('<tr><td>'+ player.name +'</td><td>'+ player.killCount +'</td></tr>')
     }
 }
 

@@ -26,20 +26,18 @@
         socket.on('connect', function () {
             socket.emit('join', "{{name}}")
             console.log('connected')
+
         });
 
         socket.on('instance', function(data) {
             join(data)
+            updateLeaderboard();
         });
 
         socket.on('addPlayer', function(data) {
             if(data.id!= socket.socket.sessionid) players[data.id] = new Player(data)
-        });
-
-        socket.on('removePlayer', function(data) {
-            players[data.id].remove()
             updateLeaderboard();
-        })
+        });
 
         socket.on('removePlayer', function(data) {
             players[data.id].remove()
@@ -61,10 +59,12 @@
 
         socket.on('died', function(data) {
             players[data.id].updatePosition(data.x, data.y, data.rotation)
-            // if(data.id == me.id)
-            console.log('died', data);
-            updateLeaderboard();
         });
+
+        socket.on('kill', function(data) {
+            players[data.id].killCount = data.killCount;
+            updateLeaderboard();
+        })
 
         socket.on('score', function(data) {
             $("#score").html(data.score)
