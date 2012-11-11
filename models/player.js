@@ -1,5 +1,6 @@
 var Player = function(id, name) {
     this.TOTAL_HEALTH = 100;
+    this.CLIP_SIZE = 25;
 
     this.id = id;
     this.name = name;
@@ -15,6 +16,8 @@ var Player = function(id, name) {
     this.dead = false;
     this.health = this.TOTAL_HEALTH;
     this.respawning = false;
+
+    this.clip = this.CLIP_SIZE;
 
     this.move = function(data) {
         this.x = data.x || this.x;
@@ -41,9 +44,21 @@ var Player = function(id, name) {
         return this.health < 0 || this.dead;
     }
 
-    this.respawn = function(io) {
+    this.isEmpty = function() {
+        return this.clip <= 0;
+    }
+
+    this.respawn = function() {
         this.health = this.TOTAL_HEALTH;
         this.dead = false;
+    }
+
+    this.shotFired = function() {
+        this.clip--;
+    }
+
+    this.reload = function() {
+        this.clip = this.CLIP_SIZE;
     }
 };
 module.exports = Player;
