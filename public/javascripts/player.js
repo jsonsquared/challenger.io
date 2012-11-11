@@ -202,6 +202,8 @@ function Player(options) {
             },200);
         }
 
+        try { self.reloadBar.remove();} catch(err) { }
+
         this.reloadBar = new ProgressBar({value:0,text:'Reloading'});
         this.reloadBar.element.css({left:430, top:600, width:150})
         this.reloadBar.element.find('.meter').animate({width:'100%'}, 1500, function() {
@@ -222,7 +224,6 @@ function Player(options) {
         this.moved()
         socket.emit('move', me.payload)
         me.updateHealth(data.health)
-        // $("#health").html(data.health);
 
     }
 
