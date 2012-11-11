@@ -85,7 +85,6 @@ function Player(options) {
         outline.lineWidth = 50;
         outline.textAlign = 'center'
 
-
         thisTextContainer.addChild(outline)
         thisTextContainer.addChild(text)
 
@@ -160,11 +159,16 @@ function Player(options) {
 
         if(this.reloading) return false;
 
+        var recoilFactor = range(-4,4)
+        recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
+
+        console.log(recoilFactor)
+
         var b = new Bullet({
             x:me.x,
             y:me.y,
-            endX: e.offsetX + (Math.random()*8)-2,
-            endY: e.offsetY+ (Math.random()*8)-2,
+            endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
+            endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
             owner:me.id
         })
         socket.emit('fire', b.data());
@@ -212,6 +216,7 @@ function Player(options) {
     }
 
     this.reloaded = function(clip) {
+        recoil = 0;
         this.reloading = false;
         this.updateClip(clip)
     }

@@ -11,6 +11,7 @@ var inputInterval = 20;
 var natural_light = .75;
 var pushFrequency = 50;
 var rateOfFire = 130;
+var recoil = 0;
 var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
@@ -103,11 +104,15 @@ function join(instance) {
         e.preventDefault()
     })
 
+    $('body').bind('mouseup', function(e) {
+        e.preventDefault()
+        recoil = 0;
+    })
+
     setInterval(function() {
         if(lastPush.x != me.payload.x || lastPush.y != me.payload.y || lastPush.rotation != me.payload.rotation) {
             socket.emit('move', me.payload)
             lastPush = me.payload;
-            // console.log('sending')
         }
     },pushFrequency)
 
@@ -125,6 +130,7 @@ function join(instance) {
     setInterval(function() {
         if(input.mouse[0]) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
+            recoil+=2
         }
     },rateOfFire)
 
