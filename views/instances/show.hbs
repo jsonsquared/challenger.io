@@ -38,8 +38,8 @@
         crosshair = new Crosshair();
 
         socket.on('connect', function () {
-            // getName();
-            socket.emit('join', 'test')
+            getName();
+            // socket.emit('join', 'test')
         });
 
         socket.on('instance', function(data) {
