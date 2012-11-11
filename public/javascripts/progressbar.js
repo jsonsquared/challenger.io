@@ -6,17 +6,17 @@ ProgressBar = function(options) {
     this.width = options.width || 100
 
     var markup = [
-        "<div id='progressbar' class='progressbar'>",
+        "<div id='progressbar' class='progressbar progress'>",
         "    <div class='container'></div>",
-        "    <div class='meter'></div>",
-        "    <div class='label'></div>",
+        "    <div class='pbmeter bar'></div>",
+        "    <div class='pblabel'></div>",
         "</div>"
     ].join('')
 
-    this.element = $(markup).appendTo('#container')
-    this.element.css({width:options.width, top:options.top || 0, left:options.left || 0})
-    this.element.find('.meter').css({width: options.value + '%', background:options.color || 'red'})
-    this.element.find('.label').text(options.text)
+    this.element = $(markup).appendTo('#meters')
+    this.element.css({width:options.width})//, top:options.top || 0, left:options.left || 0})
+    this.element.find('.pbmeter').css({width: options.value + '%'})//, background:options.color || '#C00'})
+    this.element.find('.pblabel').text(options.text)
 
     this.remove = function() {
         this.element.fadeOut(500,function() {
@@ -28,8 +28,8 @@ ProgressBar = function(options) {
     this.update = function(options) {
         options = options || this
 
-        this.element.find('.meter').stop().animate({width: options.value + '%'})
-        this.element.find('.label').text(options.text)
+        this.element.find('.pbmeter').stop().animate({width: options.value + '%'})
+        this.element.find('.pblabel').text(options.text)
     }
 
 }

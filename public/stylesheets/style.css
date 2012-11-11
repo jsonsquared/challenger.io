@@ -1,68 +1,35 @@
-body, html {
-  font-family:helvetica, arial, sans-serif;
-    margin:0px;
-    padding:0px;
-    background:#222;
-    color: #efefef;
+body {
+    background: #060606;
 }
-#container {
+
+.container {
+    width: 1320px;
+    position: relative;
+}
+
+.page-header {
+    margin-bottom: 12px;
+}
+
+#game {
     height:704px;
     width:1024px;
-    background:black;
-    margin:0 auto;
     position:relative;
 }
 #canvas-main {
-  cursor: none;
+    cursor: none;
 }
 #canvas-lighting {
-  display:none;
-}
-#knockout-vote {
-  position:absolute;
-  right:0px;
-  top:0px;
-  margin-left:470px;
+    display:none;
 }
 
-#hp {
-  padding:4px;
-  color:white;
-}
-
-#chat {
-    height:134px;
-    background:#fff;
-    color:#111;
-    font-size:11px;
-    width:600px;
-    overflow:hidden;
-    position:relative;
-
-}
-#chat-input {
-    outline:none;
-    width:1016px;
-    border:none;
-    padding:4px;
-    border-bottom:1px solid #aaa;
-    position:absolute;
-    bottom:0px;
-}
-#chat ul {
-    list-style:none;
-    margin:0px;
-    padding:2px;
-}
-#chat-input:focus {
-    background:#aaa;
+.progress {
+    margin-bottom: 5px;
 }
 
 .progressbar {
-    position:absolute;
     width:100px;
     height:20px;
-    background:black;
     font-size:12px;
     -moz-box-shadow: 0px 0px 4px #000;
     -webkit-box-shadow: 0px 0px 4px #000;
@@ -70,29 +37,92 @@ body, html {
     border:2px solid black;
 }
 
-.progressbar .meter {
+.progressbar .pbmeter {
     height:100%;
-    background:#A00;
     width:50%;
 }
-.progressbar .label {
-    font-weight:bold;
+.progressbar .pblabel {
     text-align:center;
     position:relative;
-    top:-17px;
-  }
+    top:-18px;
+    color: #efefef;
+}
 
-  #messages {
+#info {
+    position: relative;
+}
+
+#meters {
+    float:left;
+}
+
+#me {
+    position: absolute;
+    text-align: center;
+    left: 485px;
+}
+
+#meta {
+    position: absolute;
+    text-align: left;
+    right: 345px;
+}
+
+#meta h4 {
+    margin: 0px;
+}
+
+
+#sidebar {
+    position: absolute;
+    top: 150px;
+    right: 0px;
+    width: 270px;
+    text-align: center
+}
+
+#leaderboard {
+    height: 500px;
+}
+
+#chat {
+    position: relative;
+    bottom: 0px;
+    text-align: left
+}
+
+#chat .well {
+    height: 184px;
+}
+
+#chat-input {
+    padding:4px;
+    position:absolute;
+    bottom:0px;
+    background: #131517;
+    border: black;
+    color: #efefef;
+}
+#messages {
     z-index:2;
     position:absolute;
     top:720px;
     left:306px;
     height:200px;
     width:400px;
-  }
-  .message {
+}
+.message {
     width:100%;
     text-align:center;
     position:relative;
+}
 
-  }
+.instance {
+    position: relative;
+}
+
+.instance .join {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}

@@ -23,6 +23,7 @@
     function getName() {
         name = prompt('Enter a name')
         if(name && name != 'null') {
+            $('#me').html(name);
             connect()
         } else {
             getName();
@@ -39,7 +40,6 @@
 
         socket.on('connect', function () {
             getName();
-            // socket.emit('join', 'test')
         });
 
         socket.on('instance', function(data) {
@@ -119,28 +119,46 @@
 
 
 </script>
-<!-- <h2 id="score">0</h2> -->
 
-<div id='container'>
-    <div id='messages'></div>
-    <iframe id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>
-    <div id='hp'>
-        <div id='health'>35%</div>
-        <div id='hp-meter'>
-            <div class='meter-container'></div>
-            <div class='meter-value'></div>
+<div class="container">
+    <h1 class="page-header">challenger.io <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
+
+    <div id="info">
+
+        <div id="meters">
+        </div>
+
+        <h2 id="me"></h2>
+
+        <div id="meta">
+            <h4>Kills: <span></span></h4>
+            <h4>Deaths: <span></span></h4>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+
+    <div id="game">
+        <div class="page-header" style="margin-top: 5px"></div>
+        <div class="well" style="width: 1025px; padding: 5px;">
+            <canvas id='canvas-main'></canvas>
+            <canvas id='canvas-lighting'></canvas>
         </div>
     </div>
-    <div id="leaderboard">
-        <table>
-            <thead><th><td>Player</td><td>Kills</td></thead>
-            <tbody></tbody>
-        </table>
+
+    <div id="sidebar">
+        <div id="leaderboard">
+            <h5>Leaderboard</h5>
+            <table class="table table-condensed table-striped">
+                <thead><th>Rank</th></th><th>Player</th><th>Kills</th></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="chat">
+            <div class="well">
+                <ul class="unstyled" ></ul>
+                <input id='chat-input' placeholder='Press Enter to Chat'>
+            </div>
+        </div>
     </div>
-    <canvas id='canvas-main'></canvas>
-    <div id='chat'>
-        <ul></ul>
-        <input id='chat-input' placeholder='Type a message here to chat'>
-    </id>
-    <canvas id='canvas-lighting'></canvas>
 </div>
