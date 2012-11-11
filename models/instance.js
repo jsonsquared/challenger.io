@@ -154,7 +154,6 @@ var Instance = function(id) {
             });
 
             socket.on('disconnect', function(data) {
-                console.log('disconnect', player)
                 self.removePlayer(player.id);
                 self.iio.emit('removePlayer', player);
             })
