@@ -44,3 +44,4 @@ var map = [
     '0                                                              0',
     '0000000000000000000000000000000000000000000000000000000000000000'
 ]
+if(typeof module != 'undefined') module.exports = map
