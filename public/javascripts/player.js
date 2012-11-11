@@ -144,12 +144,20 @@ function Player(options) {
     }
 
     this.reload = function() {
+        var self = this;
         if(USE_SOUNDS) {
-        setTimeout(function() {
-            var sound = new Audio("/assets/sounds/reload.mp3")
-            sound.play();
+            setTimeout(function() {
+                var sound = new Audio("/assets/sounds/reload.mp3")
+                sound.play();
             },200);
         }
+
+        this.reloadBar = new ProgressBar({value:0,text:'Reloading'});
+        this.reloadBar.element.css({left:430, top:600, width:150})
+        this.reloadBar.element.find('.meter').animate({width:'100%'}, 1500, function() {
+            self.reloadBar.remove();
+        })
+
         this.reloading = true;
     }
 
