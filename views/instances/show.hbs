@@ -56,7 +56,8 @@
 
         socket.on('damage', function(data) {
             // console.log('damaged', data);
-            if(data.id == me.id) {$("#health").html(data.health);}
+            if(data.id == me.id) me.updateHealth(data.health)
+
         });
 
         socket.on('died', function(data) {
@@ -113,10 +114,8 @@
     </div>
     <canvas id='canvas-main'></canvas>
     <div id='chat'>
+        <ul></ul>
         <input id='chat-input' placeholder='Type a message here to chat'>
-        <ul>
-
-        </ul>
     </id>
     <canvas id='canvas-lighting'></canvas>
 </div>
