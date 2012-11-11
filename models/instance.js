@@ -1,7 +1,6 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1500;
 
-var qs = require('querystring');
 var Player = require('./player');
 
 var Instance = function(id, options) {
@@ -109,12 +108,8 @@ var Instance = function(id, options) {
             })
 
             socket.on('say', function(data) {
-                // console.log(this)
-                console.log(self.players)
                 var player = self.players[this.id];
-                var str = qs.escape(data)
-
-                console.log(player.name, 'said', str);
+                var str = data.replace(/<[a-zA-Z\/][^>]*>/igm, '');
                 self.iio.emit('said', {name: player.name, text: str});
             })
         })

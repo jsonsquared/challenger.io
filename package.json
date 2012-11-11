@@ -1,6 +1,6 @@
 {
   "name": "nko3-challenger-io",
-  "version": "0.0.0-20",
+  "version": "0.0.0-22",
   "description": "challenger.io",
   "main": "server.js",
   "scripts": {
@@ -23,5 +23,9 @@
   "engines": {
     "node": "0.8.x"
   },
-  "subdomain": "challenger-io.nko3"
+  "subdomain": "challenger-io.nko3",
+  "domains": [
+    "www.challenger.io",
+    "challenger.io"
+  ]
 }
