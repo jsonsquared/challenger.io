@@ -132,7 +132,7 @@ function join(instance) {
             }
         }
 
-        if(e.keyCode == 82) {
+        if(e.keyCode == 82 && $('input:focus').length==0) {
             socket.emit('manual_reload')
         }
     })
