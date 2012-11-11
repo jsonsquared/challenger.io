@@ -1,3 +1,6 @@
+var MIN_DAMAGE = 8;
+var MAX_DAMAGE = 14;
+
 var Player = function(id, name) {
     this.TOTAL_HEALTH = 100;
     this.CLIP_SIZE = 25;
@@ -10,6 +13,7 @@ var Player = function(id, name) {
     this.rotation = 0;
 
     this.lastUpdate = 0;
+    this.lastHit = 0;
     this.killedBy;
     this.killCount = 0;
     this.killSpree = 0;
@@ -27,7 +31,9 @@ var Player = function(id, name) {
     }
 
     this.takeDamage = function(killer) {
-        this.health -= 14;
+        var damage = Math.floor(Math.random() * (MAX_DAMAGE - MIN_DAMAGE + 1)) + MIN_DAMAGE;
+        this.lastHit = damage;
+        this.health -= damage;
         if(this.isDead()) {
             this.die(killer);
         }
