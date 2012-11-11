@@ -23,6 +23,10 @@ function parseMap() {
                     walls.push({x:x,y:y,sprite: sprite})
                     stage.addChildAt(sprite,1)
                 }
+
+                if(tile=='S') {
+                    spawnPoints.push({x:x, y:y})
+                }
             }
         }
     }
