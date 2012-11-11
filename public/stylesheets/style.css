@@ -81,3 +81,18 @@ body, html {
     position:relative;
     top:-17px;
   }
+
+  #messages {
+    z-index:2;
+    position:absolute;
+    top:720px;
+    left:306px;
+    height:200px;
+    width:400px;
+  }
+  .message {
+    width:100%;
+    text-align:center;
+    position:relative;
+
+  }
