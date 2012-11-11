@@ -2,7 +2,6 @@ var config = require('./config/application');
 var http = require('http');
 var path = require('path');
 var express = require('express')
-var map = require('./lib/mapUtils').parse()
 var app = express();
 
 app.configure(function(){
@@ -13,8 +12,6 @@ app.configure(function(){
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
-    app.use(express.cookieParser('g4m3z4l1f3'));
-    app.use(express.session({key: 'challengerio'}));
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
 });
@@ -35,7 +32,7 @@ var Instance = require('./models/instance')
 app.instances = {};
 
 // var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0), {map:map});
-var instance = new Instance('challenger-io', {map:map});
+var instance = new Instance('challenger-io');
 instance.attachPacketHandlers(app.io)
 app.instances[instance.id] = instance;
 

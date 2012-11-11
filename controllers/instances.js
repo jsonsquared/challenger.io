@@ -9,9 +9,6 @@ var instances = {
     },
 
     index: function(req, res) {
-        if(!req.param('name') && req.param('submit')) var error = "You must enter a name to join!"
-        if(req.param('name') && req.param('submit')) res.redirect('/instance/' + req.param('instance') + '?name=' + req.param('name'))
-
         var instances = [];
         var totalPlayers = 0;
 
@@ -28,19 +25,27 @@ var instances = {
         if(totalPlayers / Object.keys(app.instances).length > config.instance.player_limit / 2) {
             var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0));
             app.instances[instance.id] = instance;
+            instances.push({
+                id: instance.id,
+                score: instance.kills,
+                players: Object.keys(instance.players).length
+            });
         }
 
-        res.render('instances/index', {players: totalPlayers, instances: instances, flash: error});
+        res.render('instances/index', {players: totalPlayers, instances: instances, error: req.param('error')});
     },
 
     show: function(req, res) {
-        if(!req.param('id') || !app.instances[req.param('id')]) res.status(404).end();
+        if(!req.param('id') || !app.instances[req.param('id')]) res.redirect('/instance');
         var instance = app.instances[req.param('id')];
+        if(instance.full()) {
+            res.redirect('/instance' + '?error=Server is full, please pick another');
+        }
+
         res.render('instances/show', {
-            title: "Welcome to game " + instance.id,
-            name: req.param('name')
+            title: "Welcome to game " + instance.id
         });
-    },
+    }
 };
 
 module.exports = instances;

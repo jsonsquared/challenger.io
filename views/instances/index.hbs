@@ -1,20 +1,15 @@
-<div class="flash">
-    {{ flash }}
+{{#if error}}
+<div class="error">
+    <li>{{ error }}</li>
 </div>
+{{/if}}
 
-<form method="post" action="/instance">
-    Player Name: <input type="text" name="name" placeholder="Enter your name"/>
-    <br />
-
-    <div id="instance_list">
-        {{#each instances }}
-            <div class="instance">
-                <h4>{{this.id}}</h4>
-                <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
-                <input type="hidden" name="instance" value="{{this.id}}" />
-                <input type="submit" name="submit" value="join!" />
-            </div>
-        {{/each}}
-    </div>
-
-</form
+<div id="instance_list">
+    {{#each instances }}
+        <div class="instance">
+            <h4>{{this.id}}</h4>
+            <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
+            <a href="/instance/{{this.id}}">Join!</a>
+        </div>
+    {{/each}}
+</div>

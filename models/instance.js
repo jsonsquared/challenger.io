@@ -4,13 +4,14 @@ var WAIT_TIME = 5000;
 var KILL_TOTAL = 3;
 var config = require('../config/application')
 var Player = require('./player');
+var map = require('../lib/mapUtils').parse()
 
-var Instance = function(id, options) {
+var Instance = function(id) {
     this.id = id;
     this.players = {};
     this.iio;
     this.kills = 0;
-    this.map = options.map
+    this.map = map
     this.state = 'running';
 
     this.addPlayer = function(id, name) {
@@ -32,6 +33,10 @@ var Instance = function(id, options) {
         var x = point.x * config.instance.tile_size + (config.instance.tile_size/2);
         var y = point.y * config.instance.tile_size + (config.instance.tile_size/2);
         return {x: x, y: y}
+    }
+
+    this.full = function() {
+        return Object.keys(this.players).length >= config.instance.player_limit
     }
 
     this.gameover = function() {
