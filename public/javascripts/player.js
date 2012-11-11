@@ -174,7 +174,8 @@ function Player(options) {
         this.updatePosition(data.x, data.y, 0)
         this.moved()
         socket.emit('move', me.payload)
-        $("#health").html(data.health);
+        me.updateHealth(data.health)
+        // $("#health").html(data.health);
 
     }
 

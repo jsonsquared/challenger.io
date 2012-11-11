@@ -1,6 +1,9 @@
 ProgressBar = function(options) {
+    var options = options || {}
 
     var self = this;
+    this.value = options.value || 0
+    this.width = options.width || 100
 
     var markup = [
         "<div id='progressbar' class='progressbar'>",
@@ -11,8 +14,8 @@ ProgressBar = function(options) {
     ].join('')
 
     this.element = $(markup).appendTo('#container')
-    this.element.css({width:options.width || 100, top:0, left:0})
-    this.element.find('.meter').css({width: (options.value || 0) + '%'})
+    this.element.css({width:options.width, top:0, left:0})
+    this.element.find('.meter').css({width: options.value + '%'})
     this.element.find('.label').text(options.text)
 
     this.remove = function() {
@@ -20,6 +23,12 @@ ProgressBar = function(options) {
             $(this).remove();
             delete self
         })
+    }
+
+    this.update = function(options) {
+        options = options || this
+        this.element.find('.meter').stop().animate({width: options.value + '%'})
+        this.element.find('.label').text(options.text)
     }
 
 }

@@ -37,6 +37,8 @@ body, html {
     font-size:11px;
     width:600px;
     overflow:hidden;
+    position:relative;
+
 }
 #chat-input {
     outline:none;
@@ -44,6 +46,8 @@ body, html {
     border:none;
     padding:4px;
     border-bottom:1px solid #aaa;
+    position:absolute;
+    bottom:0px;
 }
 #chat ul {
     list-style:none;
