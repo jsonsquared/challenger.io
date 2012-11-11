@@ -52,6 +52,7 @@
         });
 
         socket.on('removePlayer', function(data) {
+            if(!players[data.id]) return false
             players[data.id].remove()
             delete players[data.id]
             updateLeaderboard();
