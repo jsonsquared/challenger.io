@@ -16,7 +16,7 @@ function Message(text, options) {
 
         $('#messages').append($markup)
         $markup.css({fontSize:0}).animate({fontSize:20, top:-100},{
-            duration: 1000,
+            duration: 750,
             easing: 'easeOutQuint',
             complete: function() {
                 $(this).animate({fontSize:0},100, function() { $(this).remove(); })

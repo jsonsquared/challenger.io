@@ -84,7 +84,7 @@
 
         socket.on('kill', function(data) {
             players[data.id].killCount = data.killCount;
-            if(data.id == me.id) new Message('Player Killed: ' + players[data.killee].name)
+            if(data.id == me.id) new Message('You killed ' + players[data.killee].name)
             updateLeaderboard();
             me.updateCounts();
         })
@@ -146,6 +146,7 @@
             <canvas id='canvas-main'></canvas>
             <canvas id='canvas-lighting'></canvas>
         </div>
+        <div id="messages"></div>
     </div>
 
     <div id="sidebar">
