@@ -1,7 +1,7 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1500;
 
-var sanitize = require('validator').sanitize
+var qs = require('querystring');
 var Player = require('./player');
 
 var Instance = function(id, options) {
@@ -108,10 +108,8 @@ var Instance = function(id, options) {
             })
 
             socket.on('say', function(data) {
-                var player = self.players[socket.id];
-                var str = sanitize(data).trim();
-                var str = sanitize(str).entityEncode();
-                var str = sanitize(str).xss
+                var player = self.players[this.id];
+                var str = qs.escape(data)
 
                 console.log(player.name, 'said', str);
                 self.iio.emit('said', {name: player.name, text: str});
