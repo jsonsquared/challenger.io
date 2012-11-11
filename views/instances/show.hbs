@@ -50,7 +50,11 @@
         });
 
         socket.on('fired', function(data) {
-            if(me.id != data.owner) new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+            if(me.id != data.owner) {
+                new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+            } else {
+                me.updateClip(data.ownerClip)
+            }
         });
 
         socket.on('damage', function(data) {
@@ -87,7 +91,7 @@
         });
 
         socket.on('reloaded', function(data) {
-            me.reloading = false;
+            me.reloaded(data.clip);
         });
 
 

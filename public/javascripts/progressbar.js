@@ -14,8 +14,8 @@ ProgressBar = function(options) {
     ].join('')
 
     this.element = $(markup).appendTo('#container')
-    this.element.css({width:options.width, top:0, left:0})
-    this.element.find('.meter').css({width: options.value + '%'})
+    this.element.css({width:options.width, top:options.top || 0, left:options.left || 0})
+    this.element.find('.meter').css({width: options.value + '%', background:options.color || 'red'})
     this.element.find('.label').text(options.text)
 
     this.remove = function() {

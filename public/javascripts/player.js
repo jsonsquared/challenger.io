@@ -12,7 +12,7 @@ function Player(options) {
     this.light = {}; // blank - only used if the player is this user
     this.payload = {}
     this.killCount = options.killCount || 0;
-
+    this.clip = options.clip;
     this.reloading = false;
 
     // easel object
@@ -73,7 +73,7 @@ function Player(options) {
         this.container.removeChild(this.nameLabel)
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:-1}))
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
-
+        this.ammoMeter = new ProgressBar({width:200, left:205, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 25'})
     }
 
     stage.addChild(this.container)
@@ -92,6 +92,13 @@ function Player(options) {
         $("#health").html(health);
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
+
+    this.updateClip = function(clip) {
+        this.clip = clip;
+        $("#clip").html(clip);
+        this.ammoMeter.update({value:(this.clip/25)*100, text: 'Ammo: ' + clip + ' / 25' })
+    }
+
 
     this.moved = function() {
         var deltaX = crosshair.sprite.x - me.container.x
@@ -155,6 +162,8 @@ function Player(options) {
     }
 
     this.reload = function() {
+
+        this.ammoMeter.update({value:0, text:'Reloading'})
         var self = this;
         if(USE_SOUNDS) {
             setTimeout(function() {
@@ -170,6 +179,11 @@ function Player(options) {
         })
 
         this.reloading = true;
+    }
+
+    this.reloaded = function(clip) {
+        this.reloading = false;
+        this.updateClip(clip)
     }
 
     this.respawn = function(data) {
