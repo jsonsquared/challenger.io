@@ -48,7 +48,9 @@ var Player = function(id, name) {
         return this.clip <= 0;
     }
 
-    this.respawn = function() {
+    this.respawn = function(x, y) {
+        this.x = x;
+        this.y = y;
         this.health = this.TOTAL_HEALTH;
         this.dead = false;
     }
