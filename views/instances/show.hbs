@@ -82,7 +82,7 @@
 
         socket.on('kill', function(data) {
             players[data.id].killCount = data.killCount;
-            if(data.id == me.id) new Message('Player Killed: ' + players[data.id].name)
+            if(data.id == me.id) new Message('Player Killed: ' + players[killee.id].name)
             updateLeaderboard();
         })
 
