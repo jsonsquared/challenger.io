@@ -5,6 +5,7 @@ function Player(options) {
     this.name = options.name || 'Unnamed Player';
     this.x = options.x || 100;
     this.y = options.y || 200;
+    this.health = options.health;
     this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
     this.me = options.me || false;
@@ -64,6 +65,8 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
+    this.healthMeter = new ProgressBar({value:this.health, text:'HP: ' + this.health + '%'});
+
     this.isMe = function() {
         this.me = true;
         this.container.removeChild(this.nameOutline)
@@ -80,6 +83,11 @@ function Player(options) {
         this.playerContainer.rotation = this.rotation
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
+    }
+
+    this.updateHealth = function(health) {
+        $("#health").html(health);
+        this.healthMeter.update({value:health})
     }
 
     this.moved = function() {
