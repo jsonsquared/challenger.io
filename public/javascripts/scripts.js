@@ -33,11 +33,7 @@ $(function() {
     createjs.Ticker.addListener(window);
     createjs.Ticker.setFPS(30);
 
-    lightingEngine = new LightingEngine(
-        document.getElementById('canvas-lighting'),
-        document.getElementById('canvas-main'),
-        .5
-    )
+    lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
 
     parseMap();
 });
