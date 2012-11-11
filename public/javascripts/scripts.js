@@ -2,6 +2,7 @@ var tileSize = 16;
 var moveDistance = 2;
 var stage, canvas;
 var walls = [];
+var spawnPoints = [];
 var garbage = [];
 var players = {};
 var inputInterval = 20;
@@ -36,11 +37,6 @@ $(function() {
         document.getElementById('canvas-main'),
         .5
     )
-
-    // testlight = new Light(canvas_lighting, {intensity:50});
-
-    // crosshair = new createjs.Shape();
-    // crosshair.graphics.f('#F0F').de(0,0,20,20,30);
 
     parseMap();
 });
@@ -97,11 +93,13 @@ function join(instance) {
 
     setInterval(function() {
         var move = {};
-        if(input.keyboard[87]) { move.y = me.y - moveDistance }
-        if(input.keyboard[65]) { move.x = me.x - moveDistance }
-        if(input.keyboard[83]) { move.y = me.y + moveDistance }
-        if(input.keyboard[68]) { move.x = me.x + moveDistance }
-        if(move.x || move.y) me.move(move)
+        if($('input:focus').length==0) {
+            if(input.keyboard[87]) { move.y = me.y - moveDistance }
+            if(input.keyboard[65]) { move.x = me.x - moveDistance }
+            if(input.keyboard[83]) { move.y = me.y + moveDistance }
+            if(input.keyboard[68]) { move.x = me.x + moveDistance }
+            if(move.x || move.y) me.move(move)
+        }
     },inputInterval)
 
     setInterval(function() {
