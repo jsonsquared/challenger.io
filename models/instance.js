@@ -8,6 +8,7 @@ var Instance = function(id, options) {
     this.players = {};
     this.iio;
     this.kills = 0;
+    this.map = options.map
 
     this.addPlayer = function(id, name) {
         var player = new Player(id, name);
@@ -32,7 +33,11 @@ var Instance = function(id, options) {
             var player = self.addPlayer(socket.id);
 
             socket.on('join', function(name) {
+                var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
                 player.name = name;
+                player.x = point.x * TILE_SIZE + (TILE_SIZE/2);
+                player.y = point.y * TILE_SIZE + (TILE_SIZE/2);
+
                 socket.emit('instance', self.data());
                 self.iio.emit('addPlayer', player);
             })
@@ -79,7 +84,12 @@ var Instance = function(id, options) {
                         if(!player.respawning) {
                             player.respawning = true;
                             setTimeout(function() {
-                                player.respawn();
+
+                                var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
+                                var x = point.x * TILE_SIZE + (TILE_SIZE/2);
+                                var y = point.y * TILE_SIZE + (TILE_SIZE/2);
+
+                                player.respawn(x, y);
                                 self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
                             }, RESPAWN_TIME)
