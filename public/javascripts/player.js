@@ -204,9 +204,10 @@ function Player(options) {
 
         try { self.reloadBar.remove();} catch(err) { }
 
-        this.reloadBar = new ProgressBar({value:0,text:'Reloading'});
+        this.reloadBar = new ProgressBar({value:0,text:'Reloading', parentElement:'#game'});
         this.reloadBar.element.css({left:430, top:600, width:150})
-        this.reloadBar.element.find('.meter').animate({width:'100%'}, 1500, function() {
+        foo = this.reloadBar.element
+        this.reloadBar.element.find('.pbmeter').animate({width:'100%'}, 1500, function() {
             self.reloadBar.remove();
         })
 

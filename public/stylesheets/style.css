@@ -37,14 +37,18 @@ body {
     border:2px solid black;
 }
 
+#game .progressbar {
+    position:absolute;
+}
 .progressbar .pbmeter {
     height:100%;
     width:50%;
+/*    background:red;*/
 }
 .progressbar .pblabel {
     text-align:center;
     position:relative;
-    top:-18px;
+    top:-19px;
     color: #efefef;
 }
 

@@ -13,7 +13,7 @@ ProgressBar = function(options) {
         "</div>"
     ].join('')
 
-    this.element = $(markup).appendTo('#meters')
+    this.element = $(markup).appendTo(options.parentElement || '#meters')
     this.element.css({width:options.width})//, top:options.top || 0, left:options.left || 0})
     this.element.find('.pbmeter').css({width: options.value + '%'})//, background:options.color || '#C00'})
     this.element.find('.pblabel').text(options.text)
