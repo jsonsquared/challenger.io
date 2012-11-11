@@ -16,6 +16,7 @@ var lastPush = {x:-1, y:-1, rotation:-1};
 var assets = {
     'map'   :  '/assets/images/map.jpg',
     'bullet':  '/assets/images/bullet.png',
+    'crosshair': '/assets/images/crosshair.png'
 };
 
 $(function() {
@@ -36,11 +37,10 @@ $(function() {
         .5
     )
 
-    testlight = new Light(canvas_lighting, {intensity:50});
+    // testlight = new Light(canvas_lighting, {intensity:50});
 
-    crosshair = new createjs.Shape();
-    crosshair.graphics.f('#F0F').de(0,0,20,20,30);
-    stage.addChild(crosshair)
+    // crosshair = new createjs.Shape();
+    // crosshair.graphics.f('#F0F').de(0,0,20,20,30);
 
     parseMap();
 });
@@ -75,9 +75,8 @@ function join(instance) {
     }
 
     $(canvas_main).bind('mousemove', function(e) {
-        crosshairX = e.offsetX - 10;
-        crosshairY = e.offsetY - 10;
-        // The resulting direction
+        crosshair.sprite.x = e.offsetX - 10;
+        crosshair.sprite.y = e.offsetY - 10;
 
         me.moved()
     }).bind('click',function(e) {
@@ -107,7 +106,7 @@ function join(instance) {
 
     setInterval(function() {
         if(input.mouse[0]) {
-            me.fire({offsetX:crosshairX, offsetY: crosshairY})
+            me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
         }
     },rateOfFire)
 

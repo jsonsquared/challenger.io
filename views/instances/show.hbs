@@ -5,6 +5,7 @@
 <script src='/javascripts/mapUtils.js'></script>
 
 <script src='/javascripts/bullet.js'></script>
+<script src='/javascripts/crosshair.js'></script>
 <script src='/javascripts/player.js'></script>
 <script src='/javascripts/light/light.js'></script>
 <script src='/javascripts/light/lightingEngine.js'></script>
@@ -18,6 +19,8 @@
 
     preload(assets, function(files) {
         console.log(files)
+
+        crosshair = new Crosshair();
 
         socket.on('connect', function () {
             socket.emit('join', name)

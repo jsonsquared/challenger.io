@@ -83,10 +83,10 @@ function Player(options) {
     }
 
     this.moved = function() {
-        var deltaX = crosshairX - me.container.x
-        var deltaY = crosshairY - me.container.y
-        crosshair.x = crosshairX;
-        crosshair.y = crosshairY
+        var deltaX = crosshair.sprite.x - me.container.x
+        var deltaY = crosshair.sprite.y - me.container.y
+        // crosshair.x = crosshair.sprite.x;
+        // crosshair.y = crosshair.sprite.y
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
@@ -146,8 +146,10 @@ function Player(options) {
     }
 
     this.reload = function() {
-        var sound = new Audio("/assets/sounds/reload.mp3")
-        sound.play();
+        // setTimeout(function() {
+        //     var sound = new Audio("/assets/sounds/reload.mp3")
+        //     sound.play();
+        // },200);
         this.reloading = true;
     }
 
