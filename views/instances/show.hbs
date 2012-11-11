@@ -74,6 +74,7 @@
         socket.on('damage', function(data) {
             if(data.id == me.id) me.updateHealth(data.health)
             if(data.hitBy == me.id) players[data.id].floatText('-' + data.lastHit)
+            updateLeaderboardHP(data);
         });
 
         socket.on('died', function(data) {

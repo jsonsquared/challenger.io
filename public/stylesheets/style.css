@@ -135,3 +135,12 @@ body {
     top: 5px;
     right: 5px;
 }
+
+td.leaderboard-hp {
+    padding: 0px;
+}
+
+div.leaderboard-hp {
+    margin: 0px;
+    padding: 0px;
+}
