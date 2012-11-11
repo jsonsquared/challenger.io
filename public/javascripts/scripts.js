@@ -58,7 +58,7 @@ $(function() {
 
 function checkName() {
     if($('#name').val() > '') {
-        connect($('#name').val());
+        connect($('#name').val().substr(0,10));
         $('#enter-container').remove();
         $('#game-container').show();
     } else {
@@ -157,6 +157,7 @@ function join(instance) {
     },inputInterval)
 
     setInterval(function() {
+
         if(input.mouse[0]) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
             recoil+=2
