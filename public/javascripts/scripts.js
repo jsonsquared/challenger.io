@@ -2,6 +2,7 @@ var tileSize = 16;
 var moveDistance = 2.5;
 var stage, canvas;
 var walls = [];
+var halfWalls = [];
 var spawnPoints = [];
 var garbage = [];
 var players = {};
