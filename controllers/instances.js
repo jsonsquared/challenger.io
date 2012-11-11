@@ -25,6 +25,7 @@ var instances = {
 
         if(totalPlayers / Object.keys(app.instances).length > config.instance.player_limit / 2) {
             var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0));
+            instance.attachPacketHandlers(app.io);
             app.instances[instance.id] = instance;
             instances.push({
                 id: instance.id,
