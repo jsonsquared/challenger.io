@@ -153,6 +153,17 @@ function Player(options) {
         this.reloading = true;
     }
 
+    this.respawn = function(health) {
+        var point = spawnPoints[Math.round(Math.random() * (spawnPoints.length-1))]
+
+        me.x = point.x * tileSize
+        me.y = point.y * tileSize
+        console.log(me.x, me.y, point)
+        // socket.emit('move', me.payload)
+        $("#health").html(health);
+
+    }
+
     this.remove = function() {
         stage.removeChild(this.container)
         delete this;
