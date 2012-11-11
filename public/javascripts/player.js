@@ -66,6 +66,23 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
+    this.damageText = [];
+    this.floatingDamage = function(amount) {
+        var self = this;
+        var treatment = amount > 11 ? {color:'#F00', font: 'bold 20px arial'} : {color:'#F00', font: 'bold 12px arial'}
+        var thisText = this.damageText[this.damageText.push(new createjs.Text('-' + amount, treatment.font, treatment.color))-1]
+        thisText.x = 0;
+        thisText.y = -20;
+        thisText.rotation = 0;
+        thisText.lineWidth = 50;
+        thisText.textAlign = 'center'
+
+        this.container.addChild(thisText)
+
+        createjs.Tween.get(thisText).to({y:range(-30,-60), x:range(-20,20)},500,createjs.Ease.quintOut).to({alpha:0},200).call(function() {
+            self.container.removeChild(thisText)
+        })
+    }
 
     this.isMe = function() {
         this.me = true;

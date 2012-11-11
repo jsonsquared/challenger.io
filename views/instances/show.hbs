@@ -58,8 +58,9 @@
         });
 
         socket.on('damage', function(data) {
-            // console.log('damaged', data);
+            console.log('damaged', data);
             if(data.id == me.id) me.updateHealth(data.health)
+
 
         });
 

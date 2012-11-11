@@ -73,6 +73,10 @@ function findPlayer(id) {
     }
     return -1;
 }
+function range(from,to) {
+   return Math.floor(Math.random() * (to - from + 1) + from);
+}
+
 function join(instance) {
 
     for(var p in instance.players) {
