@@ -66,13 +66,14 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
-    this.healthMeter = new ProgressBar({value:this.health, text:'HP: ' + this.health + '%'});
 
     this.isMe = function() {
         this.me = true;
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:-1}))
+        this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
+
     }
 
     stage.addChild(this.container)
@@ -87,8 +88,9 @@ function Player(options) {
     }
 
     this.updateHealth = function(health) {
+        console.log(health)
         $("#health").html(health);
-        this.healthMeter.update({value:health})
+        this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
 
     this.moved = function() {
