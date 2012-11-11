@@ -23,7 +23,6 @@ function Player(options) {
     this.img = new Image();
     this.img.src = '/assets/images/fed.png'
     this.img.onload = function() {
-        console.log('loaded')
         var img = this
         self.spriteSheet = new createjs.SpriteSheet({
             images: [img],
@@ -40,7 +39,6 @@ function Player(options) {
         self.bitmap.gotoAndPlay('alive')
 
         self.playerContainer.addChild(self.bitmap)
-        console.log('added sprite to playerContainer')
     }
 
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
@@ -161,8 +159,6 @@ function Player(options) {
 
         var recoilFactor = range(-4,4)
         recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
-
-        console.log(recoilFactor)
 
         var b = new Bullet({
             x:me.x,
