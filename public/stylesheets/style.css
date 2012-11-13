@@ -135,6 +135,7 @@ body {
 
 .instance {
     position: relative;
+    border:none;
 }
 
 .instance .join {
@@ -142,7 +143,29 @@ body {
     top: 5px;
     right: 5px;
 }
+.instance .accordion-toggle {
+  padding:0 10px 0 0;
+}
 
+.instance .accordion-inner {
+  border-top:none;
+}
+.instance .accordion-toggle i {
+  -webkit-transform:rotate(90deg);
+}
+.instance .accordion-toggle.collapsed i {
+  -webkit-transform:rotate(0deg);
+}
+.instance .meta {
+  margin-left:25px;
+}
+.instance .accordion-body {
+  margin-left:10px;
+}
+.instance .player {
+  font-weight:bold;
+  color:#33B5E5;
+}
 
 td.leaderboard-hp {
     padding: 0px;
@@ -187,3 +210,4 @@ div.leaderboard-hp {
     top: 70px;
     right: 88px;
 }
+

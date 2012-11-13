@@ -16,17 +16,39 @@
         <div class="span8 offset4">
             <div class="well">
                 <div id="instance_list">
-                    {{#each instances }}
-                        <div class="instance">
-                            <h4>{{this.id}}</h4>
-                            <p>Players: {{ this.players }}  Score: {{ this.score }}</p>
-                            {{#if this.full}}
-                                <a class="join btn btn-primary disabled" href="#">Full!</a>
-                            {{else}}
-                                <a class="join btn btn-primary" href="/instance/{{this.id}}">Join!</a>
-                            {{/if}}
+                    <div class="accordion" id="accordion">
+
+                        {{#each instances }}
+                        <div class="accordion-group instance">
+
+                            <div class="accordion-heading">
+
+                                {{#if this.full}}
+                                    <a class="join btn btn-primary disabled" href="#">Full!</a>
+                                {{else}}
+                                    <a class="join btn btn-primary" href="/instance/{{this.id}}">Join!</a>
+                                {{/if}}
+
+                                <a class='pull-left accordion-toggle collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapse-{{this.id}}"><i class="icon-play"></i></a>
+                                <h4>{{this.id}}</h4>
+                                <p class='meta'>Players: {{ this.totalPlayers }}  Score: {{ this.score }}</p>
+
+                            </div>
+
+                            <div id='collapse-{{this.id}}' class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <ul class='unstyled'>
+                                        {{#each this.players }}
+                                            <li class='player'>{{this}}</li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                    {{/each}}
+                        {{/each}}
+
+
+                    </div>
                 </div>
             </div>
         </div>
