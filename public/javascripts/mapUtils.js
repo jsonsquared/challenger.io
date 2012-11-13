@@ -1,4 +1,4 @@
-function parseMap() {
+function initMap() {
 
     var mapImage = new Image();
     mapImage.src = '/assets/images/map.jpg'
