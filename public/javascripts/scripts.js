@@ -174,6 +174,8 @@ function join(instance) {
 
 
     $(document).bind('keydown', function(e) {
+
+        // enter
         if(e.keyCode==13) {
             if($('input:focus').length==0) {
                 $('#chat-input').focus();
@@ -185,9 +187,22 @@ function join(instance) {
             }
         }
 
+        // backspace/delete
+        if(e.keyCode == 8 && $('input:focus').length==0) {
+            return false
+        }
+
+        // escape
+        if(e.keyCode == 27 && $('input:focus').length==1) {
+            $('#chat-input').blur().val('')
+        }
+
+
+        // R
         if(e.keyCode == 82 && $('input:focus').length==0) {
             socket.emit('manual_reload')
         }
+
 
         if($('input:focus').length==0 && e.keyCode >= 37 && e.keyCode <= 40) return false
     })
