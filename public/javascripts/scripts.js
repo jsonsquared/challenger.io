@@ -17,7 +17,7 @@ var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 var USE_SOUNDS = false;
-var hijackRightClick = false;
+var hijackRightClick = true;
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
