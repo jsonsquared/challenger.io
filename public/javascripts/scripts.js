@@ -148,11 +148,12 @@ function join(instance) {
     setInterval(function() {
         var move = {};
         if($('input:focus').length==0) {
-            if(input.keyboard[87]) { move.y = me.y - moveDistance }
-            if(input.keyboard[65]) { move.x = me.x - moveDistance }
-            if(input.keyboard[83]) { move.y = me.y + moveDistance }
-            if(input.keyboard[68]) { move.x = me.x + moveDistance }
+            if(input.keyboard[87] || input.keyboard[38]) { move.y = me.y - moveDistance }
+            if(input.keyboard[65] || input.keyboard[37]) { move.x = me.x - moveDistance }
+            if(input.keyboard[83] || input.keyboard[40]) { move.y = me.y + moveDistance }
+            if(input.keyboard[68] || input.keyboard[39]) { move.x = me.x + moveDistance }
             if(move.x || move.y) me.move(move)
+
         }
     },inputInterval)
 
@@ -187,6 +188,8 @@ function join(instance) {
         if(e.keyCode == 82 && $('input:focus').length==0) {
             socket.emit('manual_reload')
         }
+
+        if($('input:focus').length==0 && e.keyCode >= 37 && e.keyCode <= 40) return false
     })
 
     window.tick = function() {
