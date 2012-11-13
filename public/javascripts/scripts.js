@@ -18,6 +18,9 @@ var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 var USE_SOUNDS = false;
 var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
+var name = false;
+var socket;
+var connected = false;
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -25,12 +28,8 @@ var assets = {
     'crosshair': '/assets/images/crosshair.png'
 };
 
-function fitScreen() {
-    $('#game-container').css('-webkit-transform', 'scale(' + ($(window).height() / 900) + ')').css('transform-origin','center top')
-}
 $(function() {
 
-    fitScreen();
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
     canvas_lighting = document.getElementById("canvas-lighting");
@@ -45,10 +44,7 @@ $(function() {
 
     lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
 
-    parseMap();
-
     $('#game-container').hide();
-
 
     $('#name').bind('keypress', function(e) {
         if(e.keyCode == 13) checkName()
@@ -60,7 +56,81 @@ $(function() {
         $(canvas_main).focus()
     });
 
+    preload(assets, function(files) {
+        crosshair = new Crosshair();
+        fitScreen();
+        initMap();
+        initGameBindings();
+    });
+
 });
+
+function connect(name) {
+    initPacketHandler();
+}
+
+function fitScreen() {
+    $('#game-container').css('-webkit-transform', 'scale(' + ($(window).height() / 900) + ')').css('transform-origin','center top')
+}
+
+function initGameBindings() {
+    $(canvas_main).bind('mousemove', function(e) {
+        crosshair.sprite.x = e.offsetX - 10;
+        crosshair.sprite.y = e.offsetY - 10;
+
+        me.moved()
+    }).bind('click',function(e) {
+        me.fire(e);
+    })
+
+    $('body').bind('mousedown', function(e) {
+        e.preventDefault()
+    }).bind('mouseup', function(e) {
+        e.preventDefault()
+        recoil = 0;
+    }).bind('mousewheel', function(e) {
+        e.preventDefault()
+    });
+
+    $(document).unbind("contextmenu").bind("contextmenu",function(e) {
+        if(hijackRightClick) {
+            socket.emit('manual_reload')
+            return false
+        }
+    })
+
+    $(document).bind('keydown', function(e) {
+
+        // enter
+        if(e.keyCode==13) {
+            if($('input:focus').length==0) {
+                $('#chat-input').focus();
+            } else {
+                var msg = $('#chat-input').val()
+                console.log(msg)
+                if(connected) socket.emit('say', msg)
+                $('#chat-input').blur().val('')
+            }
+        }
+
+        // backspace/delete
+        if(e.keyCode == 8 && $('input:focus').length==0) {
+            return false
+        }
+
+        // escape
+        if(e.keyCode == 27 && $('input:focus').length==1) {
+            $('#chat-input').blur().val('')
+        }
+
+        // R
+        if(e.keyCode == 82 && $('input:focus').length==0) {
+            if(connected) socket.emit('manual_reload')
+        }
+
+        if($('input:focus').length==0 && e.keyCode >= 37 && e.keyCode <= 40) return false
+    })
+}
 
 function checkName() {
     if($('#name').val() > '') {
@@ -126,24 +196,6 @@ function join(instance) {
         }
     }
 
-    $(canvas_main).bind('mousemove', function(e) {
-        crosshair.sprite.x = e.offsetX - 10;
-        crosshair.sprite.y = e.offsetY - 10;
-
-        me.moved()
-    }).bind('click',function(e) {
-        me.fire(e);
-    })
-
-    $('body').bind('mousedown', function(e) {
-        e.preventDefault()
-    }).bind('mouseup', function(e) {
-        e.preventDefault()
-        recoil = 0;
-    }).bind('mousewheel', function(e) {
-        e.preventDefault()
-    })
-
     setInterval(function() {
         if(lastPush.x != me.payload.x || lastPush.y != me.payload.y || lastPush.rotation != me.payload.rotation) {
             socket.emit('move', me.payload)
@@ -171,65 +223,22 @@ function join(instance) {
         }
     },rateOfFire)
 
-    $(document).unbind("contextmenu").bind("contextmenu",function(e) {
-        if(hijackRightClick) {
-            socket.emit('manual_reload')
-            return false
-        }
-    })
-
-
-    $(document).bind('keydown', function(e) {
-
-        // enter
-        if(e.keyCode==13) {
-            if($('input:focus').length==0) {
-                $('#chat-input').focus();
-            } else {
-                var msg = $('#chat-input').val()
-                console.log(msg)
-                socket.emit('say', msg)
-                $('#chat-input').blur().val('')
-            }
-        }
-
-        // backspace/delete
-        if(e.keyCode == 8 && $('input:focus').length==0) {
-            return false
-        }
-
-        // escape
-        if(e.keyCode == 27 && $('input:focus').length==1) {
-            $('#chat-input').blur().val('')
-        }
-
-
-        // R
-        if(e.keyCode == 82 && $('input:focus').length==0) {
-            socket.emit('manual_reload')
-        }
-
-
-        if($('input:focus').length==0 && e.keyCode >= 37 && e.keyCode <= 40) return false
-    })
-
-    window.tick = function() {
-        $(document).trigger('tick')
-        stage.update();
-
-        if(players) {
-            for(var p in players) {
-                players[p].updatePosition()
-            }
-        }
-
-        lightingEngine.render(natural_light);
-
-        // garbage collection
-        garbage.map(function(el, i, ary) {
-            delete garbage.pop();
-        })
-    }
-
 }
 
+window.tick = function() {
+    $(document).trigger('tick')
+    stage.update();
+
+    if(players && connected) {
+        for(var p in players) {
+            players[p].updatePosition()
+        }
+    }
+
+    lightingEngine.render(natural_light);
+
+    // garbage collection
+    garbage.map(function(el, i, ary) {
+        delete garbage.pop();
+    })
+}
