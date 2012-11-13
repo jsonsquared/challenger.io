@@ -105,10 +105,11 @@ var Instance = function(id) {
                 var player = self.players[data.hitPlayer.id];
 
                 if(player) {
-                    player.takeDamage(killer.id);
-                    self.iio.emit('damage', player)
 
-                    if(player.isDead()) {
+                    if(!player.isDead()) {
+                        player.takeDamage(killer.id);
+                        self.iio.emit('damage', player)
+                    } else {
                         self.iio.emit('died', player)
                         if(!player.respawning) {
                             player.respawning = true;
