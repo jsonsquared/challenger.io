@@ -53,7 +53,8 @@ var instances = {
         }
 
         res.render('instances/show', {
-            title: "Welcome to game " + instance.id
+            title: "Welcome to game " + instance.id,
+            instance:instance.id
         });
     }
 };

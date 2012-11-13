@@ -10,6 +10,9 @@ body {
 .page-header {
     margin-bottom: 12px;
 }
+.page-header a {
+  text-decoration:none;
+}
 
 #game {
     height:704px;

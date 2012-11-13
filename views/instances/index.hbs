@@ -2,7 +2,8 @@
     <div class="row">
         <div class="span8 offset4">
 
-            <h1 class="page-header">challenger.io <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
+            <h1 class="page-header"><a href='/instance'>challenger.io</a> <small>pew pew pew <iframe style="margin:-5px 0" id='knockout-vote' src="http://nodeknockout.com/iframe/challenger-io" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe></small></h1>
+
         </div>
     </div>
 
@@ -30,6 +31,7 @@
                                 {{/if}}
 
                                 <a class='pull-left accordion-toggle collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapse-{{this.id}}"><i class="icon-play"></i></a>
+
                                 <h4>{{this.id}}</h4>
                                 <p class='meta'>Players: {{ this.totalPlayers }}  Score: {{ this.score }}</p>
 
@@ -37,11 +39,16 @@
 
                             <div id='collapse-{{this.id}}' class="accordion-body collapse">
                                 <div class="accordion-inner">
-                                    <ul class='unstyled'>
+                                    {{#if this.totalPlayers}}
+                                        <ul class='unstyled'>
                                         {{#each this.players }}
                                             <li class='player'>{{this}}</li>
                                         {{/each}}
-                                    </ul>
+                                        </ul>
+                                    {{else}}
+                                        <em>Instance is empty</em>
+                                    {{/if}}
+
                                 </div>
                             </div>
                         </div>
