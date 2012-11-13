@@ -67,8 +67,13 @@ function initPacketHandler() {
     });
 
     socket.on('said', function(data) {
-        if($('#chat li').length>7) $('#chat li:first').remove()
         $('#chat ul').append('<li><strong>' + data.name + '</strong>: ' + data.text + '</li>')
+        $('#chat li:not(:last)').each(function() {
+            $(this).css({bottom:'+=' + $('#chat li:last').height() + 'px'})
+        })
+
+        if($('#chat li').length>10) $('#chat li:first').remove()
+
     });
 
     socket.on('reload', function(data) {

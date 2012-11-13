@@ -94,7 +94,12 @@ body {
 #chat {
     position: relative;
     bottom: 0px;
-    text-align: left
+    text-align: left;
+    overflow:hidden;
+}
+#chat ul li {
+  position:absolute;
+  bottom:40px;
 }
 
 #chat .well {
