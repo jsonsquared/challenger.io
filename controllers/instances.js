@@ -14,10 +14,12 @@ var instances = {
 
         for(var i = 0, len = Object.keys(app.instances).length; i < len; i++) {
             var instance = app.instances[Object.keys(app.instances)[i]];
+
             instances.push({
                 id: instance.id,
                 score: instance.kills,
-                players: Object.keys(instance.players).length,
+                totalPlayers: Object.keys(instance.players).length,
+                players:instance.playerList(),
                 full: instance.full()
             });
             totalPlayers += Object.keys(instance.players).length;
@@ -30,12 +32,17 @@ var instances = {
             instances.push({
                 id: instance.id,
                 score: instance.kills,
-                players: Object.keys(instance.players).length,
+                totalPlayers: Object.keys(instance.players).length,
+                players:instance.playerList(),
                 full: instance.full()
             });
         }
 
-        res.render('instances/index', {players: totalPlayers, instances: instances, error: req.param('error')});
+        res.render('instances/index', {
+            totalPlayers: totalPlayers,
+            instances: instances,
+            error: req.param('error')
+        });
     },
 
     show: function(req, res) {

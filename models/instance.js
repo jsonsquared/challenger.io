@@ -25,6 +25,15 @@ var Instance = function(id) {
         delete this.players[id]
     }
 
+    this.playerList = function() {
+        var playerNames = [];
+        for(var p = 0, plen = Object.keys(this.players).length; p < plen; p++) {
+            var player = this.players[Object.keys(this.players)[p]];
+            playerNames.push(player.name)
+        }
+        return playerNames;
+    }
+
     this.data = function() {
         return {id: this.id, players: this.players, score: this.kills, state: this.state}
     }
