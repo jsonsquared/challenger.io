@@ -134,7 +134,8 @@ function initGameBindings() {
 
 function checkName() {
     if($('#name').val() > '') {
-        connect($('#name').val().substr(0,10));
+        name = $('#name').val().substr(0,10);
+        connect();
         $('#enter-container').remove();
         $('#game-container').show();
     } else {
