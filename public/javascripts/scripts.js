@@ -17,7 +17,7 @@ var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
 var USE_SOUNDS = false;
-var hijackRightClick = true;
+var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -25,7 +25,13 @@ var assets = {
     'crosshair': '/assets/images/crosshair.png'
 };
 
+function fitScreen() {
+    $('#game-container').css('-webkit-transform', 'scale(' + ($(window).height() / 900) + ')').css('transform-origin','center top')
+}
 $(function() {
+
+    fitScreen();
+    $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
     canvas_lighting = document.getElementById("canvas-lighting");
     stage = new createjs.Stage(canvas_main);
