@@ -34,6 +34,7 @@ function initPacketHandler() {
     socket.on('fired', function(data) {
         if(me.id != data.owner) {
             new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
+            players[data.owner].muzzleFlash(data.gun)
         } else {
             me.updateClip(data.ownerClip)
         }

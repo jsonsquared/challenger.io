@@ -4,6 +4,7 @@ function Bullet(options) {
 
     this.speed = 16;
     this.delta = 1;
+    this.gun = options.gun || 0;
 
     this.trajectoryX = options.endX - options.x;
     this.trajectoryY = options.endY - options.y;
@@ -32,10 +33,9 @@ function Bullet(options) {
     stage.addChildAt(this.sprite,2)
     this.removed = false;
 
-    if(USE_SOUNDS) {
-        this.sound = new Audio("/assets/sounds/single.mp3");
-        this.sound.volume =( Math.random()/2 + .5);
-        this.sound.play();
+    if(use_sounds) {
+        // sounds.singleshot.currentTime = 0;
+        // sounds.singleshot.play()
     }
 
     $(document).bind('tick', function() {
@@ -64,10 +64,10 @@ function Bullet(options) {
     });
 
     this.remove = function() {
-        if(USE_SOUNDS) {
-            this.sound.pause();
-            delete this.sound;
-        }
+        // if(use_sounds) {
+        //     this.sound.pause();
+        //     delete this.sound;
+        // }
         stage.removeChild(this.sprite)
         this.removed = true;
         this.onRemove();
@@ -77,6 +77,6 @@ function Bullet(options) {
     this.onRemove = function() {};
 
     this.data = function() {
-        return {startX: options.x, startY: options.y, endX: options.endX, endY: options.endY, owner: this.owner};
+        return {startX: options.x, startY: options.y, endX: options.endX, endY: options.endY, owner: this.owner, gun:this.gun};
     }
 }

@@ -163,7 +163,8 @@ function Player(options) {
 
         if(this.reloading) return false;
 
-        var recoilFactor = range(-4,4)
+        var gun = range(0,1);
+        var recoilFactor = gun == 0 ? -4: 4
         recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
 
         var b = new Bullet({
@@ -171,13 +172,33 @@ function Player(options) {
             y:me.y,
             endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
             endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
-            owner:me.id
+            owner:me.id,
+            gun:gun
         })
         socket.emit('fire', b.data());
 
         b.onRemove = function() {
             garbage.push(b);
         };
+
+        this.muzzleFlash(gun)
+    }
+
+    this.muzzleFlash = function(gun) {
+        flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
+        flash.gotoAndPlay('fire')
+
+        flash.scaleX = flash.scaleY = range(.5,1)
+        flash.x = 20 * flash.scaleX
+        flash.y = (gun == 1 ? -16 : 1) * flash.scaleY
+        flash.alpha=.5
+
+        this.playerContainer.addChild(flash)
+
+
+        createjs.Tween.get(flash).to({alpha:0},1000,createjs.Ease.quintOut).call(function() {
+            self.playerContainer.removeChild(this)
+        });
 
     }
 
@@ -201,7 +222,7 @@ function Player(options) {
 
         this.ammoMeter.update({value:0, text:'Reloading'})
         var self = this;
-        if(USE_SOUNDS) {
+        if(use_sounds) {
             setTimeout(function() {
                 var sound = new Audio("/assets/sounds/reload.mp3")
                 sound.play();

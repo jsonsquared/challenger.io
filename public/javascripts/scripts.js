@@ -16,19 +16,30 @@ var canvas_main, canvas_lighting;
 var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
-var USE_SOUNDS = false;
+var use_sounds = true;
 var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 var name = false;
 var socket;
 var connected = false;
-
+var spriteSheets = {};
+var flash
 var assets = {
     'map'   :  '/assets/images/map.jpg',
     'bullet':  '/assets/images/bullet.png',
-    'crosshair': '/assets/images/crosshair.png'
+    'crosshair': '/assets/images/crosshair.png',
+    'muzzle': '/assets/images/muzzle.png'
 };
 
+
+var a
+var sounds
 $(function() {
+
+    sounds= {
+        'singleshot': (function() { $('body').append('<audio src="/assets/sounds/singleshot.mp3" preload="none"></audio>'); return $('audio')[0]; })()
+    }
+    a = sounds.singleshot.cloneNode();
+    a.play();
 
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
@@ -43,6 +54,21 @@ $(function() {
     createjs.Ticker.setFPS(30);
 
     lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
+    light1 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
+    light1.x = 352; light1.y = 311
+
+    light2 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
+    light2.x = 672; light2.y = 116
+
+    light3 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
+    light3.x = 144; light3.y = 497
+
+    light4 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
+    light4.x = 608; light4.y = 422
+
+
+
+
 
     $('#game-container').hide();
 
@@ -61,6 +87,7 @@ $(function() {
         fitScreen();
         initMap();
         initGameBindings();
+        initSpriteSheets();
     });
 
 });
@@ -78,9 +105,9 @@ function initGameBindings() {
         crosshair.sprite.x = e.offsetX - 10;
         crosshair.sprite.y = e.offsetY - 10;
 
-        me.moved()
+        if(connected) me.moved()
     }).bind('click',function(e) {
-        me.fire(e);
+        if(connected) me.fire(e);
     })
 
     $('body').bind('mousedown', function(e) {
@@ -123,12 +150,13 @@ function initGameBindings() {
             $('#chat-input').blur().val('')
         }
 
+
         // R
         if(e.keyCode == 82 && $('input:focus').length==0) {
             if(connected) socket.emit('manual_reload')
         }
 
-        if($('input:focus').length==0 && e.keyCode >= 37 && e.keyCode <= 40) return false
+        if($('input:focus').length==0 && ((e.keyCode >= 37 && e.keyCode <= 40) || e.keyCode==32)) return false
     })
 }
 
@@ -220,7 +248,7 @@ function join(instance) {
 
     setInterval(function() {
 
-        if(input.mouse[0]) {
+        if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
             recoil+=2
         }
@@ -244,4 +272,14 @@ window.tick = function() {
     garbage.map(function(el, i, ary) {
         delete garbage.pop();
     })
+}
+
+function initSpriteSheets() {
+    spriteSheets['muzzle'] = new createjs.SpriteSheet({
+        images: [assets.muzzle.img],
+        frames: {width:19, height:16, regX:9.5, regY:0},
+        animations: {
+            fire:{frames:[0], frequency:5}
+        }
+    });
 }
