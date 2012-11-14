@@ -1,6 +1,7 @@
 var tileSize = 16;
 var moveDistance = 2.5;
 var stage, canvas;
+var crosshair_stage;
 var walls = [];
 var halfWalls = [];
 var spawnPoints = [];
@@ -32,28 +33,28 @@ var assets = {
 
 var canvas,ctx,light1={},desc,rect,objects,darkmask,startAt,lastd
 
-var a
-var sounds
 $(function() {
 
     sounds= {
         'singleshot': (function() { $('body').append('<audio src="/assets/sounds/singleshot.mp3" preload="none"></audio>'); return $('audio')[0]; })()
     }
-    a = sounds.singleshot.cloneNode();
-    a.play();
 
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
     canvas_lighting = document.getElementById("canvas-lighting");
+    canvas_crosshair = document.getElementById("canvas-crosshair");
     stage = new createjs.Stage(canvas_main);
-    stage.autoClear = true;
+    stage.autoClear = false;
 
-    canvas_main.width = canvas_lighting.width = map[0].length * tileSize
-    canvas_main.height = canvas_lighting.height = map.length * tileSize
+    crosshair_stage = new createjs.Stage(canvas_crosshair)
+    crosshair_stage.autoClear = true;
+
+    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * tileSize
+    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * tileSize
     canvas_main_ctx = canvas_main.getContext('2d')
 
     createjs.Ticker.addListener(window);
-    createjs.Ticker.setFPS(25);
+    createjs.Ticker.setFPS(30);
 
     lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
 
@@ -70,13 +71,11 @@ $(function() {
     });
 
     preload(assets, function(files) {
-        crosshair = new Crosshair();
         fitScreen();
         initMap()
         initLights();
         initGameBindings();
         initSpriteSheets();
-
     });
 
 });
@@ -123,7 +122,6 @@ function initGameBindings() {
                 $('#chat-input').focus();
             } else {
                 var msg = $('#chat-input').val()
-                console.log(msg)
                 if(connected) socket.emit('say', msg)
                 $('#chat-input').blur().val('')
             }
@@ -243,11 +241,13 @@ function join(instance) {
         }
     },rateOfFire)
 
+    crosshair = new Crosshair();
 }
 
 window.tick = function() {
     $(document).trigger('tick')
     stage.update();
+    crosshair_stage.update();
 
     if(players && connected) {
         for(var p in players) {
@@ -275,6 +275,7 @@ function initSpriteSheets() {
 }
 
 var objects = []
+var lightLayer
 function initLights() {
     canvas = document.getElementById("canvas-lighting");
     ctx = canvas.getContext("2d");
@@ -302,6 +303,12 @@ function initLights() {
 
     darkmask = new illuminated.DarkMask({ lights: [light1] });
 
+
+    lightLayer = new createjs.Bitmap(canvas)
+    stage.addChildAt(lightLayer,3)
+    crosshairLayer = new createjs.Bitmap(canvas_crosshair)
+    stage.addChildAt(crosshairLayer,4)
+
 }
 
 var touching;
@@ -325,5 +332,7 @@ function render () {
     ctx.globalCompositeOperation = "source-over";
     darkmask.render(ctx);
 
-    canvas_main_ctx.drawImage(canvas,0,0)
+    lightLayer.draw(canvas_main_ctx)
+    crosshairLayer.draw(canvas_main_ctx)
+
 }

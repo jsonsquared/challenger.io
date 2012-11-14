@@ -5,6 +5,7 @@ function initMap() {
     bitmap.x = 0;
     bitmap.y = 0;
 
+    console.log(stage)
     stage.addChildAt(bitmap,0)
 
     for(var y=0;y<map.length;y++) {
@@ -19,7 +20,6 @@ function initMap() {
                 sprite.y = y * tileSize;
                 sprite.alpha = .5
                 walls.push({x:x,y:y,sprite: sprite})
-                // stage.addChildAt(sprite,1)
             }
 
             if(tile=='1') {
@@ -29,7 +29,6 @@ function initMap() {
                 sprite.y = y * tileSize
                 sprite.alpha = .5
                 halfWalls.push({x:x, y:y, sprite:sprite})
-                // stage.addChildAt(sprite,1)
             }
 
             if(tile=='S') {
