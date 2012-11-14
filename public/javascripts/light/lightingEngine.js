@@ -17,9 +17,9 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
         this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
 
         for(var l in this.lights) {
-            if(!this.lights[l].secondWave) {
+            // if(!this.lights[l].secondWave) {
                 this.lights[l].render();
-            }
+            // }
         }
 
     }
@@ -34,7 +34,7 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
 
     this.transfer = function() {
         this.outputCtx.globalCompositeOperation = 'source-over';
-        this.outputCtx.drawImage(lightingCanvas, 0, 0)  
+        this.outputCtx.drawImage(lightingCanvas, 0, 0, lightingCanvas.width, lightingCanvas.height, 0,0,outputCanvas.width, outputCanvas.height)
     }
 
     this.addLight = function(light) {

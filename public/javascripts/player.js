@@ -101,7 +101,7 @@ function Player(options) {
         this.me = true;
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
-        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:150, flicker:-1, secondWave:true}))
+        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:0, flicker:-1, secondWave:true}))
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
@@ -113,8 +113,11 @@ function Player(options) {
         this.y = y || this.y;
         this.rotation = rotation || this.rotation
         this.playerContainer.rotation = this.rotation
-        this.container.x = this.light.x = this.x;
-        this.container.y = this.light.y = this.y;
+        this.container.x = this.x;
+        this.container.y = this.y;
+        this.light.x = this.x/tileSize
+        this.light.y = this.y/tileSize
+
     }
 
     this.updateHealth = function(health) {

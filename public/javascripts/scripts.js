@@ -8,7 +8,7 @@ var garbage = [];
 var players = {};
 var leaderboard = [];
 var inputInterval = 20;
-var natural_light = 0;
+var natural_light = .3;
 var pushFrequency = 50;
 var rateOfFire = 130;
 var recoil = 0;
@@ -22,8 +22,8 @@ var name = false;
 var socket;
 var connected = false;
 var use_lighting = true;
-var lighting_precision = 10
-var lighting_ray_width = 25
+var lighting_precision = 1
+var lighting_ray_width = 1
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -39,10 +39,12 @@ $(function() {
     stage = new createjs.Stage(canvas_main);
     stage.autoClear = true;
 
-    canvas_main.width = canvas_lighting.width = map[0].length * tileSize
-    canvas_main.height = canvas_lighting.height = map.length * tileSize
+    canvas_main.width = map[0].length * tileSize
+    canvas_main.height = map.length * tileSize
+    canvas_lighting.width = map[0].length
+    canvas_lighting.height = map.length
     canvas_main_ctx = canvas_main.getContext('2d')
-    canvas_lighting_ctx = canvas_lighting.getContext('2d')    
+    canvas_lighting_ctx = canvas_lighting.getContext('2d')
 
     // canvas_lighting_ctx.fillStyle='rgba(0,0,0,1)'
     // canvas_lighting_ctx.globalCompositeOperation = 'source-over'
@@ -92,7 +94,7 @@ $(function() {
         crosshair = new Crosshair();
         fitScreen();
         initMap();
-        
+
 
         ctx = canvas.getContext("2d");
         ctx.lineWidth = lighting_ray_width
@@ -280,12 +282,12 @@ window.tick = function() {
         }
     }
 
-    lightingEngine.renderFirstWave(natural_light);
+    // lightingEngine.renderFirstWave(natural_light);
 
-    
-    if(connected && use_lighting) draw()    
-// lightingEngine.renderSecondWave(natural_light);        
-    lightingEngine.transfer()
+
+    if(connected && use_lighting) draw()
+    // lightingEngine.renderSecondWave(natural_light);
+    // lightingEngine.transfer()
 
     // garbage collection
     garbage.map(function(el, i, ary) {
