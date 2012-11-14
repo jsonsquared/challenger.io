@@ -1,43 +1,39 @@
 function initMap() {
 
-    var mapImage = new Image();
-    mapImage.src = '/assets/images/map.jpg'
-    mapImage.onload = function() {
-        var bitmap = new createjs.Shape()
-        bitmap.graphics.beginBitmapFill(this).drawRect(0, 0, canvas_main.width, canvas_main.height);
-        bitmap.x = 0;
-        bitmap.y = 0;
+    var bitmap = new createjs.Shape()
+    bitmap.graphics.beginBitmapFill(assets.map.img).drawRect(0, 0, canvas_main.width, canvas_main.height);
+    bitmap.x = 0;
+    bitmap.y = 0;
 
-        stage.addChildAt(bitmap,0)
+    stage.addChildAt(bitmap,0)
 
-        for(var y=0;y<map.length;y++) {
-            var row = map[y].split('');
-            for(var x=0;x<row.length;x++) {
+    for(var y=0;y<map.length;y++) {
+        var row = map[y].split('');
+        for(var x=0;x<row.length;x++) {
 
-                var tile = map[y][x];
-                if(tile=='0') {
-                    var sprite = new createjs.Shape();
-                    sprite.graphics.beginFill('#aaa').rect(0,0,tileSize,tileSize)
-                    sprite.x = x * tileSize;
-                    sprite.y = y * tileSize;
-                    sprite.alpha = .5
-                    walls.push({x:x,y:y,sprite: sprite})
-                    // stage.addChildAt(sprite,1)
-                }
+            var tile = map[y][x];
+            if(tile=='0') {
+                var sprite = new createjs.Shape();
+                sprite.graphics.beginFill('#aaa').rect(0,0,tileSize,tileSize)
+                sprite.x = x * tileSize;
+                sprite.y = y * tileSize;
+                sprite.alpha = .5
+                walls.push({x:x,y:y,sprite: sprite})
+                // stage.addChildAt(sprite,1)
+            }
 
-                if(tile=='1') {
-                    var sprite = new createjs.Shape();
-                    sprite.graphics.beginFill('#F00').rect(0,0,tileSize,tileSize)
-                    sprite.x = x * tileSize
-                    sprite.y = y * tileSize
-                    sprite.alpha = .5
-                    halfWalls.push({x:x, y:y, sprite:sprite})
-                    // stage.addChildAt(sprite,1)
-                }
+            if(tile=='1') {
+                var sprite = new createjs.Shape();
+                sprite.graphics.beginFill('#F00').rect(0,0,tileSize,tileSize)
+                sprite.x = x * tileSize
+                sprite.y = y * tileSize
+                sprite.alpha = .5
+                halfWalls.push({x:x, y:y, sprite:sprite})
+                // stage.addChildAt(sprite,1)
+            }
 
-                if(tile=='S') {
-                    spawnPoints.push({x:x, y:y})
-                }
+            if(tile=='S') {
+                spawnPoints.push({x:x, y:y})
             }
         }
     }

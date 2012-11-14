@@ -12,7 +12,7 @@ var natural_light = .90;
 var pushFrequency = 50;
 var rateOfFire = 130;
 var recoil = 0;
-var canvas_main, canvas_lighting;
+var canvas_main, canvas_lighting, canvas_main_ctx;
 var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
@@ -30,6 +30,7 @@ var assets = {
     'muzzle': '/assets/images/muzzle.png'
 };
 
+var canvas,ctx,light1={},desc,rect,objects,darkmask,startAt,lastd
 
 var a
 var sounds
@@ -49,26 +50,10 @@ $(function() {
 
     canvas_main.width = canvas_lighting.width = map[0].length * tileSize
     canvas_main.height = canvas_lighting.height = map.length * tileSize
+    canvas_main_ctx = canvas_main.getContext('2d')
 
     createjs.Ticker.addListener(window);
-    createjs.Ticker.setFPS(30);
-
-    lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
-    light1 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
-    light1.x = 352; light1.y = 311
-
-    light2 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
-    light2.x = 672; light2.y = 116
-
-    light3 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
-    light3.x = 144; light3.y = 497
-
-    light4 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:60, flicker:2, flickerRate:5000}))
-    light4.x = 608; light4.y = 422
-
-
-
-
+    createjs.Ticker.setFPS(24);
 
     $('#game-container').hide();
 
@@ -85,9 +70,11 @@ $(function() {
     preload(assets, function(files) {
         crosshair = new Crosshair();
         fitScreen();
-        initMap();
+        initMap()
+        initLights();
         initGameBindings();
         initSpriteSheets();
+
     });
 
 });
@@ -265,8 +252,7 @@ window.tick = function() {
             players[p].updatePosition()
         }
     }
-
-    lightingEngine.render(natural_light);
+    if(connected) render()
 
     // garbage collection
     garbage.map(function(el, i, ary) {
@@ -282,4 +268,80 @@ function initSpriteSheets() {
             fire:{frames:[0], frequency:5}
         }
     });
+}
+
+var objects = []
+function initLights() {
+    canvas = document.getElementById("canvas-lighting");
+    ctx = canvas.getContext("2d");
+
+    light1 = new illuminated.Lamp({
+        position: new illuminated.Vec2(100, 250),
+        distance: 150,
+        radius: 0,
+        samples: 1,
+        angle:180
+    });
+
+    objects = []
+    for(var w = 0; w< walls.length; w++) {
+        objects.push(new illuminated.RectangleObject({
+            topleft: new illuminated.Vec2(walls[w].x* tileSize, walls[w].y* tileSize),
+            bottomright: new illuminated.Vec2(walls[w].x*tileSize+tileSize, walls[w].y*tileSize + tileSize)
+        }));
+    }
+
+    lighting1 = new illuminated.Lighting({
+        light: light1,
+        objects: objects
+    });
+
+    darkmask = new illuminated.DarkMask({ lights: [light1] });
+
+    lighting1.compute(canvas.width, canvas.height);
+
+    darkmask.compute(canvas.width, canvas.height);
+
+}
+
+
+function render () {
+
+    lighting1.compute(canvas.width, canvas.height);
+    darkmask.compute(canvas.width, canvas.height);
+
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "rgba(0,0,0,.9)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+    // need to draw tiles again
+
+    ctx.globalCompositeOperation = "destination-out";
+    lighting1.render(ctx);
+
+
+
+    ctx.fillStyle = "rgba(255,255,255,.9)";
+    // if(!me) return
+    for(var o = 0; o< objects.length; o++) {
+        // console.log(objects[o])
+
+        x = objects[o].points[0].x - me.x
+        y = objects[o].points[0].y - me.y
+        var dist = Math.sqrt((x*x) + (y*y))
+        // console.log(dist,o)
+        if(dist<tileSize*15) {
+           ctx.clearRect(objects[o].points[0].x, objects[o].points[0].y, tileSize, tileSize)
+
+            // this draws white boxes
+            ctx.beginPath();
+            objects[o].path(ctx);
+            ctx.fill();
+        }
+    }
+    ctx.globalCompositeOperation = "source-over";
+    darkmask.render(ctx);
+
+    canvas_main_ctx.drawImage(canvas,0,0)
 }

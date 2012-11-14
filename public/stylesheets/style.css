@@ -21,8 +21,13 @@ body {
 }
 #canvas-main {
     cursor: none;
+/*    display:none;*/
 }
 #canvas-lighting {
+  position:absolute;
+  top:0px;
+  left:0px;
+  background:blue;
     display:none;
 }
 
