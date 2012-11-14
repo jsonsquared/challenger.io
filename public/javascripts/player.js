@@ -102,7 +102,7 @@ function Player(options) {
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
         this.light = {}
-        // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:-1}))
+        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:20, flicker:-1}))
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
@@ -116,7 +116,7 @@ function Player(options) {
         this.playerContainer.rotation = this.rotation
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
-        light1.position = new illuminated.Vec2(this.container.x,this.container.y);
+        light1.position = new illuminated.Vec2(this.container.x+1,this.container.y+1);
         // light1.angle = this.rotation
     }
 
@@ -142,6 +142,7 @@ function Player(options) {
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
+
     }
 
     this.move = function(move) {
@@ -214,10 +215,10 @@ function Player(options) {
     }
 
     this.touching = function(otherObject) {
-        if (this.y + tileSize - 1 < otherObject.sprite.y + 1) return false;
-        if (this.y + 1 > otherObject.sprite.y + tileSize - 1) return false;
-        if (this.x + tileSize - 1 < otherObject.sprite.x + 1) return false;
-        if (this.x + 1 > otherObject.sprite.x + tileSize - 1) return false;
+        if (this.y + tileSize< otherObject.sprite.y) return false;
+        if (this.y > otherObject.sprite.y + tileSize) return false;
+        if (this.x + tileSize < otherObject.sprite.x) return false;
+        if (this.x > otherObject.sprite.x + tileSize) return false;
         return true;
     }
 

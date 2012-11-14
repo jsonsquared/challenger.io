@@ -53,7 +53,9 @@ $(function() {
     canvas_main_ctx = canvas_main.getContext('2d')
 
     createjs.Ticker.addListener(window);
-    createjs.Ticker.setFPS(24);
+    createjs.Ticker.setFPS(25);
+
+    lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
 
     $('#game-container').hide();
 
@@ -252,7 +254,9 @@ window.tick = function() {
             players[p].updatePosition()
         }
     }
+
     if(connected) render()
+    lightingEngine.render(natural_light);
 
     // garbage collection
     garbage.map(function(el, i, ary) {
@@ -277,10 +281,10 @@ function initLights() {
 
     light1 = new illuminated.Lamp({
         position: new illuminated.Vec2(100, 250),
-        distance: 150,
-        radius: 0,
-        samples: 1,
-        angle:180
+        distance: 250,
+        radius: 180,
+        samples: .1,
+        angle:90
     });
 
     objects = []
@@ -298,48 +302,26 @@ function initLights() {
 
     darkmask = new illuminated.DarkMask({ lights: [light1] });
 
-    lighting1.compute(canvas.width, canvas.height);
-
-    darkmask.compute(canvas.width, canvas.height);
-
 }
 
-
+var touching;
 function render () {
 
-    lighting1.compute(canvas.width, canvas.height);
+    touching = lighting1.compute(canvas.width, canvas.height);
     darkmask.compute(canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = "rgba(0,0,0,.9)";
+    ctx.fillStyle = "rgba(0,0,0,.4)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
-    // need to draw tiles again
 
     ctx.globalCompositeOperation = "destination-out";
     lighting1.render(ctx);
 
-
-
-    ctx.fillStyle = "rgba(255,255,255,.9)";
-    // if(!me) return
-    for(var o = 0; o< objects.length; o++) {
-        // console.log(objects[o])
-
-        x = objects[o].points[0].x - me.x
-        y = objects[o].points[0].y - me.y
-        var dist = Math.sqrt((x*x) + (y*y))
-        // console.log(dist,o)
-        if(dist<tileSize*15) {
-           ctx.clearRect(objects[o].points[0].x, objects[o].points[0].y, tileSize, tileSize)
-
-            // this draws white boxes
-            ctx.beginPath();
-            objects[o].path(ctx);
-            ctx.fill();
-        }
+    ctx.globalCompositeOperation = "source-over";
+    for(var o = 0; o< touching.length; o++) {
+       ctx.clearRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
     }
+
     ctx.globalCompositeOperation = "source-over";
     darkmask.render(ctx);
 

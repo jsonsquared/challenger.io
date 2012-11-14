@@ -313,16 +313,21 @@
    */
   cp.PolygonObject.prototype.cast = function (ctx, origin, bounds) {
     // The current implementation of projection is a bit hacky... do you have a proper solution?
+    // var touching = false
     var distance = ((bounds.bottomright.x-bounds.topleft.x)+(bounds.bottomright.y-bounds.topleft.y))/2;
-    this._forEachVisibleEdges(origin, bounds, function (a, b, originToA, originToB, aToB) {
+    var touching = this._forEachVisibleEdges(origin, bounds, function (a, b, originToA, originToB, aToB) {
       var m; // m is the projected point of origin to [a, b]
       var t = originToA.inv().dot(aToB)/aToB.length2();
-      if (t<0)
+      if (t<0) {
         m = a;
-      else if(t>1)
+        // touching = true
+      } else if(t>1) {
         m = b;
-      else
+        //touching = true
+      } else {
         m = a.add( aToB.mul(t) );
+        //touching = true
+      }
       var originToM = m.sub(origin);
       // normalize to distance
       originToM = originToM.normalize().mul(distance);
@@ -337,13 +342,17 @@
       path(ctx, [a, b, bp, obm, oam, ap]);
       ctx.fill();
     });
+
+    return touching
   }
 
   cp.PolygonObject.prototype._forEachVisibleEdges = function (origin, bounds, f) {
     var a = this.points[this.points.length-1], b;
+    var touching = false;
     for (var p=0; p<this.points.length; ++p, a=b) {
       b = this.points[p];
       if (a.inBound(bounds.topleft, bounds.bottomright)) {
+          touching = true
          var originToA = a.sub(origin);
          var originToB = b.sub(origin);
          var aToB = b.sub(a);
@@ -353,6 +362,7 @@
          }
        }
     }
+    return touching
   }
 
 
@@ -417,16 +427,21 @@
     ctx.fillStyle = "rgba(0,0,0,"+Math.round(100/n)/100+")"; // Is there any better way?
     var bounds = light.bounds();
     var objects = this.objects;
+    var touching = [];
     light.forEachSample(function (position) {
       var sampleInObject = false;
       for (var o=0; o<objects.length; ++o) {
+
         if (objects[o].contains(position)) {
           ctx.fillRect(bounds.topleft.x, bounds.topleft.y, bounds.bottomright.x-bounds.topleft.x, bounds.bottomright.y-bounds.topleft.y);
           return;
         }
       }
+
       objects.forEach(function(object) {
-        object.cast(ctx, position, bounds);
+        if(object.cast(ctx, position, bounds)) {
+            touching.push(object)
+        }
       });
     });
     // Draw objects diffuse - the intensity of the light penetration in objects
@@ -439,6 +454,7 @@
       ctx.fill();
     });
     ctxoutput.drawImage(c.canvas, 0, 0);
+    return touching
   }
 
   cp.Lighting.prototype.compute = function (w,h) {
@@ -451,8 +467,9 @@
 
     light.render(ctx);
     ctx.globalCompositeOperation = "destination-out";
-    this.cast(ctx);
+    var ret = this.cast(ctx);
     ctx.restore();
+    return ret;
   }
   cp.Lighting.prototype.render = function (ctx) {
     ctx.drawImage(this._cache.canvas, 0, 0);
