@@ -5,6 +5,7 @@ function Light(canvas, options) {
     this.intensity = options.intensity || 1;
     this.x = options.x || 0;
     this.y = options.y || 0;
+    this.secondWave = options.secondWave || false
     this.flicker = options.flicker || 3;
 
     this.render = function(x,y) {

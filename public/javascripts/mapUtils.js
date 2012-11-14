@@ -1,10 +1,10 @@
 function initMap() {
 
-    var mapImage = new Image();
-    mapImage.src = '/assets/images/map.jpg'
-    mapImage.onload = function() {
+    // var mapImage = new Image();
+    // mapImage.src = '/assets/images/map.jpg'
+    // mapImage.onload = function() {
         var bitmap = new createjs.Shape()
-        bitmap.graphics.beginBitmapFill(this).drawRect(0, 0, canvas_main.width, canvas_main.height);
+        bitmap.graphics.beginBitmapFill(assets.map.img).drawRect(0, 0, canvas_main.width, canvas_main.height);
         bitmap.x = 0;
         bitmap.y = 0;
 
@@ -40,7 +40,7 @@ function initMap() {
                 }
             }
         }
-    }
+    //}
 }
 
 function blocked(x, y, method) {

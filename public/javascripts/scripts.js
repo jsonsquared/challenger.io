@@ -8,11 +8,11 @@ var garbage = [];
 var players = {};
 var leaderboard = [];
 var inputInterval = 20;
-var natural_light = .90;
+var natural_light = 0;
 var pushFrequency = 50;
 var rateOfFire = 130;
 var recoil = 0;
-var canvas_main, canvas_lighting;
+var canvas_main, canvas_lighting, canvas_main_Ctx, canvas_lighting_Ctx;
 var crosshair, crosshairX, crosshairY;
 var me;
 var lastPush = {x:-1, y:-1, rotation:-1};
@@ -21,6 +21,9 @@ var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 var name = false;
 var socket;
 var connected = false;
+var use_lighting = true;
+var lighting_precision = 10
+var lighting_ray_width = 25
 
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -38,11 +41,40 @@ $(function() {
 
     canvas_main.width = canvas_lighting.width = map[0].length * tileSize
     canvas_main.height = canvas_lighting.height = map.length * tileSize
+    canvas_main_ctx = canvas_main.getContext('2d')
+    canvas_lighting_ctx = canvas_lighting.getContext('2d')    
+
+    // canvas_lighting_ctx.fillStyle='rgba(0,0,0,1)'
+    // canvas_lighting_ctx.globalCompositeOperation = 'source-over'
+    // canvas_lighting_ctx.fillRect(0,0,canvas_lighting.width,canvas_lighting.height)
+
+    // // fill the lighting canvas with the amount of "natual light"
+    // canvas_lighting_ctx.fillStyle="rgba(0,0,0,.1)";
+    // canvas_lighting_ctx.globalCompositeOperation = 'destination-out'
+    // canvas_lighting_ctx.fillRect(0,0,canvas_lighting.width,canvas_lighting.height)
+
 
     createjs.Ticker.addListener(window);
     createjs.Ticker.setFPS(30);
 
     lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
+
+    var light1 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:90, flicker:3}))
+    light1.x = 353
+    light1.y = 309
+
+    var light2 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:90, flicker:3}))
+    light2.x = 674
+    light2.y = 115
+
+    var light3 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:90, flicker:3}))
+    light3.x = 607
+    light3.y = 422
+
+    var light4 = lightingEngine.addLight(new Light(canvas_lighting, {intensity:90, flicker:3}))
+    light4.x = 149
+    light4.y = 498
+
 
     $('#game-container').hide();
 
@@ -60,6 +92,15 @@ $(function() {
         crosshair = new Crosshair();
         fitScreen();
         initMap();
+        
+
+        ctx = canvas.getContext("2d");
+        ctx.lineWidth = lighting_ray_width
+        ctx.strokeStyle = 'rgba(255,255,255,.5)'
+
+        // ctx.strokeStyle = '#fff'
+
+        initRayCaster();
         initGameBindings();
     });
 
@@ -232,16 +273,47 @@ window.tick = function() {
     $(document).trigger('tick')
     stage.update();
 
+
     if(players && connected) {
         for(var p in players) {
             players[p].updatePosition()
         }
     }
 
-    lightingEngine.render(natural_light);
+    lightingEngine.renderFirstWave(natural_light);
+
+    
+    if(connected && use_lighting) draw()    
+// lightingEngine.renderSecondWave(natural_light);        
+    lightingEngine.transfer()
 
     // garbage collection
     garbage.map(function(el, i, ary) {
         delete garbage.pop();
     })
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
