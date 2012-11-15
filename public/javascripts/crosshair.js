@@ -13,5 +13,5 @@ function Crosshair() {
 
     this.sprite.gotoAndPlay('main')
 
-    crosshair_stage.addChild(this.sprite)
+    stage_over.addChild(this.sprite)
 }

@@ -5,8 +5,7 @@ function initMap() {
     bitmap.x = 0;
     bitmap.y = 0;
 
-    console.log(stage)
-    stage.addChildAt(bitmap,0)
+    stage_under.addChildAt(bitmap,0)
 
     for(var y=0;y<map.length;y++) {
         var row = map[y].split('');

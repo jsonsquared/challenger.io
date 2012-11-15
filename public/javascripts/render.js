@@ -6,8 +6,8 @@ var raycaster = {}      // illumination.js lightsource, position is updated thro
 var lightLayers = 0;
 function render() {
     if(!connected || !me) return
-    stage.update();
-    crosshair_stage.update();
+    stage_under.update();
+    stage_over.update();
     lightingEngine.render()
     processRaycasting();
     lightLayer.draw(canvas_main_ctx)
@@ -39,9 +39,9 @@ function initLights() {
     darkmask = new illuminated.DarkMask({ lights: [raycaster] });
 
     lightLayer = new createjs.Bitmap(canvas_lighting)
-    stage.addChildAt(lightLayer,3)
+    stage_under.addChildAt(lightLayer,3)
     crosshairLayer = new createjs.Bitmap(canvas_crosshair)
-    stage.addChildAt(crosshairLayer,4)
+    stage_under.addChildAt(crosshairLayer,4)
 }
 function processRaycasting () {
 

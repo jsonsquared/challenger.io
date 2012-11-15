@@ -1,7 +1,9 @@
 var TILE_SIZE = 16;
 var MOVE_DISTANCE = 3;
-var stage, canvas;
-var crosshair_stage;
+
+var socket;
+var connected = false;
+var stage_under, stage_over;
 var garbage = [];
 var players = {};
 
@@ -19,10 +21,13 @@ var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
 var crosshair; // easeljs Bitmap
 var me; // alias for which player I am in the players object
 var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
-var use_sounds = true;
+
 var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
-var socket;
-var connected = false;
+
+var settings = {
+    sounds:true
+}
+
 var spriteSheets = {};
 var assets = {
     'map'   :  '/assets/images/map.jpg',
@@ -30,6 +35,10 @@ var assets = {
     'crosshair': '/assets/images/crosshair.png',
     'muzzle': '/assets/images/muzzle.png'
 };
+sounds= {
+    'singleshot': new Audio('/assets/sounds/singleshot.mp3')
+}
+
 
 INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
 INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
@@ -38,19 +47,16 @@ INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:fa
 
 $(function() {
 
-    sounds= {
-        'singleshot': (function() { $('body').append('<audio src="/assets/sounds/singleshot.mp3" preload="none"></audio>'); return $('audio')[0]; })()
-    }
 
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
     canvas_lighting = document.getElementById("canvas-lighting");
     canvas_crosshair = document.getElementById("canvas-crosshair");
-    stage = new createjs.Stage(canvas_main);
-    stage.autoClear = false;
+    stage_under = new createjs.Stage(canvas_main);
+    stage_under.autoClear = false;
 
-    crosshair_stage = new createjs.Stage(canvas_crosshair)
-    crosshair_stage.autoClear = true;
+    stage_over = new createjs.Stage(canvas_crosshair)
+    stage_over.autoClear = true;
 
     canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * TILE_SIZE
     canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * TILE_SIZE

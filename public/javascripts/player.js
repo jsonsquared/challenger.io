@@ -110,7 +110,7 @@ function Player(options) {
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
 
-    stage.addChildAt(this.container,1)
+    stage_under.addChildAt(this.container,1)
 
     this.updatePosition = function(x, y, rotation) {
         this.x = x || this.x;
@@ -232,8 +232,8 @@ function Player(options) {
 
         var b = new Bullet({
             speed:this.dashing ? 100 : undefined,
-            x:me.x,
-            y:me.y,
+            x:gun==1 ? me.x -8 : me.x+8,
+            y:gun==1 ? me.y -8 : me.y+8,
             endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
             endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
             owner:me.id,
@@ -286,7 +286,7 @@ function Player(options) {
 
         this.ammoMeter.update({value:0, text:'Reloading'})
         var self = this;
-        if(use_sounds) {
+        if(settings.sounds) {
             setTimeout(function() {
                 var sound = new Audio("/assets/sounds/reload.mp3")
                 sound.play();
@@ -320,7 +320,7 @@ function Player(options) {
     }
 
     this.remove = function() {
-        stage.removeChild(this.container)
+        stage_under.removeChild(this.container)
         delete this;
     }
 

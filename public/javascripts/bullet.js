@@ -5,6 +5,7 @@ function Bullet(options) {
     this.speed = options.speed || 16;
     this.delta = 1;
     this.gun = options.gun || 0;
+    this.sound = false;
 
     this.trajectoryX = options.endX - options.x;
     this.trajectoryY = options.endY - options.y;
@@ -30,7 +31,7 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
-    stage.addChildAt(this.sprite,2)
+    stage_under.addChildAt(this.sprite,2)
     this.removed = false;
 
 
@@ -45,18 +46,14 @@ function Bullet(options) {
         return false;
     }
 
-    if(use_sounds) {
-        // this.sound = new Audio("/assets/sounds/single.mp3");
-        // this.sound.volume =( Math.random()/2 + .5);
-        // this.sound.play();
+    if(settings.sounds) {
+        this.sound = sounds.singleshot.cloneNode()
+        this.sound.volume = range(1,2)/2;
+        this.sound.play();
     }
 
     $(document).bind('tick', function() {
         if(!self.removed) {
-
-
-
-
 
             self.delta = self.speed / self.length
             var x = self.delta * self.trajectoryX
@@ -82,11 +79,10 @@ function Bullet(options) {
     });
 
     this.remove = function() {
-        // if(use_sounds) {
-        //     this.sound.pause();
-        //     delete this.sound;
-        // }
-        stage.removeChild(this.sprite)
+        if(settings.sounds) {
+            delete this.sound;
+        }
+        stage_under.removeChild(this.sprite)
         this.removed = true;
         this.onRemove();
         delete this;
