@@ -1,5 +1,5 @@
-function initPacketHandler() {
-
+function initPacketHandler(name) {
+    var name = name
     socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
 
     socket.on('connect', function () {

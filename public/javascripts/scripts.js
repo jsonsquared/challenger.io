@@ -8,30 +8,29 @@ var spawnPoints = [];
 var garbage = [];
 var players = {};
 var leaderboard = [];
-var inputInterval = 20;
-var natural_light = .90;
-var pushFrequency = 50;
-var rateOfFire = 130;
+
+var natural_light = 0.2;
 var recoil = 0;
+var intervals = {
+    push:   {rate:50},
+    move:   {rate:20},
+    fire:   {rate:130}
+}
 var canvas_main, canvas_lighting, canvas_main_ctx;
-var crosshair, crosshairX, crosshairY;
-var me;
-var lastPush = {x:-1, y:-1, rotation:-1};
+var crosshair; // easeljs Bitmap
+var me; // alias for which player I am in the players object
+var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
 var use_sounds = true;
 var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
-var name = false;
 var socket;
 var connected = false;
 var spriteSheets = {};
-var flash
 var assets = {
     'map'   :  '/assets/images/map.jpg',
     'bullet':  '/assets/images/bullet.png',
     'crosshair': '/assets/images/crosshair.png',
     'muzzle': '/assets/images/muzzle.png'
 };
-
-var canvas,ctx,raycaster={},desc,rect,objects,darkmask,startAt,lastd
 
 INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
 INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
@@ -57,6 +56,7 @@ $(function() {
     canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * tileSize
     canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * tileSize
     canvas_main_ctx = canvas_main.getContext('2d')
+    canvas_lighting_ctx = canvas_lighting.getContext('2d')
 
     createjs.Ticker.addListener(window);
     createjs.Ticker.setFPS(30);
@@ -66,11 +66,11 @@ $(function() {
     $('#game-container').hide();
 
     $('#name').bind('keypress', function(e) {
-        if(e.keyCode == 13) checkName()
+        if(e.keyCode == 13) checkName(name, function(name) {connect(name); })
     }).focus();
 
     $('#join-button').bind('click', function() {
-        checkName()
+        checkName(checkName(name, function(name) {connect(name); }))
         $('#name').blur();
         $(canvas_main).focus()
     });
@@ -81,12 +81,13 @@ $(function() {
         initLights();
         initGameBindings();
         initSpriteSheets();
+        crosshair = new Crosshair();
     });
 
 });
 
 function connect(name) {
-    initPacketHandler();
+    initPacketHandler(name);
 }
 
 function fitScreen() {
@@ -151,65 +152,27 @@ function initGameBindings() {
     })
 
 
-var lastKeyUp = {was:false, at:new Date()};
-$(document).bind('keyup',function(e) {
-    lastKeyUp = {was:e.keyCode,at:new Date()}
-}).bind('keydown',function(e) {
-    var now = new Date()
-    if(now.getTime() - lastKeyUp.at.getTime() < 200 && e.keyCode == lastKeyUp.was) {
-        lastKeyUp = {was:false, at:new Date()};
-        if(e.keyCode==87 || e.keyCode==38) me.dash('U')        
-        if(e.keyCode==68 || e.keyCode==39) me.dash('R')
-        if(e.keyCode==83 || e.keyCode==40) me.dash('D')
-        if(e.keyCode==65 || e.keyCode==37) me.dash('L')
-    }
-})
-
-    $(document).bind('keyup', function(e) {
-        // doubletap checks
-
-
-// INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
-// INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
-// INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
-// INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
-
-        //if(e.keyCode==38) { tapped('U') }
-        //if(INPUT_D()) { tapped('D') }
-        //if(INPUT_L()) { tapped('L') }
-        //if(INPUT_R()) { tapped('R') }                
+    var lastKeyUp = {was:false, at:new Date()};
+    $(document).bind('keyup',function(e) {
+        lastKeyUp = {was:e.keyCode,at:new Date()}
+    }).bind('keydown',function(e) {
+        var now = new Date()
+        if(now.getTime() - lastKeyUp.at.getTime() < 200 && e.keyCode == lastKeyUp.was) {
+            lastKeyUp = {was:false, at:new Date()};
+            if(e.keyCode==87 || e.keyCode==38) me.dash('U')
+            if(e.keyCode==68 || e.keyCode==39) me.dash('R')
+            if(e.keyCode==83 || e.keyCode==40) me.dash('D')
+            if(e.keyCode==65 || e.keyCode==37) me.dash('L')
+        }
     })
+
 }
 
 
-
-// var lastTap = {was:false, at:new Date()}
-// var dashDelay = 3000
-// // var canDash = true;
-// function tapped(dir) {
-//     // if(!canDash) return false
-//     var at = new Date();
-//     console.log(at.getTime() - lastTap.at.getTime())
-//     if(at.getTime() - lastTap.at.getTime() < 200 && lastTap.was == dir) {
-//         me.dash(dir)
-//         // canDash = false        
-//         // setTimeout(function() {
-//         //     canDash = true
-//         // },dashDelay)
-//         console.log('double tapped', dir)
-//         // lastTap.at = at;
-//         lastTap.was = ''
-
-//     } else {
-//         lastTap.at = at;
-//         lastTap.was = dir
-//     }
-// }
-
-function checkName() {
+function checkName(name, callback) {
     if($('#name').val() > '') {
-        name = $('#name').val().substr(0,10);
-        connect();
+        var name = $('#name').val().substr(0,10);
+        callback(name)
         $('#enter-container').remove();
         $('#game-container').show();
     } else {
@@ -273,39 +236,12 @@ function join(instance) {
         }
     }
 
-    setInterval(function() {
-        if(lastPush.x != me.payload.x || lastPush.y != me.payload.y || lastPush.rotation != me.payload.rotation) {
-            socket.emit('move', me.payload)
-            lastPush = me.payload;
-        }
-    },pushFrequency)
+    initIntervals();
 
-    setInterval(function() {
-        var move = {};
-        if($('input:focus').length==0) {
-            if(INPUT_U()) { move.y = me.y - moveDistance }
-            if(INPUT_L()) { move.x = me.x - moveDistance }
-            if(INPUT_D()) { move.y = me.y + moveDistance }
-            if(INPUT_R()) { move.x = me.x + moveDistance }
-            if(move.x || move.y) me.move(move)
-
-        }
-    },inputInterval)
-
-    setInterval(function() {
-
-        if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
-            me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
-            recoil+=2
-        }
-    },rateOfFire)
-
-    crosshair = new Crosshair();
 }
 
 window.tick = function() {
     $(document).trigger('tick')
-    render()
 
     if(players && connected) {
         for(var p in players) {
@@ -313,7 +249,7 @@ window.tick = function() {
         }
     }
 
-    lightingEngine.render(natural_light);
+    render()
 
     // garbage collection
     garbage.map(function(el, i, ary) {
@@ -329,85 +265,4 @@ function initSpriteSheets() {
             fire:{frames:[0], frequency:5}
         }
     });
-}
-
-var objects = []
-var lightLayer
-function initLights() {
-    canvas = document.getElementById("canvas-lighting");
-    ctx = canvas.getContext("2d");
-
-    raycaster = new illuminated.Lamp({
-        position: new illuminated.Vec2(100, 250),
-        distance: 400,
-        radius: 0,
-        samples: 1,
-        angle:0
-    });
-
-    objects = []
-    for(var w = 0; w< walls.length; w++) {
-        objects.push(new illuminated.RectangleObject({
-            topleft: new illuminated.Vec2(walls[w].x* tileSize, walls[w].y* tileSize),
-            bottomright: new illuminated.Vec2(walls[w].x*tileSize+tileSize, walls[w].y*tileSize + tileSize)
-        }));
-    }
-
-    lighting1 = new illuminated.Lighting({
-        light: raycaster,
-        objects: objects
-    });
-
-    darkmask = new illuminated.DarkMask({ lights: [raycaster] });
-
-
-    lightLayer = new createjs.Bitmap(canvas)
-    stage.addChildAt(lightLayer,3)
-    crosshairLayer = new createjs.Bitmap(canvas_crosshair)
-    stage.addChildAt(crosshairLayer,4)
-
-}
-
-function render() {
-    if(!connected || !me) return
-    stage.update();
-    crosshair_stage.update();
-
-    processRaycasting();
-    lightingEngine.render()
-    lightLayer.draw(canvas_main_ctx)
-    crosshairLayer.draw(canvas_main_ctx)
-
-}
-
-
-
-var touching;
-var CLEAR = 1;
-var FILL = .4;
-function processRaycasting () {
-
-    touching = lighting1.compute(canvas.width, canvas.height);
-    darkmask.compute(canvas.width, canvas.height);
-
-    ctx.globalCompositeOperation = "source-out";
-    ctx.fillStyle = "rgba(0,0,0,.5)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.globalCompositeOperation = "destination-out";
-    lighting1.render(ctx);
-
-    // ctx.globalCompositeOperation = "xor";
-    ctx.fillStyle = "rgba(0,0,0," + FILL + ")";
-
-    if(CLEAR) {
-        for(var o = 0; o< touching.length; o++) {
-           ctx.clearRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
-           ctx.fillRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
-       }
-    }
-    ctx.globalAlpha = .8
-    ctx.globalCompositeOperation = "destination-over";
-    darkmask.render(ctx);
-
 }

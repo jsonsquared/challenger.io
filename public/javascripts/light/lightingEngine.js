@@ -6,14 +6,14 @@ function LightingEngine(lightingCanvas, outputCanvas, natural_light) {
 
     this.render = function(natural_light) {
 
-        this.lightingCtx.fillStyle='rgba(0,0,0,0)'
-        this.lightingCtx.globalCompositeOperation = 'source-over'
-        this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
+        // this.lightingCtx.fillStyle='rgba(0,0,0,1)'
+        // this.lightingCtx.globalCompositeOperation = 'source-over'
+        // this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
 
         // fill the lighting canvas with the amount of "natual light"
-        this.lightingCtx.fillStyle="rgba(0,0,0," + natural_light + ")";
-        this.lightingCtx.globalCompositeOperation = 'destination-out'
-        this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
+        // this.lightingCtx.fillStyle="rgba(0,0,0," + natural_light + ")";
+        // this.lightingCtx.globalCompositeOperation = 'destination-out'
+        // this.lightingCtx.fillRect(0,0,lightingCanvas.width,lightingCanvas.height)
 
         for(var l in this.lights) {
             this.lights[l].render();
