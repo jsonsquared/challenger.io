@@ -313,7 +313,9 @@ function render() {
     if(!connected || !me) return
     stage.update();
     crosshair_stage.update();
+
     processRaycasting();
+    lightingEngine.render()
     lightLayer.draw(canvas_main_ctx)
     crosshairLayer.draw(canvas_main_ctx)
 
@@ -336,18 +338,17 @@ function processRaycasting () {
     ctx.globalCompositeOperation = "destination-out";
     lighting1.render(ctx);
 
-    ctx.globalCompositeOperation = "source-over";
+    // ctx.globalCompositeOperation = "xor";
     ctx.fillStyle = "rgba(0,0,0," + FILL + ")";
 
-    for(var o = 0; o< touching.length; o++) {
-       if(CLEAR) {
+    if(CLEAR) {
+        for(var o = 0; o< touching.length; o++) {
            ctx.clearRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
            ctx.fillRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
        }
     }
-
-    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = .8
+    ctx.globalCompositeOperation = "destination-over";
     darkmask.render(ctx);
-
 
 }

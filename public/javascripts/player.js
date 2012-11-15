@@ -102,7 +102,7 @@ function Player(options) {
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
         this.light = {}
-        // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:0, flicker:-1}))
+        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:150, flicker:5}))
 
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
