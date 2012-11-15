@@ -20,11 +20,9 @@ body {
     position:relative;
 }
 #canvas-main {
-/*    cursor: url('/assets/images/crosshair.png') 16 16, pointer;*/
     cursor: none;
-*//*    display:none;*/
 }
-#canvas-lighting {
+#canvas-lighting, #canvas-crosshair {
   position:absolute;
   top:0px;
   left:0px;

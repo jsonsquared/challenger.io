@@ -34,8 +34,9 @@ function Bullet(options) {
     this.removed = false;
 
     if(use_sounds) {
-        // sounds.singleshot.currentTime = 0;
-        // sounds.singleshot.play()
+        // this.sound = new Audio("/assets/sounds/single.mp3");
+        // this.sound.volume =( Math.random()/2 + .5);
+        // this.sound.play();
     }
 
     $(document).bind('tick', function() {

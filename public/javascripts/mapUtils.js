@@ -1,7 +1,7 @@
 function initMap() {
 
     var bitmap = new createjs.Shape()
-    bitmap.graphics.beginBitmapFill(assets.map.img).drawRect(0, 0, canvas_main.width, canvas_main.height);
+    bitmap.graphics.beginBitmapFill(assets.map.img).drawRect(0, 0, canvas_main.width, canvas_main.height,0,0,canvas_main.width/2, canvas_main.height/2);
     bitmap.x = 0;
     bitmap.y = 0;
 
