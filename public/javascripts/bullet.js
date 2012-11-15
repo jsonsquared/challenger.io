@@ -2,7 +2,7 @@ function Bullet(options) {
     var self = this;
     options = options || {}
 
-    this.speed = 16;
+    this.speed = options.speed || 16;
     this.delta = 1;
     this.gun = options.gun || 0;
 
