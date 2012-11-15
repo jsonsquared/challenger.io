@@ -103,7 +103,7 @@ function Player(options) {
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
         this.light = {}
-        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:150, flicker:5}))
+        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:5}))
 
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
@@ -119,7 +119,6 @@ function Player(options) {
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
         if (this==me) raycaster.position = new illuminated.Vec2(this.container.x+1,this.container.y+1);
-        // light1.angle = this.rotation
     }
 
     this.updateHealth = function(health) {
@@ -146,7 +145,6 @@ function Player(options) {
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
     }
 
-    this.dashFiring = null
     this.dash = function(dir) {
         console.log(dir)
         var move = final = latest = {x:this.x,y:this.y}
@@ -173,14 +171,6 @@ function Player(options) {
         } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
             final.y = move.y;
         }
-
-        // lets you fire twice as much during dash
-        this.dashFiring = setInterval(function() {
-            if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
-                me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
-                recoil=0
-            }
-        },rateOfFire)
 
         createjs.Tween.removeTweens(this)
         console.log(final)
@@ -213,7 +203,6 @@ function Player(options) {
             final.x = this.x
         }
 
-        console.log(arguments.length)
         if(arguments.length==1) {
             self.x = final.x;
             self.y = final.y;
@@ -259,7 +248,7 @@ function Player(options) {
     }
 
     this.muzzleFlash = function(gun) {
-        flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
+        var flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
         flash.gotoAndPlay('fire')
 
         flash.scaleX = flash.scaleY = range(.5,1)
