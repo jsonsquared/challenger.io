@@ -146,6 +146,7 @@ function Player(options) {
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
     }
 
+    this.dashFiring = null
     this.dash = function(dir) {
         console.log(dir)
         var move = final = latest = {x:this.x,y:this.y}
@@ -173,12 +174,21 @@ function Player(options) {
             final.y = move.y;
         }
 
+        // lets you fire twice as much during dash
+        this.dashFiring = setInterval(function() {
+            if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
+                me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
+                recoil=0
+            }
+        },rateOfFire)
+
         createjs.Tween.removeTweens(this)
         console.log(final)
         createjs.Tween.get(this).to(final,500,createjs.Ease.sineOut).call(function() {
             self.x = final.x;
             self.y = final.y;
             me.dashing = false;
+            clearInterval(this.dashFiring)
             self.moved()
         });
 
