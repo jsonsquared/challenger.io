@@ -16,6 +16,7 @@ function Player(options) {
     this.clip = options.clip;
     this.reloading = false;
     this.dashing = false;
+    this.recoil = 0;
 
     // easel object
     this.container = new createjs.Container();
@@ -150,19 +151,19 @@ function Player(options) {
         var move = final = latest = {x:this.x,y:this.y}
 
         for(var t = 0; t < 20; t++) {
-            if(dir == 'U') {move.y = me.y-moveDistance}
-            if(dir == 'D') {move.y = me.y+moveDistance}
-            if(dir == 'L') {move.x = me.x-moveDistance}
-            if(dir == 'R') {move.x = me.x+moveDistance}
+            if(dir == 'U') {move.y = me.y-MOVE_DISTANCE}
+            if(dir == 'D') {move.y = me.y+MOVE_DISTANCE}
+            if(dir == 'L') {move.x = me.x-MOVE_DISTANCE}
+            if(dir == 'R') {move.x = me.x+MOVE_DISTANCE}
             var latest = latest || this.move(move, true)
         }
         move = final = {x:this.x,y:this.y}
         console.log(latest)
 
-        if(dir == 'U') {move.y = latest.y-moveDistance*20}
-        if(dir == 'D') {move.y = latest.y+moveDistance*20}
-        if(dir == 'L') {move.x = latest.x-moveDistance*20}
-        if(dir == 'R') {move.x = latest.x+moveDistance*20}
+        if(dir == 'U') {move.y = latest.y-MOVE_DISTANCE*20}
+        if(dir == 'D') {move.y = latest.y+MOVE_DISTANCE*20}
+        if(dir == 'L') {move.x = latest.x-MOVE_DISTANCE*20}
+        if(dir == 'R') {move.x = latest.x+MOVE_DISTANCE*20}
         if(!blocked(move.x, move.y) && !halfBlocked(move.x, move.y)) {
             final.x = move.x
             final.y = move.y;
@@ -226,7 +227,7 @@ function Player(options) {
 
         var gun = range(0,1);
         var recoilFactor = gun == 0 ? -2: 2
-        recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
+        recoilFactor = recoilFactor < 0 ? recoilFactor - this.recoil : recoilFactor + this.recoil
         recoilFactor = this.dashing ? 0 : recoilFactor
 
         var b = new Bullet({
@@ -274,10 +275,10 @@ function Player(options) {
     }
 
     this.touching = function(otherObject) {
-        if (this.y + tileSize< otherObject.sprite.y) return false;
-        if (this.y > otherObject.sprite.y + tileSize) return false;
-        if (this.x + tileSize < otherObject.sprite.x) return false;
-        if (this.x > otherObject.sprite.x + tileSize) return false;
+        if (this.y + TILE_SIZE< otherObject.sprite.y) return false;
+        if (this.y > otherObject.sprite.y + TILE_SIZE) return false;
+        if (this.x + TILE_SIZE < otherObject.sprite.x) return false;
+        if (this.x > otherObject.sprite.x + TILE_SIZE) return false;
         return true;
     }
 
@@ -305,7 +306,7 @@ function Player(options) {
     }
 
     this.reloaded = function(clip) {
-        recoil = 0;
+        this.recoil = 0;
         this.reloading = false;
         this.updateClip(clip)
     }

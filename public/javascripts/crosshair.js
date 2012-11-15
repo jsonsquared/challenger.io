@@ -8,8 +8,8 @@ function Crosshair() {
     });
 
     this.sprite = new createjs.BitmapAnimation(this.spriteSheet);
-    this.sprite.x = canvas_main.width/2 - tileSize
-    this.sprite.y = canvas_main.height/2 - tileSize
+    this.sprite.x = canvas_main.width/2 - TILE_SIZE
+    this.sprite.y = canvas_main.height/2 - TILE_SIZE
 
     this.sprite.gotoAndPlay('main')
 

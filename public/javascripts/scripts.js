@@ -1,22 +1,21 @@
-var tileSize = 16;
-var moveDistance = 3;
+var TILE_SIZE = 16;
+var MOVE_DISTANCE = 3;
 var stage, canvas;
 var crosshair_stage;
-var walls = [];
-var halfWalls = [];
-var spawnPoints = [];
 var garbage = [];
 var players = {};
 
+var mapData = {
+    walls:[],
+    halfWalls:[]
+}
 
-var natural_light = 0.2;
-var recoil = 0;
 var intervals = {
     push:   {rate:50},
     move:   {rate:20},
     fire:   {rate:130}
 }
-var canvas_main, canvas_lighting, canvas_main_ctx;
+var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
 var crosshair; // easeljs Bitmap
 var me; // alias for which player I am in the players object
 var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
@@ -53,15 +52,15 @@ $(function() {
     crosshair_stage = new createjs.Stage(canvas_crosshair)
     crosshair_stage.autoClear = true;
 
-    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * tileSize
-    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * tileSize
+    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * TILE_SIZE
+    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * TILE_SIZE
     canvas_main_ctx = canvas_main.getContext('2d')
     canvas_lighting_ctx = canvas_lighting.getContext('2d')
 
     createjs.Ticker.addListener(window);
     createjs.Ticker.setFPS(30);
 
-    lightingEngine = new LightingEngine(canvas_lighting,canvas_main,natural_light)
+    lightingEngine = new LightingEngine(canvas_lighting,canvas_main)
 
     $('#game-container').hide();
 
@@ -94,81 +93,6 @@ function fitScreen() {
     $('#game-container').css('-webkit-transform', 'scale(' + ($(window).height() / 900) + ')').css('transform-origin','center top')
 }
 
-function initGameBindings() {
-    $(canvas_main).bind('mousemove', function(e) {
-        crosshair.sprite.x = e.offsetX - 10;
-        crosshair.sprite.y = e.offsetY - 10;
-
-        if(connected) me.moved()
-    }).bind('click',function(e) {
-        if(connected) me.fire(e);
-    })
-
-    $('body').bind('mousedown', function(e) {
-        e.preventDefault()
-    }).bind('mouseup', function(e) {
-        e.preventDefault()
-        recoil = 0;
-    }).bind('mousewheel', function(e) {
-        e.preventDefault()
-    });
-
-    $(document).unbind("contextmenu").bind("contextmenu",function(e) {
-        if(hijackRightClick) {
-            socket.emit('manual_reload')
-            return false
-        }
-    })
-
-    $(document).bind('keydown', function(e) {
-
-        // enter
-        if(e.keyCode==13) {
-            if($('input:focus').length==0) {
-                $('#chat-input').focus();
-            } else {
-                var msg = $('#chat-input').val()
-                if(connected) socket.emit('say', msg)
-                $('#chat-input').blur().val('')
-            }
-        }
-
-        // backspace/delete
-        if(e.keyCode == 8 && $('input:focus').length==0) {
-            return false
-        }
-
-        // escape
-        if(e.keyCode == 27 && $('input:focus').length==1) {
-            $('#chat-input').blur().val('')
-        }
-
-        // R
-        if(e.keyCode == 82 && $('input:focus').length==0) {
-            if(connected) socket.emit('manual_reload')
-        }
-
-        if($('input:focus').length==0 && ((e.keyCode >= 37 && e.keyCode <= 40) || e.keyCode==32)) return false
-    })
-
-
-    var lastKeyUp = {was:false, at:new Date()};
-    $(document).bind('keyup',function(e) {
-        lastKeyUp = {was:e.keyCode,at:new Date()}
-    }).bind('keydown',function(e) {
-        var now = new Date()
-        if(now.getTime() - lastKeyUp.at.getTime() < 200 && e.keyCode == lastKeyUp.was) {
-            lastKeyUp = {was:false, at:new Date()};
-            if(e.keyCode==87 || e.keyCode==38) me.dash('U')
-            if(e.keyCode==68 || e.keyCode==39) me.dash('R')
-            if(e.keyCode==83 || e.keyCode==40) me.dash('D')
-            if(e.keyCode==65 || e.keyCode==37) me.dash('L')
-        }
-    })
-
-}
-
-
 function checkName(name, callback) {
     if($('#name').val() > '') {
         var name = $('#name').val().substr(0,10);
@@ -178,19 +102,6 @@ function checkName(name, callback) {
     } else {
         $('#name').css({border:'2px solid red'});
     }
-}
-
-
-
-function playerHit(bullet) {
-    for(var i = 0, len = Object.keys(players).length; i < len; i++) {
-        var key = Object.keys(players)[i];
-        if(bullet.owner != key && bullet.removed == false) {
-            var player = players[key];
-            if(player.touching(bullet)) return player;
-        }
-    }
-    return false;
 }
 
 function findPlayer(id) {

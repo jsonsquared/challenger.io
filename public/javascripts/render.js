@@ -10,9 +10,7 @@ function render() {
     crosshair_stage.update();
     lightingEngine.render()
     processRaycasting();
-    // for(var l = 0;l<lightLayers;l++) {
-        lightLayer.draw(canvas_main_ctx)
-    // }
+    lightLayer.draw(canvas_main_ctx)
     crosshairLayer.draw(canvas_main_ctx)
 }
 
@@ -26,11 +24,10 @@ function initLights() {
         angle:0
     });
 
-
-    for(var w = 0; w< walls.length; w++) {
+    for(var w = 0; w< mapData.walls.length; w++) {
         objects[objects.length] = new illuminated.RectangleObject({
-            topleft: new illuminated.Vec2(walls[w].x* tileSize, walls[w].y* tileSize),
-            bottomright: new illuminated.Vec2(walls[w].x*tileSize+tileSize, walls[w].y*tileSize + tileSize)
+            topleft: new illuminated.Vec2(mapData.walls[w].x* TILE_SIZE, mapData.walls[w].y* TILE_SIZE),
+            bottomright: new illuminated.Vec2(mapData.walls[w].x*TILE_SIZE+TILE_SIZE, mapData.walls[w].y*TILE_SIZE + TILE_SIZE)
         });
     }
 
@@ -62,8 +59,8 @@ function processRaycasting () {
 
     if(CLEAR) {
         for(var o = 0; o< touching.length; o++) {
-           canvas_lighting_ctx.clearRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
-           canvas_lighting_ctx.fillRect(touching[o].points[0].x, touching[o].points[0].y, tileSize, tileSize)
+           canvas_lighting_ctx.clearRect(touching[o].points[0].x, touching[o].points[0].y, TILE_SIZE, TILE_SIZE)
+           canvas_lighting_ctx.fillRect(touching[o].points[0].x, touching[o].points[0].y, TILE_SIZE, TILE_SIZE)
        }
     }
     canvas_lighting_ctx.globalAlpha = .9

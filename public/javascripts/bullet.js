@@ -33,6 +33,18 @@ function Bullet(options) {
     stage.addChildAt(this.sprite,2)
     this.removed = false;
 
+
+    var playerHit = function(bullet) {
+        for(var i = 0, len = Object.keys(players).length; i < len; i++) {
+            var key = Object.keys(players)[i];
+            if(bullet.owner != key && bullet.removed == false) {
+                var player = players[key];
+                if(player.touching(bullet)) return player;
+            }
+        }
+        return false;
+    }
+
     if(use_sounds) {
         // this.sound = new Audio("/assets/sounds/single.mp3");
         // this.sound.volume =( Math.random()/2 + .5);
@@ -41,6 +53,11 @@ function Bullet(options) {
 
     $(document).bind('tick', function() {
         if(!self.removed) {
+
+
+
+
+
             self.delta = self.speed / self.length
             var x = self.delta * self.trajectoryX
             var y = self.delta * self.trajectoryY
@@ -57,7 +74,7 @@ function Bullet(options) {
                 self.sprite.y += y
             }
 
-            if(self.sprite.x < tileSize || self.sprite.y < tileSize || self.sprite.x > canvas_main.width - tileSize || self.sprite.y > canvas_main.height - tileSize) {
+            if(self.sprite.x < TILE_SIZE || self.sprite.y < TILE_SIZE || self.sprite.x > canvas_main.width - TILE_SIZE || self.sprite.y > canvas_main.height - TILE_SIZE) {
                 self.remove();
             }
 

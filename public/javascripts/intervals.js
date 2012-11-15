@@ -9,10 +9,10 @@ function initIntervals() {
     intervals.move.interval = setInterval(function() {
         var move = {};
         if($('input:focus').length==0) {
-            if(INPUT_U()) { move.y = me.y - moveDistance }
-            if(INPUT_L()) { move.x = me.x - moveDistance }
-            if(INPUT_D()) { move.y = me.y + moveDistance }
-            if(INPUT_R()) { move.x = me.x + moveDistance }
+            if(INPUT_U()) { move.y = me.y - MOVE_DISTANCE }
+            if(INPUT_L()) { move.x = me.x - MOVE_DISTANCE }
+            if(INPUT_D()) { move.y = me.y + MOVE_DISTANCE }
+            if(INPUT_R()) { move.x = me.x + MOVE_DISTANCE }
             if(move.x || move.y) me.move(move)
 
         }
@@ -22,7 +22,7 @@ function initIntervals() {
 
         if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
-            recoil+=2
+            me.recoil+=2
         }
     },intervals.fire.rate)
 }
