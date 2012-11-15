@@ -169,7 +169,7 @@ function Player(options) {
         if(this.reloading) return false;
 
         var gun = range(0,1);
-        var recoilFactor = gun == 0 ? -4: 4
+        var recoilFactor = gun == 0 ? -1: 1
         recoilFactor = recoilFactor < 0 ? recoilFactor - recoil : recoilFactor + recoil
 
         var b = new Bullet({
