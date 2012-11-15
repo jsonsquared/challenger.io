@@ -33,6 +33,11 @@ var assets = {
 
 var canvas,ctx,raycaster={},desc,rect,objects,darkmask,startAt,lastd
 
+INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
+INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
+INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
+INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
+
 $(function() {
 
     sounds= {
@@ -137,7 +142,6 @@ function initGameBindings() {
             $('#chat-input').blur().val('')
         }
 
-
         // R
         if(e.keyCode == 82 && $('input:focus').length==0) {
             if(connected) socket.emit('manual_reload')
@@ -145,7 +149,62 @@ function initGameBindings() {
 
         if($('input:focus').length==0 && ((e.keyCode >= 37 && e.keyCode <= 40) || e.keyCode==32)) return false
     })
+
+
+var lastKeyUp = {was:false, at:new Date()};
+$(document).bind('keyup',function(e) {
+    lastKeyUp = {was:e.keyCode,at:new Date()}
+}).bind('keydown',function(e) {
+    var now = new Date()
+    if(now.getTime() - lastKeyUp.at.getTime() < 200 && e.keyCode == lastKeyUp.was) {
+        lastKeyUp = {was:false, at:new Date()};
+        if(e.keyCode==87 || e.keyCode==38) me.dash('U')        
+        if(e.keyCode==68 || e.keyCode==39) me.dash('R')
+        if(e.keyCode==83 || e.keyCode==40) me.dash('D')
+        if(e.keyCode==65 || e.keyCode==37) me.dash('L')
+    }
+})
+
+    $(document).bind('keyup', function(e) {
+        // doubletap checks
+
+
+// INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
+// INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
+// INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
+// INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
+
+        //if(e.keyCode==38) { tapped('U') }
+        //if(INPUT_D()) { tapped('D') }
+        //if(INPUT_L()) { tapped('L') }
+        //if(INPUT_R()) { tapped('R') }                
+    })
 }
+
+
+
+// var lastTap = {was:false, at:new Date()}
+// var dashDelay = 3000
+// // var canDash = true;
+// function tapped(dir) {
+//     // if(!canDash) return false
+//     var at = new Date();
+//     console.log(at.getTime() - lastTap.at.getTime())
+//     if(at.getTime() - lastTap.at.getTime() < 200 && lastTap.was == dir) {
+//         me.dash(dir)
+//         // canDash = false        
+//         // setTimeout(function() {
+//         //     canDash = true
+//         // },dashDelay)
+//         console.log('double tapped', dir)
+//         // lastTap.at = at;
+//         lastTap.was = ''
+
+//     } else {
+//         lastTap.at = at;
+//         lastTap.was = dir
+//     }
+// }
 
 function checkName() {
     if($('#name').val() > '') {
@@ -224,10 +283,10 @@ function join(instance) {
     setInterval(function() {
         var move = {};
         if($('input:focus').length==0) {
-            if(input.keyboard[87] || input.keyboard[38]) { move.y = me.y - moveDistance }
-            if(input.keyboard[65] || input.keyboard[37]) { move.x = me.x - moveDistance }
-            if(input.keyboard[83] || input.keyboard[40]) { move.y = me.y + moveDistance }
-            if(input.keyboard[68] || input.keyboard[39]) { move.x = me.x + moveDistance }
+            if(INPUT_U()) { move.y = me.y - moveDistance }
+            if(INPUT_L()) { move.x = me.x - moveDistance }
+            if(INPUT_D()) { move.y = me.y + moveDistance }
+            if(INPUT_R()) { move.x = me.x + moveDistance }
             if(move.x || move.y) me.move(move)
 
         }

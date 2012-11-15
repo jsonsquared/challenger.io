@@ -15,6 +15,7 @@ function Player(options) {
     this.deaths = options.deaths || 0;
     this.clip = options.clip;
     this.reloading = false;
+    this.dashing = false;
 
     // easel object
     this.container = new createjs.Container();
@@ -143,25 +144,81 @@ function Player(options) {
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
+    }
+
+    this.dash = function(dir) {
+        console.log(dir)
+        var move = final = latest = {x:this.x,y:this.y}
+        
+        for(var t = 0; t < 10; t++) {    
+            if(dir == 'U') {move.y = me.y-moveDistance}
+            if(dir == 'D') {move.y = me.y+moveDistance}
+            if(dir == 'L') {move.x = me.x-moveDistance}
+            if(dir == 'R') {move.x = me.x+moveDistance}
+            var latest = latest || this.move(move, true)        
+        }
+        move = final = {x:this.x,y:this.y}
+        console.log(latest)
+
+        if(dir == 'U') {move.y = latest.y-moveDistance*10}
+        if(dir == 'D') {move.y = latest.y+moveDistance*10}
+        if(dir == 'L') {move.x = latest.x-moveDistance*10}
+        if(dir == 'R') {move.x = latest.x+moveDistance*10}  
+        if(!blocked(move.x, move.y) && !halfBlocked(move.x, move.y)) {
+            final.x = move.x
+            final.y = move.y;
+        } else if(move.x && !blocked(move.x, this.y) && !halfBlocked(move.x, this.y)) {
+            final.x = move.x
+        } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
+            final.y = move.y;        
+        } 
+
+        createjs.Tween.removeTweens(this)
+        console.log(final)
+        createjs.Tween.get(this).to(final,500,createjs.Ease.elasticOut).call(function() {
+            self.x = final.x;
+            self.y = final.y;
+            me.dashing = false;
+            self.moved()
+        });  
+
 
     }
 
-    this.move = function(move) {
-        var final = {
-            x:move.x || this.x,
-            y:move.y || this.y
-        };
-        if(!blocked(final.x, final.y) && !halfBlocked(final.x, final.y)) {
-            this.x = final.x
-            this.y = final.y;
-            this.moved();
+    this.move = function(move, justCheck) {
+        if(me.dashing) return false
+        var move = {x:move.x || this.x, y:move.y||this.y}
+        var final = {}
+            
+        if(!blocked(move.x, move.y) && !halfBlocked(move.x, move.y)) {
+            final.x = move.x
+            final.y = move.y;
+            
         } else if(move.x && !blocked(move.x, this.y) && !halfBlocked(move.x, this.y)) {
-            this.x = move.x
-            this.moved();
+            final.x = move.x
+            final.y = this.y
+            
         } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
-            this.y = move.y;
-            this.moved();
+            final.y = move.y;
+            final.x = this.x            
         }
+
+        console.log(arguments.length)
+        if(arguments.length==1) {
+            self.x = final.x;
+            self.y = final.y;
+            self.moved()
+        } else {
+            return final == move ? false : final
+        }
+
+        // createjs.Tween.removeTweens(this)
+        // createjs.Tween.get(this).to(final,60,createjs.Ease.sineOut).call(function() {
+        //     self.x = final.x;
+        //     self.y = final.y;
+        //     self.moved()
+        //     if(typeof callback == 'function') callback()
+        // });  
     }
 
     this.fire = function(e) {
