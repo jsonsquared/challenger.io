@@ -280,7 +280,7 @@ function initLights() {
 
     raycaster = new illuminated.Lamp({
         position: new illuminated.Vec2(100, 250),
-        distance: 250,
+        distance: 400,
         radius: 0,
         samples: 1,
         angle:0
