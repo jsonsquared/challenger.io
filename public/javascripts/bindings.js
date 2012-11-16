@@ -49,6 +49,7 @@ function initGameBindings() {
 
         // R
         if(e.keyCode == 82 && $('input:focus').length==0) {
+            if(me.clip >= me.clipMax) return
             if(connected) socket.emit('manual_reload')
         }
 

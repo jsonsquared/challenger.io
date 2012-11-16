@@ -16,7 +16,7 @@ function Player(options) {
     this.payload = {}
     this.killCount = options.killCount || 0;
     this.deaths = options.deaths || 0;
-    this.clip = options.clip;
+    this.clip = this.clipMax = options.clip;
     this.reloading = false;
     this.recoil = 0;
 
