@@ -37,7 +37,6 @@ function initPacketHandler(name) {
     });
 
 
-
     socket.on('fired', function(data) {
         if(me.id != data.owner) {
             new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
@@ -49,7 +48,10 @@ function initPacketHandler(name) {
 
     socket.on('damage', function(data) {
         if(data.id == me.id) me.updateHealth(data.health)
-        if(data.hitBy == me.id) players[data.id].floatText('-' + data.lastHit)
+        if(data.hitBy == me.id) {
+            players[data.id].floatText('-' + data.lastHit)
+            crosshair.hit()
+        }
         updateLeaderboardHP(data);
     });
 
