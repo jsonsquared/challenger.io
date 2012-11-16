@@ -2,6 +2,7 @@ var TILE_SIZE = 16;
 var MOVE_DISTANCE = 3;
 var SLIDE_FACTOR = 24;
 var STAMINA_TO_DASH = 40;
+var NAME_LENGTH = 16;
 var socket;
 var connected = false;
 var stage_under, stage_over;
@@ -90,6 +91,7 @@ $(function() {
         initGameBindings();
         initSpriteSheets();
         crosshair = new Crosshair();
+        $('#name').attr('maxlength', NAME_LENGTH)
     });
 
 });
@@ -104,7 +106,7 @@ function fitScreen() {
 
 function checkName(name, callback) {
     if($('#name').val() > '') {
-        var name = $('#name').val().substr(0,10);
+        var name = $('#name').val().substr(0,NAME_LENGTH);
         callback(name)
         $('#enter-container').remove();
         $('#game-container').show();
