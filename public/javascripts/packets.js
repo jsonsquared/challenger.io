@@ -31,6 +31,13 @@ function initPacketHandler(name) {
         if(data.id!=me.id) players[data.id].updatePosition(data.x, data.y, data.rotation)
     });
 
+    socket.on('dashed', function(data) {
+        if(!players[data.player.id]) return false;
+        if(data.player.id!=me.id) players[data.player.id].dash('', {x:data.best.x, y:data.best.y})
+    });
+
+
+
     socket.on('fired', function(data) {
         if(me.id != data.owner) {
             new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})

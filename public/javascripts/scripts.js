@@ -1,6 +1,7 @@
 var TILE_SIZE = 16;
 var MOVE_DISTANCE = 3;
-
+var SLIDE_FACTOR = 24;
+var STAMINA_TO_DASH = 40;
 var socket;
 var connected = false;
 var stage_under, stage_over;
@@ -139,6 +140,8 @@ function join(instance) {
 
 window.tick = function() {
     $(document).trigger('tick')
+
+    if(me) me.stamina = me.stamina < 100 ? me.stamina+1 : 100
 
     if(players && connected) {
         for(var p in players) {

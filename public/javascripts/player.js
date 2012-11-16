@@ -1,6 +1,9 @@
 function Player(options) {
 
     var self = this;
+    this.dashing = false;
+    this.stamina = 100;
+
     this.id = options.id || 0;
     this.name = options.name || 'Unnamed Player';
     this.x = options.x || 100;
@@ -15,7 +18,6 @@ function Player(options) {
     this.deaths = options.deaths || 0;
     this.clip = options.clip;
     this.reloading = false;
-    this.dashing = false;
     this.recoil = 0;
 
     // easel object
@@ -105,7 +107,7 @@ function Player(options) {
         this.container.removeChild(this.nameLabel)
         this.light = {}
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:5}))
-
+        raycaster.position = new illuminated.Vec2(this.x,this.y);
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
@@ -119,7 +121,6 @@ function Player(options) {
         this.playerContainer.rotation = this.rotation
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
-        if (this==me) raycaster.position = new illuminated.Vec2(this.container.x+1,this.container.y+1);
     }
 
     this.updateHealth = function(health) {
@@ -144,81 +145,76 @@ function Player(options) {
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
+
+        if (this==me) {
+            if(INPUT_L() || INPUT_R()) raycaster.position.x = INPUT_L() ? this.x+1 : this.x-1
+            if(INPUT_U() || INPUT_D()) raycaster.position.y = INPUT_U() ? this.y+1 : this.y-1
+        }
     }
 
-    this.dash = function(dir) {
-        console.log(dir)
-        var move = final = latest = {x:this.x,y:this.y}
 
-        for(var t = 0; t < 20; t++) {
-            if(dir == 'U') {move.y = me.y-MOVE_DISTANCE}
-            if(dir == 'D') {move.y = me.y+MOVE_DISTANCE}
-            if(dir == 'L') {move.x = me.x-MOVE_DISTANCE}
-            if(dir == 'R') {move.x = me.x+MOVE_DISTANCE}
-            var latest = latest || this.move(move, true)
+    this.dash = function(dir, best) {
+
+        if(this == me && this.stamina < STAMINA_TO_DASH || this.dashing) return
+        this.dashing = true
+        this.stamina -= STAMINA_TO_DASH
+
+        if(typeof best == 'undefined') {
+            var best = {x:this.x, y:this.y}
+            if(dir == 'U') {
+                for(var d=this.y; d > this.y - MOVE_DISTANCE*SLIDE_FACTOR; d-=MOVE_DISTANCE) {
+                    var x = this.x; var y = d;
+                    if(!blocked(x, y) && !halfBlocked(x, y)) { best.y = d } else { break }
+                }
+            }
+            if(dir == 'D') {
+                for(var d=this.y; d < this.y + MOVE_DISTANCE*SLIDE_FACTOR; d+=MOVE_DISTANCE) {
+                    var x = this.x; var y = d;
+                    if(!blocked(x, y) && !halfBlocked(x, y)) { best.y = d } else { break }
+                }
+            }
+            if(dir == 'L') {
+                for(var d=this.x; d > this.x - MOVE_DISTANCE*SLIDE_FACTOR; d-=MOVE_DISTANCE) {
+                    var y = this.y; var x = d;
+                    if(!blocked(x, y) && !halfBlocked(x, y)) { best.x = d } else { break }
+                }
+            }
+            if(dir == 'R') {
+                for(var d=this.x; d < this.x + MOVE_DISTANCE*SLIDE_FACTOR; d+=MOVE_DISTANCE) {
+                    var y = this.y; var x = d;
+                    if(!blocked(x, y) && !halfBlocked(x, y)) { best.x = d } else { break }
+                }
+            }
+            socket.emit('dash', best)
         }
-        move = final = {x:this.x,y:this.y}
-        console.log(latest)
 
-        if(dir == 'U') {move.y = latest.y-MOVE_DISTANCE*20}
-        if(dir == 'D') {move.y = latest.y+MOVE_DISTANCE*20}
-        if(dir == 'L') {move.x = latest.x-MOVE_DISTANCE*20}
-        if(dir == 'R') {move.x = latest.x+MOVE_DISTANCE*20}
-        if(!blocked(move.x, move.y) && !halfBlocked(move.x, move.y)) {
-            final.x = move.x
-            final.y = move.y;
-        } else if(move.x && !blocked(move.x, this.y) && !halfBlocked(move.x, this.y)) {
-            final.x = move.x
-        } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
-            final.y = move.y;
-        }
-
-        createjs.Tween.removeTweens(this)
-        console.log(final)
-        createjs.Tween.get(this).to(final,500,createjs.Ease.sineOut).call(function() {
-            self.x = final.x;
-            self.y = final.y;
-            me.dashing = false;
-            clearInterval(this.dashFiring)
+        createjs.Tween.get(this).to(best,500,createjs.Ease.sineOut).call(function() {
+            self.x = best.x;
+            self.y = best.y;
+            self.dashing = false;
             self.moved()
         });
 
-
     }
 
-    this.move = function(move, justCheck) {
-        if(me.dashing) return false
-        var move = {x:move.x || this.x, y:move.y||this.y}
-        var final = {}
+    this.move = function(move) {
+        var was = {x:this.x, y:this.y}
+        var final = {
+             x:move.x || this.x,
+             y:move.y || this.y
+         };
+         if(!blocked(final.x, final.y,2) && !halfBlocked(final.x, final.y,2)) {
+             this.x = final.x
+             this.y = final.y;
+             this.moved();
+         } else if(move.x && !blocked(move.x, this.y,2) && !halfBlocked(move.x, this.y,2)) {
+             this.x = move.x
+             this.moved();
+         } else if(move.y && !blocked(this.x, move.y,2) && !halfBlocked(this.x, move.y,2)) {
+             this.y = move.y;
+             this.moved();
+         }
 
-        if(!blocked(move.x, move.y) && !halfBlocked(move.x, move.y)) {
-            final.x = move.x
-            final.y = move.y;
-
-        } else if(move.x && !blocked(move.x, this.y) && !halfBlocked(move.x, this.y)) {
-            final.x = move.x
-            final.y = this.y
-
-        } else if(move.y && !blocked(this.x, move.y) && !halfBlocked(this.x, move.y)) {
-            final.y = move.y;
-            final.x = this.x
-        }
-
-        if(arguments.length==1) {
-            self.x = final.x;
-            self.y = final.y;
-            self.moved()
-        } else {
-            return final == move ? false : final
-        }
-
-        // createjs.Tween.removeTweens(this)
-        // createjs.Tween.get(this).to(final,60,createjs.Ease.sineOut).call(function() {
-        //     self.x = final.x;
-        //     self.y = final.y;
-        //     self.moved()
-        //     if(typeof callback == 'function') callback()
-        // });
     }
 
     this.fire = function(e) {
@@ -231,7 +227,7 @@ function Player(options) {
         recoilFactor = this.dashing ? 0 : recoilFactor
 
         var b = new Bullet({
-            speed:this.dashing ? 100 : undefined,
+            // speed:this.dashing ? 100 : undefined,
             x:gun==1 ? me.x -8 : me.x+8,
             y:gun==1 ? me.y -8 : me.y+8,
             endX: e.offsetX + range(recoilFactor*-1, recoilFactor),

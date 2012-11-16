@@ -77,6 +77,13 @@ var Instance = function(id) {
                 self.iio.volatile.emit('moved', player)
             });
 
+            socket.on('dash', function(best) {
+                var player = self.players[socket.id]
+                player.dash(best)
+
+                self.iio.emit('dashed', {player:player, best:best})
+            })
+
             socket.on('fire', function(data) {
                 var shooter = self.players[data.owner];
                 data.ownerClip = shooter.clip;

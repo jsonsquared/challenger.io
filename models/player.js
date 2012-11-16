@@ -31,6 +31,11 @@ var Player = function(id, name) {
         this.rotation = data.rotation || this.rotation;
     }
 
+    this.dash = function(data) {
+        this.x = data.x || this.x;
+        this.y = data.y || this.y;
+    }
+
     this.takeDamage = function(killer) {
         var damage = Math.floor(Math.random() * (MAX_DAMAGE - MIN_DAMAGE + 1)) + MIN_DAMAGE;
         this.hitBy = killer;
