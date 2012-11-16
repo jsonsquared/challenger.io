@@ -25,9 +25,6 @@ function Player(options) {
     this.playerContainer = new createjs.Container();
     this.dualWield = true;
 
-    // this.img = new Image();
-    // this.img.src = '/assets/images/fed.png'
-    // this.img.onload = function() {
     self.spriteSheet = new createjs.SpriteSheet({
         images: [assets.fed.img],
         frames: {width:32, height:32, regX:16, regY:16},
