@@ -33,6 +33,7 @@ var settings = {
 var spriteSheets = {};
 var assets = {
     'map'   :  '/assets/images/map.jpg',
+    'bloodborder'   :  '/assets/images/bloodborder.png',
     'fed'   :  '/assets/images/fed.png',
     'bullet':  '/assets/images/bullet.png',
     'ricochet':  '/assets/images/ricochet.png',
@@ -90,6 +91,7 @@ $(function() {
         initLights();
         initGameBindings();
         initSpriteSheets();
+        bloodeffect = new BloodEffect();
         crosshair = new Crosshair();
         $('#name').attr('maxlength', NAME_LENGTH)
     });
