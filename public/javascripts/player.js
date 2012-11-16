@@ -139,14 +139,16 @@ function Player(options) {
         $('#deaths span').html(this.deaths);
     }
 
-    this.moved = function() {
+    this.moved = function(skipRaycaster) {
         var deltaX = crosshair.sprite.x - me.container.x
         var deltaY = crosshair.sprite.y - me.container.y
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
+        //raycaster.position = new illuminated.Vec2(this.x,this.y);
 
-        if (this==me) {
+        //
+        if (this==me && arguments.length==0) {
             if(INPUT_L() || INPUT_R()) raycaster.position.x = INPUT_L() ? this.x+1 : this.x-1
             if(INPUT_U() || INPUT_D()) raycaster.position.y = INPUT_U() ? this.y+1 : this.y-1
         }
@@ -192,8 +194,10 @@ function Player(options) {
             self.x = best.x;
             self.y = best.y;
             self.dashing = false;
-            self.moved()
+            self.moved(true)
         });
+
+        createjs.Tween.get(raycaster.position).to(best,500,createjs.Ease.sineOut)
 
     }
 
