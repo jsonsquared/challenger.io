@@ -145,7 +145,7 @@ var Instance = function(id) {
 
                                 if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
-                            }, RESPAWN_TIME)
+                            }, game.respawn_time)
                         }
 
                         killer.killCount++;
