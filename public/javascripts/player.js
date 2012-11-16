@@ -105,10 +105,10 @@ function Player(options) {
         stage_over.addChild(this.container)
         stage_under.removeChild(this.container)
         this.light = {}
-        this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:5}))
+        // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:40, flicker:0, strength:.1}))
         raycaster.position = new illuminated.Vec2(this.x,this.y);
         this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
-        this.ammoMeter = new ProgressBar({width:200, color:'#090', value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
+        this.ammoMeter = new ProgressBar({width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
 
     stage_under.addChildAt(this.container,1)
@@ -295,11 +295,21 @@ function Player(options) {
 
         try { self.reloadBar.remove();} catch(err) { }
 
-        this.reloadBar = new ProgressBar({value:0,text:'Reloading', parentElement:'#game'});
-        this.reloadBar.element.css({left:430, top:600, width:150})
+        this.reloadBar = new ProgressBar({value:0,text:'', parentElement:'#game', color:'red'});
+        this.reloadBar.element.css({width:40, height:5,opacity:.5})
         foo = this.reloadBar.element
-        this.reloadBar.element.find('.pbmeter').animate({width:'100%'}, 1500, function() {
-            self.reloadBar.remove();
+        this.reloadBar.element.find('.pbmeter').animate({width:'100%'}, {
+            duration:900,
+            easing:'linear',
+            complete:function() {
+                self.reloadBar.remove();
+            },
+            step:function() {
+                self.reloadBar.element.css({
+                    left:crosshair.sprite.x,
+                    top:crosshair.sprite.y + 70
+                })
+            }
         })
 
         this.reloading = true;

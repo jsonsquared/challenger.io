@@ -4,12 +4,13 @@ var lightLayer;         // easeljs stage for lights. shared between initLights, 
 var darkmask;           // illumination.js canvas. shared between initLights, processRaycasting
 var raycaster = {}      // illumination.js lightsource, position is updated through
 var lightLayers = 0;
+var light1 = false;
 function render() {
     if(!connected || !me) return
     stage_under.update();
     stage_over.update();
-    lightingEngine.render()
     processRaycasting();
+    lightingEngine.render()
     lightLayer.draw(canvas_main_ctx)
     crosshairLayer.draw(canvas_main_ctx)
 }
@@ -18,7 +19,7 @@ function initLights() {
     var objects = []
     raycaster = new illuminated.Lamp({
         position: new illuminated.Vec2(100, 250),
-        distance: 400,
+        distance: 350,
         radius: 0,
         samples: 1,
         angle:0
@@ -49,7 +50,7 @@ function processRaycasting () {
     darkmask.compute(canvas_lighting.width, canvas_lighting.height);
 
     canvas_lighting_ctx.globalCompositeOperation = "source-out";
-    canvas_lighting_ctx.fillStyle = "rgba(0,0,0,.5)";
+    canvas_lighting_ctx.fillStyle = "rgba(0,0,0,1)";
     canvas_lighting_ctx.fillRect(0, 0, canvas_lighting.width, canvas_lighting.height);
 
     canvas_lighting_ctx.globalCompositeOperation = "destination-out";
@@ -63,7 +64,7 @@ function processRaycasting () {
            canvas_lighting_ctx.fillRect(touching[o].points[0].x, touching[o].points[0].y, TILE_SIZE, TILE_SIZE)
        }
     }
-    canvas_lighting_ctx.globalAlpha = .9
+
     canvas_lighting_ctx.globalCompositeOperation = "destination-over";
     darkmask.render(canvas_lighting_ctx);
 }

@@ -5,13 +5,11 @@ function LightingEngine(lightingCanvas, outputCanvas) {
     this.lights = [];
 
     this.render = function() {
+        canvas_lighting_ctx.fillRect(0, 0, canvas_lighting.width, canvas_lighting.height);
 
         for(var l in this.lights) {
             this.lights[l].render();
         }
-
-        this.outputCtx.globalCompositeOperation = 'source-over';
-        this.outputCtx.drawImage(lightingCanvas, 0, 0)
 
     }
 

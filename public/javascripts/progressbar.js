@@ -15,11 +15,11 @@ ProgressBar = function(options) {
 
     this.element = $(markup).appendTo(options.parentElement || '#meters')
     this.element.css({width:options.width})//, top:options.top || 0, left:options.left || 0})
-    this.element.find('.pbmeter').css({width: options.value + '%'})//, background:options.color || '#C00'})
+    this.element.find('.pbmeter').css({width: options.value + '%', background:options.color ? options.color:''})//, background:options.color || '#C00'})
     this.element.find('.pblabel').text(options.text)
 
     this.remove = function() {
-        this.element.fadeOut(500,function() {
+        this.element.fadeOut(100,function() {
             $(this).remove();
             delete self
         })
