@@ -32,6 +32,7 @@ var settings = {
 var spriteSheets = {};
 var assets = {
     'map'   :  '/assets/images/map.jpg',
+    'fed'   :  '/assets/images/fed.png',
     'bullet':  '/assets/images/bullet.png',
     'crosshair': '/assets/images/crosshair.png',
     'muzzle': '/assets/images/muzzle.png'

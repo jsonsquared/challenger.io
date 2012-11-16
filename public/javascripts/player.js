@@ -25,26 +25,25 @@ function Player(options) {
     this.playerContainer = new createjs.Container();
     this.dualWield = true;
 
-    this.img = new Image();
-    this.img.src = '/assets/images/fed.png'
-    this.img.onload = function() {
-        var img = this
-        self.spriteSheet = new createjs.SpriteSheet({
-            images: [img],
-            frames: {width:32, height:32, regX:16, regY:16},
-            animations: {
-                alive:{frames:[0], frequency:5}
-                // dying:{frames:[2,3,4,5,6,7,8,9,10,11,12,13,14], frequency:5},
-            }
-        });
+    // this.img = new Image();
+    // this.img.src = '/assets/images/fed.png'
+    // this.img.onload = function() {
+    self.spriteSheet = new createjs.SpriteSheet({
+        images: [assets.fed.img],
+        frames: {width:32, height:32, regX:16, regY:16},
+        animations: {
+            alive:{frames:[0], frequency:5}
+            // dying:{frames:[2,3,4,5,6,7,8,9,10,11,12,13,14], frequency:5},
+        }
+    });
 
-        self.bitmap = new createjs.BitmapAnimation(self.spriteSheet);
-        self.bitmap.rotation = 270
-        self.bitmap.scaleX = self.bitmap.scaleY = .75
-        self.bitmap.gotoAndPlay('alive')
+    self.bitmap = new createjs.BitmapAnimation(self.spriteSheet);
+    self.bitmap.rotation = 270
+    self.bitmap.scaleX = self.bitmap.scaleY = .75
+    self.bitmap.gotoAndPlay('alive')
 
-        self.playerContainer.addChild(self.bitmap)
-    }
+    self.playerContainer.addChild(self.bitmap)
+
 
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
 
@@ -105,6 +104,8 @@ function Player(options) {
         this.me = true;
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
+        stage_over.addChild(this.container)
+        stage_under.removeChild(this.container)
         this.light = {}
         this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:100, flicker:5}))
         raycaster.position = new illuminated.Vec2(this.x,this.y);

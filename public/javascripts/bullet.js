@@ -31,7 +31,7 @@ function Bullet(options) {
     this.sprite.x = options.x;
     this.sprite.y = options.y;
 
-    stage_under.addChildAt(this.sprite,2)
+    stage_under.addChildAt(this.sprite,1)
     this.removed = false;
 
 
