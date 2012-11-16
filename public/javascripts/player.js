@@ -197,7 +197,7 @@ function Player(options) {
             self.moved(true)
         });
 
-        createjs.Tween.get(raycaster.position).to(best,500,createjs.Ease.sineOut)
+        if(this==me) createjs.Tween.get(raycaster.position).to(best,500,createjs.Ease.sineOut)
 
     }
 
