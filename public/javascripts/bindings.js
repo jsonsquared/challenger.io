@@ -4,8 +4,12 @@ function initGameBindings() {
         crosshair.sprite.y = e.offsetY - 10;
 
         if(connected) me.moved()
-    }).bind('click',function(e) {
+    }).bind('mousedown',function(e) {
         if(connected) me.fire(e);
+        me.singleClickFiring=true
+        setTimeout(function() {
+            me.singleClickFiring = false
+        },intervals.fire.rate)
     })
 
     $('body').bind('mousedown', function(e) {

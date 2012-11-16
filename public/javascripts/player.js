@@ -19,6 +19,7 @@ function Player(options) {
     this.clip = this.clipMax = options.clip;
     this.reloading = false;
     this.recoil = 0;
+    this.singleClickFiring = false;
 
     // easel object
     this.container = new createjs.Container();

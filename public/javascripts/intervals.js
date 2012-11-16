@@ -19,7 +19,7 @@ function initIntervals() {
     },intervals.move.rate)
 
     intervals.fire.interval = setInterval(function() {
-
+        if(me.singleClickFiring) {console.log('no'); return }
         if(input.mouse[0] || (input.keyboard[32] && $('input:focus').length==0)) {
             me.fire({offsetX:crosshair.sprite.x, offsetY: crosshair.sprite.y})
             me.recoil+=2
