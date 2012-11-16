@@ -2,28 +2,33 @@ var MIN_DAMAGE = 8;
 var MAX_DAMAGE = 14;
 
 var Player = function(id, name) {
+    var self = this;
     this.TOTAL_HEALTH = 100;
     this.CLIP_SIZE = 32;
 
-    this.id = id;
-    this.name = name;
-    this.team = 0;
-    this.x = 0;
-    this.y = 0;
-    this.rotation = 0;
+    this.reset = function(id, name) {
+        console.log('reseting',id)
+        self.id = id;
+        self.name = name;
+        self.team = 0;
+        self.x = 0;
+        self.y = 0;
+        self.rotation = 0;
 
-    this.lastUpdate = 0;
-    this.lastHit = 0;
-    this.hitBy;
-    this.killCount = 0;
-    this.killSpree = 0;
-    this.deaths = 0;
+        self.lastUpdate = 0;
+        self.lastHit = 0;
+        self.hitBy;
+        self.killCount = 0;
+        self.killSpree = 0;
+        self.deaths = 0;
 
-    this.dead = false;
-    this.health = this.TOTAL_HEALTH;
-    this.respawning = false;
+        self.dead = false;
+        self.health = this.TOTAL_HEALTH;
+        self.respawning = false;
 
-    this.clip = this.CLIP_SIZE;
+        self.clip = this.CLIP_SIZE;
+    }
+    this.reset(id, name)
 
     this.move = function(data) {
         this.x = data.x || this.x;

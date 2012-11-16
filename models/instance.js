@@ -1,12 +1,13 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
-var KILL_TOTAL = 2000;
+var KILL_TOTAL = 1;
 var config = require('../config/application')
 var Player = require('./player');
 var map = require('../lib/mapUtils').parse()
 
 var Instance = function(id) {
+    var self = this;
     this.id = id;
     this.players = {};
     this.iio;
@@ -35,7 +36,12 @@ var Instance = function(id) {
     }
 
     this.data = function() {
-        return {id: this.id, players: this.players, score: this.kills, state: this.state}
+        return {
+            id: this.id,
+            players: this.players,
+            score: this.kills,
+            state: this.state
+        }
     }
 
     this.randomSpawn = function() {
@@ -53,8 +59,17 @@ var Instance = function(id) {
         return this.kills == KILL_TOTAL;
     }
 
+    this.newGame = function() {
+        self.kills = 0;
+        for(var p = 0, plen = Object.keys(this.players).length; p < plen; p++) {
+            var player = this.players[Object.keys(this.players)[p]];
+            player.reset(player.id, player.name);
+            player.setPosition(self.randomSpawn())
+            player.respawn();
+        }
+    }
+
     this.attachPacketHandlers = function(io) {
-        var self = this;
 
         this.iio = io.of('/instance/' + this.id);
         this.iio.on('connection', function (socket) {
@@ -127,17 +142,6 @@ var Instance = function(id) {
                         self.iio.emit('damage', player)
                     } else {
                         self.iio.emit('died', player)
-                        if(!player.respawning) {
-                            player.respawning = true;
-                            setTimeout(function() {
-
-                                player.setPosition(self.randomSpawn())
-                                player.respawn();
-
-                                if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
-                                player.respawning = false;
-                            }, RESPAWN_TIME)
-                        }
 
                         killer.killCount++;
                         killer.killSpree++;
@@ -151,14 +155,27 @@ var Instance = function(id) {
                         self.kills++;
                         self.iio.emit('score', self.data())
 
-                        // if(self.gameover()) {
-                        //     self.iio.emit('gameover')
-                        //     self.state = 'stopped';
-                        //     setTimeout(function() {
-                        //         self.state = 'running';
-                        //         self.iio.emit('new_game', self.data())
-                        //     }, WAIT_TIME)
-                        // }
+                        if(self.gameover()) {
+                            self.iio.emit('gameover')
+                            self.state = 'stopped';
+                            setTimeout(function() {
+                                self.state = 'running';
+                                self.newGame();
+                                self.iio.emit('new_game', self.data())
+                            }, WAIT_TIME)
+                        } else {
+                            if(!player.respawning) {
+                                player.respawning = true;
+                                setTimeout(function() {
+
+                                    player.setPosition(self.randomSpawn())
+                                    player.respawn();
+
+                                    if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
+                                    player.respawning = false;
+                                }, RESPAWN_TIME)
+                            }
+                        }
                     }
                 }
             })

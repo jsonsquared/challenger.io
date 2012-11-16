@@ -89,9 +89,8 @@ $(function() {
         fitScreen();
         initMap()
         initLights();
-        initGameBindings();
         initSpriteSheets();
-        bloodeffect = new BloodEffect();
+        bloodEffect = new BloodEffect();
         crosshair = new Crosshair();
         $('#name').attr('maxlength', NAME_LENGTH)
     });
@@ -100,6 +99,7 @@ $(function() {
 
 function connect(name) {
     initPacketHandler(name);
+    initGameBindings();
 }
 
 function fitScreen() {
@@ -117,31 +117,38 @@ function checkName(name, callback) {
     }
 }
 
-function findPlayer(id) {
-    for(var i = 0, len = players.length; i < len; i++) {
-        if(players[i].id == id) return i;
-    }
-    return -1;
-}
+
 function range(from,to) {
    return Math.floor(Math.random() * (to - from + 1) + from);
 }
 
 function join(instance) {
+    startGame(instance)
+    initIntervals();
+}
+function startGame(instance) {
+    // if players is not empty, we must be restarting
+    if(Object.keys(players).length!==0) {
+        for(var p in players) {
+            players[p].remove();
+        }
+        players = {};
+        $('#meter-ammo, #meter-hp').remove();
+    }
 
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
     }
 
+    updateLeaderboard()
+    bloodEffect.update(0)
     for(var p in players) {
         if(players[p].id == socket.socket.sessionid) {
             players[p].isMe();
             me = players[p]
         }
+        updateLeaderboardHP(p)
     }
-
-    initIntervals();
-
 }
 
 window.tick = function() {

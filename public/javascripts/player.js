@@ -42,9 +42,7 @@ function Player(options) {
 
     self.playerContainer.addChild(self.bitmap)
 
-
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
-
     this.nameOutline.outline=true;
     this.nameOutline.x = 0;
     this.nameOutline.y = -25;
@@ -52,6 +50,7 @@ function Player(options) {
     this.nameOutline.lineWidth = 300;
     this.nameOutline.textAlign = 'center'
     this.container.addChild(this.nameOutline);
+
     this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#fff")
     this.nameLabel.x = 0;
     this.nameLabel.y = -25;
@@ -107,8 +106,9 @@ function Player(options) {
         this.light = {}
         // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:40, flicker:0, strength:.1}))
         raycaster.position = new illuminated.Vec2(this.x,this.y);
-        this.healthMeter = new ProgressBar({width:200, value:this.health, text:'HP: ' + this.health + '%'});
-        this.ammoMeter = new ProgressBar({width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
+
+        this.healthMeter = new ProgressBar({id:'meter-hp', width:200, value:this.health, text:'HP: ' + this.health + '%'});
+        this.ammoMeter = new ProgressBar({id:'meter-ammo', width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
     }
 
     stage_under.addChildAt(this.container,1)
@@ -124,7 +124,7 @@ function Player(options) {
 
     this.updateHealth = function(health) {
         $("#health").html(health);
-        bloodeffect.update((100 - health) / 50)
+        bloodEffect.update((100 - health) / 50)
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
 
@@ -145,15 +145,12 @@ function Player(options) {
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
-        //raycaster.position = new illuminated.Vec2(this.x,this.y);
 
-        //
         if (this==me && arguments.length==0) {
             if(INPUT_L() || INPUT_R()) raycaster.position.x = INPUT_L() ? this.x+1 : this.x-1
             if(INPUT_U() || INPUT_D()) raycaster.position.y = INPUT_U() ? this.y+1 : this.y-1
         }
     }
-
 
     this.dash = function(dir, best) {
 
@@ -330,7 +327,12 @@ function Player(options) {
     }
 
     this.remove = function() {
-        stage_under.removeChild(this.container)
+        if(this == me) {
+            stage_over.removeChild(this.container)
+        } else {
+            stage_under.removeChild(this.container)
+        }
+        delete players[this];
         delete this;
     }
 

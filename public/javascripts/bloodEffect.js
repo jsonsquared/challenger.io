@@ -5,7 +5,7 @@ function BloodEffect() {
     this.sprite.alpha = 0;
 
     this.update = function(amount) {
-        this.sprite.alpha=amount
+        createjs.Tween.get(this.sprite).to({alpha:amount},400)
     }
 
 }

@@ -95,17 +95,17 @@ function initPacketHandler(name) {
     });
 
     socket.on('gameover', function() {
-        setTimeout(function() { new Message('Game over, new game starting in 5...') },1000)
-        setTimeout(function() { new Message('Game over, new game starting in 4...') },2000)
-        setTimeout(function() { new Message('Game over, new game starting in 3...') },3000)
-        setTimeout(function() { new Message('Game over, new game starting in 2...') },4000)
-        finalGameOverTimeout = setTimeout(function() { new Message('Game over, new game starting in 1...') },5000)
-        console.log('gameover');
+        setTimeout(function() { new Message('Round over') },1000)
+        setTimeout(function() { new Message('New round starting in 5...') },1000)
+        setTimeout(function() { new Message('New round starting in 4...') },2000)
+        setTimeout(function() { new Message('New round starting in 3...') },3000)
+        setTimeout(function() { new Message('New round starting in 2...') },4000)
+        finalGameOverTimeout = setTimeout(function() { new Message('New round starting in 1...') },5000)
     });
 
     socket.on('new_game', function(data) {
         clearTimeout(finalGameOverTimeout)
+        startGame(data)
         new Message('GO GO GO!')
-        console.log('new_game', data)
     });
 }

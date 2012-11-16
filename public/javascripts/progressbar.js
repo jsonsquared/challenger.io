@@ -4,9 +4,10 @@ ProgressBar = function(options) {
     var self = this;
     this.value = options.value || 0
     this.width = options.width || 100
+    this.id = options.id || 'progressbar-' + (new Date()).getTime()
 
     var markup = [
-        "<div id='progressbar' class='progressbar progress'>",
+        "<div id='" + this.id + "' class='progressbar progress'>",
         "    <div class='container'></div>",
         "    <div class='pbmeter bar'></div>",
         "    <div class='pblabel'></div>",
@@ -31,5 +32,7 @@ ProgressBar = function(options) {
         this.element.find('.pbmeter').stop().animate({width: options.value + '%'})
         this.element.find('.pblabel').text(options.text)
     }
+
+    return this;
 
 }
