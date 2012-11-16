@@ -1,17 +1,18 @@
-var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
 var KILL_TOTAL = 2000;
-var config = require('../config/application')
+var config = require('../config/application');
+var game = require('../config/game.config');
+
+var Map = require('./map');
 var Player = require('./player');
-var map = require('../lib/mapUtils').parse()
 
 var Instance = function(id) {
     this.id = id;
     this.players = {};
     this.iio;
     this.kills = 0;
-    this.map = map
+    this.map = new Map(game.map.default);
     this.state = 'running';
 
     this.addPlayer = function(id, name) {
@@ -38,15 +39,8 @@ var Instance = function(id) {
         return {id: this.id, players: this.players, score: this.kills, state: this.state}
     }
 
-    this.randomSpawn = function() {
-        var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
-        var x = point.x * config.instance.tile_size + (config.instance.tile_size/2);
-        var y = point.y * config.instance.tile_size + (config.instance.tile_size/2);
-        return {x: x, y: y}
-    }
-
     this.full = function() {
-        return Object.keys(this.players).length >= config.instance.player_limit
+        return Object.keys(this.players).length >= game.instance.player_limit
     }
 
     this.gameover = function() {
@@ -64,7 +58,7 @@ var Instance = function(id) {
             socket.on('join', function(name) {
 
                 player.name = name;
-                player.setPosition(self.randomSpawn())
+                player.setPosition(self.map.randomSpawn())
 
                 socket.emit('instance', self.data());
                 self.iio.emit('addPlayer', player);
@@ -124,7 +118,7 @@ var Instance = function(id) {
                             player.respawning = true;
                             setTimeout(function() {
 
-                                player.setPosition(self.randomSpawn())
+                                player.setPosition(self.map.randomSpawn())
                                 player.respawn();
 
                                 if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
