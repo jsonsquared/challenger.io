@@ -79,16 +79,37 @@ function Bullet(options) {
     });
 
     this.remove = function() {
+        var x = this.sprite.x
+        var y = this.sprite.y
+        var r = this.sprite.rotation;
+
         if(settings.sounds) {
             delete this.sound;
         }
+
         stage_under.removeChild(this.sprite)
         this.removed = true;
-        this.onRemove();
-        delete this;
-    }
 
-    this.onRemove = function() {};
+        var spriteSheet = new createjs.SpriteSheet({
+            images: [assets.ricochet.img],
+            frames: {width:16, height:16, regX:8, regY:8},
+            animations: {
+                richochet:{frames:[0], frequency:5}
+            }
+        });
+
+        this.sprite = new createjs.BitmapAnimation(spriteSheet);
+        this.sprite.gotoAndPlay('richochet')
+        this.sprite.x = x;
+        this.sprite.y = y;
+        this.sprite.rotation = r - 90 + 30
+        stage_under.addChildAt(this.sprite,1)
+
+        createjs.Tween.get(this.sprite).to({alpha:0},500,createjs.Ease.quintOut).call(function() {
+            stage_under.removeChild(self.sprite)
+            delete self
+        })
+    }
 
     this.data = function() {
         return {startX: options.x, startY: options.y, endX: options.endX, endY: options.endY, owner: this.owner, gun:this.gun};

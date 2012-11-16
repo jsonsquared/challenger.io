@@ -34,6 +34,7 @@ var assets = {
     'map'   :  '/assets/images/map.jpg',
     'fed'   :  '/assets/images/fed.png',
     'bullet':  '/assets/images/bullet.png',
+    'ricochet':  '/assets/images/ricochet.png',
     'crosshair': '/assets/images/crosshair.png',
     'muzzle': '/assets/images/muzzle.png'
 };
