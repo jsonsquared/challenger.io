@@ -124,6 +124,7 @@ function Player(options) {
 
     this.updateHealth = function(health) {
         $("#health").html(health);
+        bloodeffect.update((100 - health) / 50)
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
 
