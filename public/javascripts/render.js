@@ -36,7 +36,7 @@ function initLights() {
         objects: objects
     });
 
-    darkmask = new illuminated.DarkMask({ lights: [raycaster], color: 'rgba(0,0,0,.5)' });
+    darkmask = new illuminated.DarkMask({ lights: [raycaster], color: 'rgba(0,0,0,.9)' });
 
     lightLayer = new createjs.Bitmap(canvas_lighting)
     stage_under.addChildAt(lightLayer,3)
