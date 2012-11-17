@@ -1,8 +1,8 @@
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
 var KILL_TOTAL = 2000;
-var config = require('../config/application');
-var game = require('../config/game.config');
+
+var gameConfig = require('../config/game.config');
 
 var Map = require('./map');
 var Player = require('./player');
@@ -12,7 +12,7 @@ var Instance = function(id) {
     this.players = {};
     this.iio;
     this.kills = 0;
-    this.map = new Map(game.map.default);
+    this.map = new Map(gameConfig.map.default);
     this.state = 'running';
 
     this.addPlayer = function(id, name) {
@@ -40,7 +40,7 @@ var Instance = function(id) {
     }
 
     this.full = function() {
-        return Object.keys(this.players).length >= game.instance.player_limit
+        return Object.keys(this.players).length >= gameConfig.instance.player_limit
     }
 
     this.gameover = function() {
@@ -123,7 +123,7 @@ var Instance = function(id) {
 
                                 if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
                                 player.respawning = false;
-                            }, game.respawn_time)
+                            }, gameConfig.respawn_time)
                         }
 
                         killer.killCount++;
