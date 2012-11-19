@@ -2,6 +2,9 @@ var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
 var KILL_TOTAL = 2;
+var REGEN_AMOUNT = 2;
+var REGEN_WAIT = 2000;
+var REGEN_INTERVAL = 100;
 var config = require('../config/application')
 var Player = require('./player');
 var map = require('../lib/mapUtils').parse()
@@ -83,21 +86,21 @@ var Instance = function(id) {
                 player.setPosition(self.randomSpawn())
 
                 socket.emit('instance', self.data());
-                self.iio.emit('addPlayer', player);
+                self.iio.emit('addPlayer', player.data());
             })
 
             socket.on('move', function(data) {
                 var player = self.players[socket.id]
                 player.move(data)
 
-                self.iio.volatile.emit('moved', player)
+                self.iio.volatile.emit('moved', player.data())
             });
 
             socket.on('dash', function(best) {
                 var player = self.players[socket.id]
                 player.dash(best)
 
-                self.iio.emit('dashed', {player:player, best:best})
+                self.iio.emit('dashed', {player:player.data(), best:best})
             })
 
             socket.on('fire', function(data) {
@@ -109,11 +112,11 @@ var Instance = function(id) {
                 }
                 if(shooter.isEmpty()) {
                     if(!shooter.reloading) {
-                        self.iio.sockets[shooter.id].emit('reload', shooter)
+                        self.iio.sockets[shooter.id].emit('reload', shooter.data())
                         shooter.reloading = true;
                         setTimeout(function() {
                             shooter.reload();
-                            if(self.iio.sockets[shooter.id]) self.iio.sockets[shooter.id].emit('reloaded', shooter)
+                            if(self.iio.sockets[shooter.id]) self.iio.sockets[shooter.id].emit('reloaded', shooter.data())
                             shooter.reloading = false;
                         }, RELOAD_TIME)
                     }
@@ -121,11 +124,11 @@ var Instance = function(id) {
             });
 
             socket.on('manual_reload', function(data) {
-                self.iio.sockets[socket.id].emit('reload', player)
+                self.iio.sockets[socket.id].emit('reload', player.data())
                 player.reloading = true;
                 setTimeout(function() {
                     player.reload();
-                    socket.emit('reloaded', player)
+                    socket.emit('reloaded', player.data())
                     player.reloading = false;
                 }, RELOAD_TIME)
             })
@@ -144,11 +147,26 @@ var Instance = function(id) {
 
                     if(!player.isDead()) {
                         player.takeDamage(killer.id);
-                        self.iio.emit('damage', player)
+
+                        clearInterval(player.regenInterval); // stop gaining health
+                        clearTimeout(player.regenTimeout) // reset the time we wait to start regenerating health
+                        player.regenTimeout = setTimeout(function(p) {
+                            p.regenInterval = setInterval(function(p) {
+                                p.health+=REGEN_AMOUNT
+                                if(p.health>=100) {
+                                    p.health = 100;
+                                    clearInterval(p.regenInterval)
+                                    clearTimeout(p.regenTimeout)
+                                }
+                                self.iio.emit('regen', player.data())
+                            },REGEN_INTERVAL, p)
+                        }, REGEN_WAIT, player)
+
+                        self.iio.emit('damage', player.data())
 
                         if(player.health<=0) {
                             player.die();
-                            self.iio.emit('died', player)
+                            self.iio.emit('died', player.data())
 
                             killer.killCount++;
                             killer.killSpree++;
@@ -178,7 +196,7 @@ var Instance = function(id) {
                                         player.setPosition(self.randomSpawn())
                                         player.respawn();
 
-                                        if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
+                                        if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player.data())
                                         player.respawning = false;
                                     }, RESPAWN_TIME)
                                 }
@@ -198,7 +216,7 @@ var Instance = function(id) {
 
             socket.on('disconnect', function(data) {
                 self.removePlayer(player.id);
-                self.iio.emit('removePlayer', player);
+                self.iio.emit('removePlayer', player.data());
             })
 
             socket.on('say', function(data) {

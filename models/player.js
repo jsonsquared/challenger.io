@@ -1,5 +1,7 @@
 var MIN_DAMAGE = 8;
 var MAX_DAMAGE = 14;
+var REGEN_WAIT = 500;
+var util = require('../lib/util');
 
 var Player = function(id, name) {
     var self = this;
@@ -41,14 +43,13 @@ var Player = function(id, name) {
         this.y = data.y || this.y;
     }
 
+    this.regenInterval = 0;
+    this.regenTimeout = 0;
     this.takeDamage = function(killer) {
         var damage = Math.floor(Math.random() * (MAX_DAMAGE - MIN_DAMAGE + 1)) + MIN_DAMAGE;
         this.hitBy = killer;
         this.lastHit = damage;
         this.health -= damage;
-        if(this.isDead()) {
-            this.die(killer);
-        }
     }
 
     this.die = function(killer) {
@@ -107,5 +108,27 @@ var Player = function(id, name) {
             return this.name + ' is a killing machine';
         }
     }
-};
+
+    this.data = function() {
+        //return util.packetSafe(this)
+        return {
+            id:self.id,
+            name: self.name,
+            team: self.team,
+            x:self.x,
+            y:self.y,
+            rotation:self.rotation,
+            lastUpdate:self.lastUpdate,
+            lastHit:self.lastHit,
+            hitBy:self.hitBy,
+            killCount:self.killCount,
+            killSpree: self.killSpree,
+            deaths:self.deaths,
+            dead:self.dead,
+            health:self.health,
+            respawning:self.respawning,
+            clip: self.clip,
+        }
+    }
+}
 module.exports = Player;
