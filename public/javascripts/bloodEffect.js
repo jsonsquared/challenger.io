@@ -5,6 +5,7 @@ function BloodEffect() {
     this.sprite.alpha = 0;
 
     this.update = function(amount) {
+        createjs.Tween.removeTweens(this.sprite)
         createjs.Tween.get(this.sprite).to({alpha:amount},400)
     }
 
