@@ -18,5 +18,5 @@ function updateLeaderboard() {
 }
 
 function updateLeaderboardHP(player) {
-    $('#' + player.id).animate({width: player.health + '%'});
+    $('#' + player.id).stop().animate({width: player.health + '%'});
 }
