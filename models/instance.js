@@ -1,10 +1,11 @@
 var RESPAWN_TIME = 3000;
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
-var KILL_TOTAL = 1;
+var KILL_TOTAL = 2;
 var config = require('../config/application')
 var Player = require('./player');
 var map = require('../lib/mapUtils').parse()
+var util = require('../lib/util');
 
 var Instance = function(id) {
     var self = this;
@@ -130,50 +131,57 @@ var Instance = function(id) {
             })
 
             socket.on('hit', function(data) {
-                // supposedly data.bullet hit data.hitPlayer
-                // validate that at some point
+
                 var killer = self.players[data.bullet.owner];
                 var player = self.players[data.hitPlayer.id];
+
+                if(!util.touching({x:parseInt(data.x), y:parseInt(data.y)}, {x:player.x, y:player.y}, config.instance.tile_size)) {
+                    console.log('client reported a hit but server says there is no player at the reported position')
+                    return;
+                }
 
                 if(player) {
 
                     if(!player.isDead()) {
                         player.takeDamage(killer.id);
                         self.iio.emit('damage', player)
-                    } else {
-                        self.iio.emit('died', player)
 
-                        killer.killCount++;
-                        killer.killSpree++;
-                        self.iio.emit('kill', {id: killer.id, killCount: killer.killCount, killee: player.id})
+                        if(player.health<=0) {
+                            player.die();
+                            self.iio.emit('died', player)
 
-                        if(killer.onKillingSpree()) {
-                            self.iio.emit('said', {name: 'Server', text: killer.killSpreeLevel()} )
-                            self.iio.emit('spree', killer.killSpreeLevel())
-                        }
+                            killer.killCount++;
+                            killer.killSpree++;
+                            self.iio.emit('kill', {id: killer.id, killCount: killer.killCount, killee: player.id})
 
-                        self.kills++;
-                        self.iio.emit('score', self.data())
+                            if(killer.onKillingSpree()) {
+                                self.iio.emit('said', {name: 'Server', text: killer.killSpreeLevel()} )
+                                self.iio.emit('spree', killer.killSpreeLevel())
+                            }
 
-                        if(self.gameover()) {
-                            self.iio.emit('gameover')
-                            self.state = 'stopped';
-                            setTimeout(function() {
-                                self.state = 'running';
-                                self.newGame();
-                                self.iio.emit('new_game', self.data())
-                            }, WAIT_TIME)
-                        } else {
-                            if(!player.respawning) {
-                                player.respawning = true;
+                            self.kills++;
+                            self.iio.emit('score', self.data())
+
+                            if(self.gameover()) {
+                                self.iio.emit('gameover')
+                                self.state = 'stopped';
                                 setTimeout(function() {
+                                    self.state = 'running';
+                                    self.newGame();
+                                    self.iio.emit('new_game', self.data())
+                                }, WAIT_TIME)
+                            } else {
+                                if(!player.respawning) {
+                                    player.respawning = true;
+                                    setTimeout(function() {
 
-                                    player.setPosition(self.randomSpawn())
-                                    player.respawn();
+                                        player.setPosition(self.randomSpawn())
+                                        player.respawn();
 
-                                    if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
-                                    player.respawning = false;
-                                }, RESPAWN_TIME)
+                                        if(self.iio.sockets[player.id]) self.iio.sockets[player.id].emit('respawn', player)
+                                        player.respawning = false;
+                                    }, RESPAWN_TIME)
+                                }
                             }
                         }
                     }

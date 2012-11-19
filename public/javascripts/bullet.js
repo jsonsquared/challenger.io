@@ -64,7 +64,8 @@ function Bullet(options) {
                self.remove();
             } else if(hitPlayer = playerHit(self)) {
                 // hit a player
-                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data()})
+                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y})
+                HIT = {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y};
                self.remove();
             } else {
                 self.sprite.x += x
