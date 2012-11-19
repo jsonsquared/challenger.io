@@ -47,9 +47,7 @@ function Bullet(options) {
     }
 
     if(settings.sounds) {
-        this.sound = sounds.singleshot.cloneNode()
-        this.sound.volume = range(1,2)/2;
-        this.sound.play();
+        this.sound = sounds.singleshot.play(range(1,2)/2)
     }
 
     $(document).bind('tick', function() {

@@ -40,10 +40,30 @@ var assets = {
     'crosshair': '/assets/images/crosshair.png',
     'muzzle': '/assets/images/muzzle.png'
 };
-sounds= {
-    'singleshot': new Audio('/assets/sounds/singleshot.mp3')
+
+sounds = {
+    'singleshot': '/assets/sounds/singleshot.mp3'
 }
 
+
+function initSounds() {
+    for(var s in sounds) {
+        var path = sounds[s];
+        sounds[s] = {
+            path:path,
+            clones:[],
+            channel:0,
+            play:function(volume) {
+                this.channel = this.channel >= this.clones.length-1 ? 0 : this.channel+1
+                this.clones[this.channel].volume = volume || 1;
+                this.clones[this.channel].play()
+            }
+        };
+        for(var c=0;c<5;c++) {
+            sounds[s].clones.push(new Audio(path))
+        }
+    }
+}
 
 INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
 INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
@@ -90,6 +110,7 @@ $(function() {
         initMap()
         initLights();
         initSpriteSheets();
+        initSounds();
         bloodEffect = new BloodEffect();
         crosshair = new Crosshair();
         $('#name').attr('maxlength', NAME_LENGTH)
