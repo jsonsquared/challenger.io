@@ -233,9 +233,8 @@ function Player(options) {
         recoilFactor = this.dashing ? 0 : recoilFactor
 
         var b = new Bullet({
-            // speed:this.dashing ? 100 : undefined,
             x:gun==1 ? me.x -8 : me.x+8,
-            y:gun==1 ? me.y -8 : me.y+8,
+            y:me.y,
             endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
             endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
             owner:me.id,
