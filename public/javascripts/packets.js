@@ -76,6 +76,13 @@ function initPacketHandler(name) {
         me.respawn(data);
     });
 
+    socket.on('regen', function(data) {
+        players[data.id].health = data.health
+        updateLeaderboardHP(data);
+        if(data.id==me.id) me.updateHealth(data.health)
+    });
+
+
     socket.on('said', function(data) {
         $('#chat ul').append('<li><strong>' + data.name + '</strong>: ' + data.text + '</li>')
         $('#chat li:not(:last)').each(function() {
