@@ -8,6 +8,12 @@ var connected = false;
 var stage_under, stage_over;
 var garbage = [];
 var players = {};
+var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
+var crosshair; // easeljs Bitmap
+var me; // alias for which player I am in the players object
+var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
+var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
+var spriteSheets = {};
 
 var mapData = {
     walls:[],
@@ -19,18 +25,11 @@ var intervals = {
     move:   {rate:20},
     fire:   {rate:130}
 }
-var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
-var crosshair; // easeljs Bitmap
-var me; // alias for which player I am in the players object
-var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
-
-var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 
 var settings = {
     sounds:true
 }
 
-var spriteSheets = {};
 var assets = {
     'map'   :  '/assets/images/map.jpg',
     'bloodborder'   :  '/assets/images/bloodborder.png',
@@ -45,33 +44,12 @@ sounds = {
     'singleshot': '/assets/sounds/singleshot.mp3'
 }
 
-
-function initSounds() {
-    for(var s in sounds) {
-        var path = sounds[s];
-        sounds[s] = {
-            path:path,
-            clones:[],
-            channel:0,
-            play:function(volume) {
-                this.channel = this.channel >= this.clones.length-1 ? 0 : this.channel+1
-                this.clones[this.channel].volume = volume || 1;
-                this.clones[this.channel].play()
-            }
-        };
-        for(var c=0;c<5;c++) {
-            sounds[s].clones.push(new Audio(path))
-        }
-    }
-}
-
 INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
 INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
 INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
 INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
 
 $(function() {
-
 
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
@@ -147,6 +125,7 @@ function join(instance) {
     startGame(instance)
     initIntervals();
 }
+
 function startGame(instance) {
     // if players is not empty, we must be restarting
     if(Object.keys(players).length!==0) {
@@ -199,4 +178,23 @@ function initSpriteSheets() {
             fire:{frames:[0], frequency:5}
         }
     });
+}
+
+function initSounds() {
+    for(var s in sounds) {
+        var path = sounds[s];
+        sounds[s] = {
+            path:path,
+            clones:[],
+            channel:0,
+            play:function(volume) {
+                this.channel = this.channel >= this.clones.length-1 ? 0 : this.channel+1
+                this.clones[this.channel].volume = volume || 1;
+                this.clones[this.channel].play()
+            }
+        };
+        for(var c=0;c<5;c++) {
+            sounds[s].clones.push(new Audio(path))
+        }
+    }
 }
