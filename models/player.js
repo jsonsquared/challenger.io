@@ -53,6 +53,8 @@ var Player = function(id, name) {
     }
 
     this.die = function(killer) {
+        clearInterval(this.regenInterval); // stop gaining health
+        clearTimeout(this.regenTimeout)
         this.deaths++;
         this.hitBy = killer;
         this.killSpree = 0;

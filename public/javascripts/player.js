@@ -109,6 +109,7 @@ function Player(options) {
 
         this.healthMeter = new ProgressBar({id:'meter-hp', width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({id:'meter-ammo', width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
+        this.collisionManager = new CollisionManager(this, TILE_SIZE);
     }
 
     stage_under.addChildAt(this.container,1)
@@ -154,6 +155,7 @@ function Player(options) {
             }
 
             me.updatePosition(this.x, this.y, this.rotation)
+            me.collisionManager.check();
         }
     }
 

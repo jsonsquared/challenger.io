@@ -7,13 +7,16 @@ var REGEN_WAIT = 2000;
 var REGEN_INTERVAL = 100;
 var config = require('../config/application')
 var Player = require('./player');
+var Item = require('./item');
 var map = require('../lib/mapUtils').parse()
 var util = require('../lib/util');
+require('../public/javascripts/lib/jsonHelpers');
 
 var Instance = function(id) {
     var self = this;
     this.id = id;
     this.players = {};
+    this.items = {};
     this.iio;
     this.kills = 0;
     this.map = map
@@ -39,14 +42,36 @@ var Instance = function(id) {
         return playerNames;
     }
 
+    this.addItem = function(options) {
+        var id = (new Date()).getTime() + util.range(1000,9999)
+        var thisItem = this.items[id] = new Item(options, self.iio)
+        thisItem.id = id;
+        self.iio.emit('addItem', packetSafe(thisItem))
+    }
+
+    this.removeItem = function(id) {
+        if(this.items[id]) {
+            self.iio.emit('removeItem', id)
+            delete this.items[id]
+        }
+    }
+
     this.data = function() {
         return {
             id: this.id,
             players: this.players,
+            items: packetSafe(this.items),
             score: this.kills,
             state: this.state
         }
     }
+
+    this.generateItem = function() {
+        self.addItem({name:'Item', x:util.range(16,1000), y:util.range(12,700)});
+        console.log('generating an item')
+    }
+
+    setInterval(this.generateItem, 5000)
 
     this.randomSpawn = function() {
         var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
@@ -71,6 +96,11 @@ var Instance = function(id) {
             player.setPosition(self.randomSpawn())
             player.respawn();
         }
+    }
+
+    this.initStartingItems = function() {
+        this.addItem({name:'Item 1', x:10, y:10});
+        this.addItem({name:'Item 2', x:20, y:20});
     }
 
     this.attachPacketHandlers = function(io) {
@@ -158,7 +188,7 @@ var Instance = function(id) {
                                     clearInterval(p.regenInterval)
                                     clearTimeout(p.regenTimeout)
                                 }
-                                self.iio.emit('regen', player.data())
+                                self.iio.emit('regen', p.data())
                             },REGEN_INTERVAL, p)
                         }, REGEN_WAIT, player)
 
@@ -204,6 +234,10 @@ var Instance = function(id) {
                         }
                     }
                 }
+            })
+
+            socket.on('touchItem', function(data) {
+                self.removeItem(data.id)
             })
 
             socket.on('pickup', function(data) {

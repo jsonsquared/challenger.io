@@ -8,6 +8,7 @@ var connected = false;
 var stage_under, stage_over;
 var garbage = [];
 var players = {};
+var items = {};
 var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
 var crosshair; // easeljs Bitmap
 var me; // alias for which player I am in the players object
@@ -37,7 +38,8 @@ var assets = {
     'bullet':  '/assets/images/bullet.png',
     'ricochet':  '/assets/images/ricochet.png',
     'crosshair': '/assets/images/crosshair.png',
-    'muzzle': '/assets/images/muzzle.png'
+    'muzzle': '/assets/images/muzzle.png',
+    'item': '/assets/images/item.jpg'
 };
 
 sounds = {
@@ -61,8 +63,8 @@ $(function() {
     stage_over = new createjs.Stage(canvas_crosshair)
     stage_over.autoClear = true;
 
-    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map[0].length * TILE_SIZE
-    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.length * TILE_SIZE
+    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map.data[0].length * TILE_SIZE
+    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.data.length * TILE_SIZE
     canvas_main_ctx = canvas_main.getContext('2d')
     canvas_lighting_ctx = canvas_lighting.getContext('2d')
 
@@ -133,9 +135,11 @@ function startGame(instance) {
             players[p].remove();
         }
         players = {};
+        items = [];
         $('#meter-ammo, #meter-hp').remove();
     }
 
+    console.log('startGame')
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
     }
@@ -149,18 +153,17 @@ function startGame(instance) {
         }
         updateLeaderboardHP(p)
     }
+
+    for(var i in instance.items) {
+        items[i] = new Item(i, instance.items[i])
+    }
+
 }
 
 window.tick = function() {
     $(document).trigger('tick')
 
     if(me) me.stamina = me.stamina < 100 ? me.stamina+1 : 100
-
-    if(players && connected) {
-        for(var p in players) {
-            players[p].updatePosition()
-        }
-    }
 
     render()
 

@@ -9,6 +9,7 @@ function initPacketHandler(name) {
     });
 
     socket.on('instance', function(data) {
+        console.log(data)
         join(data)
         new Message('GO GO GO!')
         updateLeaderboard();
@@ -24,6 +25,15 @@ function initPacketHandler(name) {
         players[data.id].remove()
         delete players[data.id]
         updateLeaderboard();
+    })
+
+    socket.on('addItem', function(data) {
+        items[data.id] = new Item(data.id, data)
+    })
+
+    socket.on('removeItem', function(data) {
+        console.log(data)
+        items[data].remove();
     })
 
     socket.on('moved', function(data) {

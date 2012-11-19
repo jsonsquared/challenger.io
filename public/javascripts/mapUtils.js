@@ -7,11 +7,11 @@ function initMap() {
 
     stage_under.addChildAt(bitmap,0)
 
-    for(var y=0;y<map.length;y++) {
-        var row = map[y].split('');
+    for(var y=0;y<map.data.length;y++) {
+        var row = map.data[y].split('');
         for(var x=0;x<row.length;x++) {
 
-            var tile = map[y][x];
+            var tile = map.data[y][x];
             if(tile=='0') {
                 var sprite = new createjs.Shape();
                 sprite.graphics.beginFill('#aaa').rect(0,0,TILE_SIZE,TILE_SIZE)
@@ -36,15 +36,15 @@ function initMap() {
 function blocked(x, y, method) {
     var tileX = method == 1 ? Math.ceil((x)/TILE_SIZE) : Math.floor((x)/TILE_SIZE)
     var tileY = method == 1 ? Math.ceil((y)/TILE_SIZE) : Math.floor((y)/TILE_SIZE)
-    if(tileY < 0 || tileY > map.length-1 || tileX < 0 || tileX > map[0].length-1) return false
+    if(tileY < 0 || tileY > map.data.length-1 || tileX < 0 || tileX > map.data[0].length-1) return false
 
-    return map[tileY][tileX] == '0'
+    return map.data[tileY][tileX] == '0'
 }
 
 function halfBlocked(x, y, method) {
     var tileX = method == 1 ? Math.ceil(x/TILE_SIZE) : Math.floor(x/TILE_SIZE)
     var tileY = method == 1 ? Math.ceil(y/TILE_SIZE) : Math.floor(y/TILE_SIZE)
-    if(tileY < 0 || tileY > map.length-1 || tileX < 0 || tileX > map[0].length-1) return false
+    if(tileY < 0 || tileY > map.data.length-1 || tileX < 0 || tileX > map.data[0].length-1) return false
 
-    return map[tileY][tileX] == '1'
+    return map.data[tileY][tileX] == '1'
 }
