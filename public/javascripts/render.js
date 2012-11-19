@@ -2,11 +2,10 @@ var CLEAR = 1;
 var FILL = .5;
 var lightLayer;         // easeljs stage for lights. shared between initLights, processRaycasting
 var darkmask;           // illumination.js canvas. shared between initLights, processRaycasting
-var raycaster = {}      // illumination.js lightsource, position is updated through
-var lightLayers = 0;
-var lights= [];
+var myLight = {}      // illumination.js lightsource, position is updated through
+var lights = [];
 var myLighting
-var lighting= [];
+var lighting = [];
 function render() {
     if(!connected || !me) return
     stage_under.update();
@@ -18,10 +17,10 @@ function render() {
 
 function initLights() {
     var objects = []
-    raycaster = new illuminated.Lamp({
+    myLight = new illuminated.Lamp({
         position: new illuminated.Vec2(100, 250),
-        distance: 250,
-        radius: 125,
+        distance: 180,
+        radius: 90,
         samples: 1,
         angle:0
     });
@@ -34,29 +33,29 @@ function initLights() {
     }
 
     myLighting = new illuminated.Lighting({
-        light: raycaster,
+        light: myLight,
         objects: objects
     });
 
 
     // street lights
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(672, 115),distance: 150,radius: 75,samples: 1,angle:0}));
+    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(672, 115),distance:60,radius: 30,samples: 1,angle:0}));
     lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
 
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(353, 305),distance: 150,radius: 75,samples: 1,angle:0}));
+    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(353, 305),distance:60,radius: 30,samples: 1,angle:0}));
     lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
 
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(149, 496),distance: 150,radius: 75,samples: 1,angle:0}));
+    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(149, 496),distance: 60,radius: 30,samples: 1,angle:0}));
     lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
 
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(609, 415),distance: 150,radius: 75,samples: 1,angle:0}));
+    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(609, 415),distance: 60,radius: 30,samples: 1,angle:0}));
     lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
 
     for(l = 0;l<lighting.length;l++) {
         lighting[l].compute(canvas_lighting.width, canvas_lighting.height);
     }
 
-    lights.push(raycaster)
+    lights.push(myLight)
 
     darkmask = new illuminated.DarkMask({
         lights: lights,
@@ -72,7 +71,7 @@ function initLights() {
 
 function processRaycasting () {
 
-    canvas_lighting_ctx.fillStyle = "rgba(0,0,0,.2)";
+    canvas_lighting_ctx.fillStyle = "rgba(0,0,0,.6)";
     canvas_lighting_ctx.fillRect(0, 0, canvas_lighting.width, canvas_lighting.height);
 
     canvas_lighting_ctx.globalCompositeOperation = "destination-out";

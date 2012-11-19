@@ -105,7 +105,7 @@ function Player(options) {
         stage_under.removeChild(this.container)
         this.light = {}
         // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:40, flicker:0, strength:.1}))
-        raycaster.position = new illuminated.Vec2(this.x,this.y);
+        myLight.position = new illuminated.Vec2(this.x,this.y);
 
         this.healthMeter = new ProgressBar({id:'meter-hp', width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({id:'meter-ammo', width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
@@ -139,16 +139,21 @@ function Player(options) {
         $('#deaths span').html(this.deaths);
     }
 
-    this.moved = function(skipRaycaster) {
+    this.moved = function(skipmyLight) {
         var deltaX = crosshair.sprite.x - me.container.x
         var deltaY = crosshair.sprite.y - me.container.y
 
         me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
 
-        if (this==me && arguments.length==0) {
-            if(INPUT_L() || INPUT_R()) raycaster.position.x = INPUT_L() ? this.x+1 : this.x-1
-            if(INPUT_U() || INPUT_D()) raycaster.position.y = INPUT_U() ? this.y+1 : this.y-1
+        if (this==me) {
+
+            if(arguments.length==0) {
+                if(INPUT_L() || INPUT_R()) myLight.position.x = INPUT_L() ? this.x+1 : this.x-1
+                if(INPUT_U() || INPUT_D()) myLight.position.y = INPUT_U() ? this.y+1 : this.y-1
+            }
+
+            me.updatePosition(this.x, this.y, this.rotation)
         }
     }
 
@@ -194,7 +199,7 @@ function Player(options) {
             self.moved(true)
         });
 
-        if(this==me) createjs.Tween.get(raycaster.position).to(best,500,createjs.Ease.sineOut)
+        if(this==me) createjs.Tween.get(myLight.position).to(best,500,createjs.Ease.sineOut)
 
     }
 
