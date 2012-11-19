@@ -1,5 +1,3 @@
-var CLEAR = 1;
-var FILL = .5;
 var lightLayer;         // easeljs stage for lights. shared between initLights, processRaycasting
 var darkmask;           // illumination.js canvas. shared between initLights, processRaycasting
 var myLight = {}      // illumination.js lightsource, position is updated through
@@ -8,6 +6,19 @@ var myLighting
 var lighting = [];
 function render() {
     if(!connected || !me) return
+
+    if(players) {
+        for(var p in players) {
+            players[p].updatePosition()
+        }
+    }
+
+    if(items) {
+        for(var i in items) {
+            items[i].updatePosition()
+        }
+    }
+
     stage_under.update();
     stage_over.update();
     processRaycasting();
@@ -37,19 +48,10 @@ function initLights() {
         objects: objects
     });
 
-
-    // street lights
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(672, 115),distance:60,radius: 30,samples: 1,angle:0}));
-    lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
-
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(353, 305),distance:60,radius: 30,samples: 1,angle:0}));
-    lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
-
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(149, 496),distance: 60,radius: 30,samples: 1,angle:0}));
-    lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
-
-    lights.push(new illuminated.Lamp({position: new illuminated.Vec2(609, 415),distance: 60,radius: 30,samples: 1,angle:0}));
-    lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
+    for(var l=0;l<map.lights.length;l++) {
+        lights.push(new illuminated.Lamp({position: new illuminated.Vec2(map.lights[l].x, map.lights[l].y),distance:map.lights[l].distance,radius: map.lights[l].distance/2,samples: 1,angle:0}));
+        lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
+    }
 
     for(l = 0;l<lighting.length;l++) {
         lighting[l].compute(canvas_lighting.width, canvas_lighting.height);
@@ -88,4 +90,3 @@ function processRaycasting () {
     darkmask.compute(canvas_lighting.width, canvas_lighting.height);
     darkmask.render(canvas_lighting_ctx);
 }
-var A = true
