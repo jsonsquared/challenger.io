@@ -2,8 +2,9 @@ var config = require('./config/application');
 var http = require('http');
 var path = require('path');
 var express = require('express')
-var app = express();
+global.app = express();
 
+global.TILE_SIZE = 16;
 global.MIN_DAMAGE = 8;
 global.MAX_DAMAGE = 14;
 global.REGEN_WAIT = 500;
@@ -46,9 +47,8 @@ app.io.set('log level', 1);
 var Instance = require('./models/instance')
 app.instances = {};
 
-// var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0), {map:map});
 var instance = new Instance('challenger-io');
-instance.attachPacketHandlers(app.io)
+// instance.attachPacketHandlers(app.io)
 app.instances[instance.id] = instance;
 
 var routes = require('./config/routes');

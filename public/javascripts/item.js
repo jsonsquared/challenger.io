@@ -22,7 +22,8 @@ function Item(id, options) {
 
     this.sprite = new createjs.Shape()
     this.sprite.graphics.beginFill(this.color).drawRect(0,0,16,16)
-
+    console.log(this.sprite)
+    console.log('???')
     stage_over.addChildAt(this.sprite, 1)
 
     me.collisionManager.add(this)
