@@ -1,12 +1,7 @@
-var MIN_DAMAGE = 8;
-var MAX_DAMAGE = 14;
-var REGEN_WAIT = 500;
 var util = require('../lib/util');
 
 var Player = function(id, name) {
     var self = this;
-    this.TOTAL_HEALTH = 100;
-    this.CLIP_SIZE = 32;
 
     this.reset = function(id, name) {
         console.log('reseting',id)
@@ -25,10 +20,10 @@ var Player = function(id, name) {
         self.deaths = 0;
 
         self.dead = false;
-        self.health = this.TOTAL_HEALTH;
+        self.health = TOTAL_HEALTH;
         self.respawning = false;
 
-        self.clip = this.CLIP_SIZE;
+        self.clip = self.clipSize = CLIP_SIZE;
     }
     this.reset(id, name)
 
@@ -41,6 +36,11 @@ var Player = function(id, name) {
     this.dash = function(data) {
         this.x = data.x || this.x;
         this.y = data.y || this.y;
+    }
+
+    this.refresh = function(data) {
+        // console.log('sending player')
+        console.log(this.data())
     }
 
     this.regenInterval = 0;
@@ -73,7 +73,7 @@ var Player = function(id, name) {
     }
 
     this.respawn = function(x, y) {
-        this.health = this.TOTAL_HEALTH;
+        this.health = TOTAL_HEALTH;
         this.dead = false;
     }
 
@@ -82,7 +82,7 @@ var Player = function(id, name) {
     }
 
     this.reload = function() {
-        this.clip = this.CLIP_SIZE;
+        this.clip = this.clipSize;
     }
 
     this.setPosition = function(obj) {
@@ -112,25 +112,7 @@ var Player = function(id, name) {
     }
 
     this.data = function() {
-        //return util.packetSafe(this)
-        return {
-            id:self.id,
-            name: self.name,
-            team: self.team,
-            x:self.x,
-            y:self.y,
-            rotation:self.rotation,
-            lastUpdate:self.lastUpdate,
-            lastHit:self.lastHit,
-            hitBy:self.hitBy,
-            killCount:self.killCount,
-            killSpree: self.killSpree,
-            deaths:self.deaths,
-            dead:self.dead,
-            health:self.health,
-            respawning:self.respawning,
-            clip: self.clip,
-        }
+        return util.packetSafe(this)
     }
 }
 module.exports = Player;

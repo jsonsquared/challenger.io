@@ -1,16 +1,10 @@
-var RESPAWN_TIME = 3000;
-var RELOAD_TIME = 1000;
-var WAIT_TIME = 5000;
-var KILL_TOTAL = 2;
-var REGEN_AMOUNT = 2;
-var REGEN_WAIT = 2000;
-var REGEN_INTERVAL = 100;
 var config = require('../config/application')
 var Player = require('./player');
 var Item = require('./item');
 var map = require('../lib/mapUtils').parse()
 var util = require('../lib/util');
 require('../public/javascripts/lib/jsonHelpers');
+var itemsDB = require('../public/assets/itemsDB');
 
 var Instance = function(id) {
     var self = this;
@@ -44,11 +38,11 @@ var Instance = function(id) {
 
     this.addItem = function(options) {
         var id = (new Date()).getTime() + util.range(1000,9999)
-        var thisItem = this.items[id] = new Item(options, self.iio)
-        thisItem.id = id;
-        self.iio.emit('addItem', packetSafe(thisItem))
+        this.items[id] = new Item(options)
+        this.items[id].id = id;
+        self.iio.emit('addItem', packetSafe(this.items[id]))
 
-        return thisItem
+        return this.items[id]
     }
 
     this.removeItem = function(id) {
@@ -70,16 +64,18 @@ var Instance = function(id) {
 
     this.generateItem = function() {
         var point = map.blankSpaces[Math.round(Math.random() * (map.blankSpaces.length-1))]
-        var x = point.x * config.instance.tile_size
-        var y = point.y * config.instance.tile_size
-        var item = self.addItem({name:'Item', x:x, y:y});
-        item.expiring = setTimeout(function(i) {
+        var i = util.range(0, itemsDB.length-1)
+        var item = itemsDB[i]
+        item.x = point.x * config.instance.tile_size
+        item.y = point.y * config.instance.tile_size
+        item.item = i
+        var itemInstance = self.addItem(item);
+    
+        itemInstance.expiring = setTimeout(function(i) {
             console.log('removing self ', i)
             self.iio.emit('removeItem', i.id)
             delete self.items[i.id]
-        }, item.expires, item)
-        console.log(self.items)
-        console.log('generating an item')
+        }, item.expires, itemInstance)        
     }
 
     setInterval(this.generateItem, 5000)
@@ -107,11 +103,6 @@ var Instance = function(id) {
             player.setPosition(self.randomSpawn())
             player.respawn();
         }
-    }
-
-    this.initStartingItems = function() {
-        this.addItem({name:'Item 1', x:10, y:10});
-        this.addItem({name:'Item 2', x:20, y:20});
     }
 
     this.attachPacketHandlers = function(io) {
@@ -248,7 +239,10 @@ var Instance = function(id) {
             })
 
             socket.on('touchItem', function(data) {
-                self.removeItem(data.id)
+                if(self.items[data.id]) {
+                    self.items[data.id].buff(self.players[socket.id])
+                    self.removeItem(data.id)
+                }
             })
 
             socket.on('pickup', function(data) {

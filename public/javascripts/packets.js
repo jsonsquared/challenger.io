@@ -28,6 +28,7 @@ function initPacketHandler(name) {
     })
 
     socket.on('addItem', function(data) {
+        console.log(data)
         items[data.id] = new Item(data.id, data)
     })
 
