@@ -34,7 +34,6 @@ app.instances = {};
 // var instance = new Instance('challenger-' + Math.round(new Date().getTime()/1000.0), {map:map});
 var instance = new Instance('challenger-io');
 instance.attachPacketHandlers(app.io)
-instance.initStartingItems()
 app.instances[instance.id] = instance;
 
 var routes = require('./config/routes');

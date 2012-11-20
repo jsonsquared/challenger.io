@@ -68,21 +68,16 @@ var Instance = function(id) {
         }
     }
 
-    this.generateItem = function() {
+    setInterval(function() {
         var point = map.blankSpaces[Math.round(Math.random() * (map.blankSpaces.length-1))]
         var x = point.x * config.instance.tile_size
         var y = point.y * config.instance.tile_size
         var item = self.addItem({name:'Item', x:x, y:y});
         item.expiring = setTimeout(function(i) {
-            console.log('removing self ', i)
-            self.iio.emit('removeItem', i.id)
-            delete self.items[i.id]
+            self.removeItem(i.id)
         }, item.expires, item)
-        console.log(self.items)
-        console.log('generating an item')
-    }
+    },5000)
 
-    setInterval(this.generateItem, 5000)
 
     this.randomSpawn = function() {
         var point = map.spawnPoints[Math.round(Math.random() * (map.spawnPoints.length-1))]
@@ -107,11 +102,6 @@ var Instance = function(id) {
             player.setPosition(self.randomSpawn())
             player.respawn();
         }
-    }
-
-    this.initStartingItems = function() {
-        this.addItem({name:'Item 1', x:10, y:10});
-        this.addItem({name:'Item 2', x:20, y:20});
     }
 
     this.attachPacketHandlers = function(io) {
