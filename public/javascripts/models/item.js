@@ -37,6 +37,11 @@ function Item(id, options) {
         socket.emit('touchItem', packetSafe(this))
     }
 
+    this.flicker = function() {
+        this.sprite
+        createjs.Tween.get(this.sprite, {loop:true}).to({alpha:0},100).to({alpha:1},100)
+    }
+
     this.remove = function() {
         console.log('remove this!!')
         stage_over.removeChild(this.sprite)

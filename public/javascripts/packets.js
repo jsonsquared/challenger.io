@@ -32,8 +32,11 @@ function initPacketHandler(name) {
         items[data.id] = new Item(data.id, data)
     })
 
+    socket.on('flickerItem', function(data) {
+        items[data].flicker();
+    })
+
     socket.on('removeItem', function(data) {
-        console.log(data)
         items[data].remove();
     })
 
@@ -69,10 +72,11 @@ function initPacketHandler(name) {
 
     socket.on('adjustAttributes', function(data) {
         console.log('buff', data)
-        me.clipSize = data.clipSize;
-        me.ammo = data.ammo;
-        me.moveDistance = data.moveDistance
+        for(var a in data) {
+            me[a] = data[a]
+        }
         me.updateClip(data.clip)
+        me.updateHealth(data.health)
     })
 
     socket.on('died', function(data) {
@@ -97,11 +101,8 @@ function initPacketHandler(name) {
     });
 
     socket.on('regen', function(data) {
-        players[data.id].health = data.health
-        updateLeaderboardHP(data);
-        if(data.id==me.id) me.updateHealth(data.health)
+        me.updateHealth(data)
     });
-
 
     socket.on('said', function(data) {
         $('#chat ul').append('<li><strong>' + data.name + '</strong>: ' + data.text + '</li>')
