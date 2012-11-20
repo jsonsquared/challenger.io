@@ -5,11 +5,13 @@ function initGameBindings() {
 
         if(connected) me.moved()
     }).bind('mousedown',function(e) {
-        if(connected) me.fire(e);
-        me.singleClickFiring=true
-        setTimeout(function() {
-            me.singleClickFiring = false
-        },intervals.fire.rate)
+        if(connected && e.button==0) {
+            me.fire(e);
+            me.singleClickFiring=true
+            setTimeout(function() {
+                me.singleClickFiring = false
+            },intervals.fire.rate)
+        }
     })
 
     $('body').bind('mousedown', function(e) {
@@ -23,6 +25,7 @@ function initGameBindings() {
 
     $(document).unbind("contextmenu").bind("contextmenu",function(e) {
         if(hijackRightClick) {
+            if(me.clip >= me.clipMax) return false
             socket.emit('manual_reload')
             return false
         }

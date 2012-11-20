@@ -163,9 +163,13 @@ function startGame(instance) {
 window.tick = function() {
     $(document).trigger('tick')
 
-    if(me) me.stamina = me.stamina < 100 ? me.stamina+1 : 100
+    if(me) {
+        me.stamina = me.stamina < 100 ? me.stamina+1 : 100
+        document.title = me.stamina
+    }
 
     render()
+
 
     // garbage collection
     garbage.map(function(el, i, ary) {

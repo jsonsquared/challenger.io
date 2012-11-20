@@ -47,6 +47,8 @@ var Instance = function(id) {
         var thisItem = this.items[id] = new Item(options, self.iio)
         thisItem.id = id;
         self.iio.emit('addItem', packetSafe(thisItem))
+
+        return thisItem
     }
 
     this.removeItem = function(id) {
@@ -67,7 +69,16 @@ var Instance = function(id) {
     }
 
     this.generateItem = function() {
-        self.addItem({name:'Item', x:util.range(16,1000), y:util.range(12,700)});
+        var point = map.blankSpaces[Math.round(Math.random() * (map.blankSpaces.length-1))]
+        var x = point.x * config.instance.tile_size
+        var y = point.y * config.instance.tile_size
+        var item = self.addItem({name:'Item', x:x, y:y});
+        item.expiring = setTimeout(function(i) {
+            console.log('removing self ', i)
+            self.iio.emit('removeItem', i.id)
+            delete self.items[i.id]
+        }, item.expires, item)
+        console.log(self.items)
         console.log('generating an item')
     }
 

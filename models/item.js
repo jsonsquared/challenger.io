@@ -6,11 +6,8 @@ function Item(options, socket) {
     this.expires = options.expires || 10000
     this.indestructable = options.indestructable || true;
     this.name = options.name || 'Unnamed Item'
-    this.expiring = setTimeout(function(i) {
-        console.log('removing self ', i)
-        socket.emit('removeItem', i.id)
-        delete i
-    }, this.expires, this)
+
+    return this;
 }
 
 module.exports = Item;

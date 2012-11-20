@@ -9,7 +9,7 @@ function Item(id, options) {
 
     var spriteSheet = new createjs.SpriteSheet({
         images: [assets.item.img],
-        frames: {width:16, height:16, regX:8, regY:8},
+        frames: {width:16, height:16, regX:0, regY:0},
         animations: {
             alive:{frames:[0], frequency:5}
             // dying:{frames:[2,3,4,5,6,7,8,9,10,11,12,13,14], frequency:5},
