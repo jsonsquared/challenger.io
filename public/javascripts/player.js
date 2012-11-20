@@ -3,7 +3,7 @@ function Player(options) {
     var self = this;
     this.dashing = false;
     this.stamina = 100;
-
+    this.moveDistance = MOVE_DISTANCE
     this.id = options.id || 0;
     this.name = options.name || 'Unnamed Player';
     this.x = options.x || 100;
@@ -16,7 +16,7 @@ function Player(options) {
     this.payload = {}
     this.killCount = options.killCount || 0;
     this.deaths = options.deaths || 0;
-    this.clip = this.clipMax = options.clip;
+    this.clip = this.clipSize = options.clip;
     this.reloading = false;
     this.recoil = 0;
     this.singleClickFiring = false;
@@ -132,7 +132,7 @@ function Player(options) {
     this.updateClip = function(clip) {
         this.clip = clip;
         $("#clip").html(clip);
-        this.ammoMeter.update({value:(this.clip/25)*100, text: 'Ammo: ' + clip + ' / 32' })
+        this.ammoMeter.update({value:(this.clip/25)*100, text: 'Ammo: ' + clip + ' / ' + me.clipSize })
     }
 
     this.updateCounts = function() {
@@ -168,25 +168,25 @@ function Player(options) {
         if(typeof best == 'undefined') {
             var best = {x:this.x, y:this.y}
             if(dir == 'U') {
-                for(var d=this.y; d > this.y - MOVE_DISTANCE*SLIDE_FACTOR; d-=MOVE_DISTANCE) {
+                for(var d=this.y; d > this.y - self.moveDistance*SLIDE_FACTOR; d-=self.moveDistance) {
                     var x = this.x; var y = d;
                     if(!blocked(x, y) && !halfBlocked(x, y)) { best.y = d } else { break }
                 }
             }
             if(dir == 'D') {
-                for(var d=this.y; d < this.y + MOVE_DISTANCE*SLIDE_FACTOR; d+=MOVE_DISTANCE) {
+                for(var d=this.y; d < this.y + self.moveDistance*SLIDE_FACTOR; d+=self.moveDistance) {
                     var x = this.x; var y = d;
                     if(!blocked(x, y) && !halfBlocked(x, y)) { best.y = d } else { break }
                 }
             }
             if(dir == 'L') {
-                for(var d=this.x; d > this.x - MOVE_DISTANCE*SLIDE_FACTOR; d-=MOVE_DISTANCE) {
+                for(var d=this.x; d > this.x - self.moveDistance*SLIDE_FACTOR; d-=self.moveDistance) {
                     var y = this.y; var x = d;
                     if(!blocked(x, y) && !halfBlocked(x, y)) { best.x = d } else { break }
                 }
             }
             if(dir == 'R') {
-                for(var d=this.x; d < this.x + MOVE_DISTANCE*SLIDE_FACTOR; d+=MOVE_DISTANCE) {
+                for(var d=this.x; d < this.x + self.moveDistance*SLIDE_FACTOR; d+=self.moveDistance) {
                     var y = this.y; var x = d;
                     if(!blocked(x, y) && !halfBlocked(x, y)) { best.x = d } else { break }
                 }

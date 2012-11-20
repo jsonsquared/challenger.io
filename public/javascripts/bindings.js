@@ -25,7 +25,7 @@ function initGameBindings() {
 
     $(document).unbind("contextmenu").bind("contextmenu",function(e) {
         if(hijackRightClick) {
-            if(me.clip >= me.clipMax) return false
+            if(me.clip >= me.clipSize) return false
             socket.emit('manual_reload')
             return false
         }
@@ -56,7 +56,7 @@ function initGameBindings() {
 
         // R
         if(e.keyCode == 82 && $('input:focus').length==0) {
-            if(me.clip >= me.clipMax) return
+            if(me.clip >= me.clipSize) return
             if(connected) socket.emit('manual_reload')
         }
 

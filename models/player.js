@@ -11,6 +11,7 @@ var Player = function(id, name) {
         self.x = 0;
         self.y = 0;
         self.rotation = 0;
+        self.moveDistance = MOVE_DISTANCE
 
         self.lastUpdate = 0;
         self.lastHit = 0;
@@ -27,6 +28,10 @@ var Player = function(id, name) {
     }
     this.reset(id, name)
 
+    this.emit = function(name, packet) {
+        app.io.of('/instance/' + this.instance).sockets[this.id].emit(name, packet);
+    }
+
     this.move = function(data) {
         this.x = data.x || this.x;
         this.y = data.y || this.y;
@@ -38,9 +43,23 @@ var Player = function(id, name) {
         this.y = data.y || this.y;
     }
 
-    this.refresh = function(data) {
-        // console.log('sending player')
-        console.log(this.data())
+    this.useItem = function(item) {
+        if(this.currentItem) {
+            this.currentItem.debuff(this)
+        }
+        this.currentItem = item;
+        this.currentItem.buff(this)
+        setTimeout(function(item, player) {
+            item.debuff(player)
+        },item.duration, item, this);
+
+    }
+    this.buff = function(data) {
+        this.emit('adjustAttributes', this.data())
+    }
+
+    this.debuff = function(data) {
+        this.emit('adjustAttributes', this.data())
     }
 
     this.regenInterval = 0;

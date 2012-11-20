@@ -2,7 +2,6 @@ var config = require('../config/application')
 var Player = require('./player');
 var Item = require('./item');
 var util = require('../lib/util');
-require('../public/javascripts/lib/jsonHelpers');
 var initPacketHandler = require('../lib/packets.js');
 var initMainloop = require('../lib/mainloop.js');
 
@@ -19,8 +18,8 @@ var Instance = function(id) {
     this.iio = initPacketHandler(this)
     this.mainloop = initMainloop(this)
 
-    this.addPlayer = function(id, name) {
-        var player = new Player(id, name);
+    this.addPlayer = function(id) {
+        var player = new Player(id);
         this.players[id] = player;
         return player;
     }
@@ -34,14 +33,20 @@ var Instance = function(id) {
         var id = (new Date()).getTime() + util.range(1000,9999)
         this.items[id] = new Item(options)
         this.items[id].id = id;
-        self.iio.emit('addItem', packetSafe(this.items[id]))
+        self.iio.emit('addItem', util.packetSafe(this.items[id]))
 
         return this.items[id]
     }
 
+    this.useItem = function(id) {
+        if(this.items[id]) {
+            this.items[id].used = true;
+            self.iio.emit('removeItem', id)
+        }
+    }
+
     this.removeItem = function(id) {
         if(this.items[id]) {
-            self.iio.emit('removeItem', id)
             delete this.items[id]
         }
     }
@@ -81,10 +86,11 @@ var Instance = function(id) {
     }
 
     this.data = function() {
+        // return util.packetSafe(this)
         return {
             id: this.id,
-            players: this.players,
-            items: packetSafe(this.items),
+            players: util.packetSafe(this.players),
+            items: util.packetSafe(this.items),
             score: this.kills,
             state: this.state
         }

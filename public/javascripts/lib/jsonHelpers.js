@@ -35,5 +35,3 @@ packetSafe = function(what) {
     }
     return ret;
 }
-
-if(typeof module != 'undefined') module.exports = packetSafe

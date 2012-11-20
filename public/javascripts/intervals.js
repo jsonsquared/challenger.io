@@ -9,10 +9,10 @@ function initIntervals() {
     intervals.move.interval = setInterval(function() {
         var move = {};
         if($('input:focus').length==0) {
-            if(INPUT_U()) { move.y = me.y - MOVE_DISTANCE }
-            if(INPUT_L()) { move.x = me.x - MOVE_DISTANCE }
-            if(INPUT_D()) { move.y = me.y + MOVE_DISTANCE }
-            if(INPUT_R()) { move.x = me.x + MOVE_DISTANCE }
+            if(INPUT_U()) { move.y = me.y - me.moveDistance }
+            if(INPUT_L()) { move.x = me.x - me.moveDistance }
+            if(INPUT_D()) { move.y = me.y + me.moveDistance }
+            if(INPUT_R()) { move.x = me.x + me.moveDistance }
             if(move.x || move.y) me.move(move)
         }
     },intervals.move.rate)

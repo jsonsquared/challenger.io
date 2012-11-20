@@ -3,6 +3,7 @@ var MOVE_DISTANCE = 3;
 var SLIDE_FACTOR = 24;
 var STAMINA_TO_DASH = 40;
 var NAME_LENGTH = 16;
+var CLIP_SIZE = 32;
 var socket;
 var connected = false;
 var stage_under, stage_over;

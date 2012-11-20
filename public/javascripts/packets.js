@@ -53,7 +53,8 @@ function initPacketHandler(name) {
             new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
             players[data.owner].muzzleFlash(data.gun)
         } else {
-            me.updateClip(data.ownerClip)
+            console.log(me.clipSize)
+            me.updateClip(data.ownerClip, me.clipSize)
         }
     });
 
@@ -65,6 +66,14 @@ function initPacketHandler(name) {
         }
         updateLeaderboardHP(data);
     });
+
+    socket.on('adjustAttributes', function(data) {
+        console.log('buff', data)
+        me.clipSize = data.clipSize;
+        me.ammo = data.ammo;
+        me.moveDistance = data.moveDistance
+        me.updateClip(data.clip)
+    })
 
     socket.on('died', function(data) {
         players[data.id].deaths = data.deaths;
