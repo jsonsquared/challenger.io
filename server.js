@@ -48,7 +48,6 @@ var Instance = require('./models/instance')
 app.instances = {};
 
 var instance = new Instance('challenger-io');
-// instance.attachPacketHandlers(app.io)
 app.instances[instance.id] = instance;
 
 var routes = require('./config/routes');

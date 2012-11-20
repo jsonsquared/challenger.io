@@ -16,6 +16,7 @@ var me; // alias for which player I am in the players object
 var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
 var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 var spriteSheets = {};
+var messages = [];
 
 var mapData = {
     walls:[],

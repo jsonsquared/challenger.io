@@ -1,0 +1,9 @@
+An instance has many players
+An instance has many items
+An instance has one main loop
+An instance has one packet manager
+
+
+
+
+The player has one item

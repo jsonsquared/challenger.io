@@ -1,4 +1,3 @@
-var messages = [];
 function Message(text, options) {
     var options = options || {}
 
@@ -26,5 +25,4 @@ function Message(text, options) {
     }
 
     this.show(options)
-
 }

@@ -86,7 +86,6 @@ var Instance = function(id) {
     }
 
     this.data = function() {
-        // return util.packetSafe(this)
         return {
             id: this.id,
             players: util.packetSafe(this.players),
