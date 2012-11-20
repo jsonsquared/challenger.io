@@ -58,13 +58,10 @@ function Bullet(options) {
             var y = self.delta * self.trajectoryY
 
             if(blocked(self.sprite.x, self.sprite.y, 2)) {
-                // hit a wall
-               self.remove();
+                self.remove();
             } else if(hitPlayer = playerHit(self)) {
-                // hit a player
-                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y})
-                HIT = {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y};
-               self.remove();
+                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y})                
+                self.remove();
             } else {
                 self.sprite.x += x
                 self.sprite.y += y

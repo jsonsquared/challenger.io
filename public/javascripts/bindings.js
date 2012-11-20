@@ -75,6 +75,8 @@ function initGameBindings() {
             if(e.keyCode==68 || e.keyCode==39) me.dash('R')
             if(e.keyCode==83 || e.keyCode==40) me.dash('D')
             if(e.keyCode==65 || e.keyCode==37) me.dash('L')
+        } else {
+            lastKeyUp = {was:false, at:now};
         }
     })
 
