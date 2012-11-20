@@ -30,7 +30,7 @@ var Instance = function(id) {
     }
 
     this.addItem = function(options) {
-        var id = (new Date()).getTime() + util.range(1000,9999)
+        var id = (new Date()).getTime() + '-' + util.range(1000,9999)
         this.items[id] = new Item(options)
         this.items[id].id = id;
         self.iio.emit('addItem', util.packetSafe(this.items[id]))
@@ -51,11 +51,15 @@ var Instance = function(id) {
         }
     }
 
-    this.randomSpawn = function() {
-        var point = this.map.spawnPoints[util.range(0, this.map.spawnPoints.length-1)]
-        var x = point.x * config.instance.tile_size + (config.instance.tile_size/2);
-        var y = point.y * config.instance.tile_size + (config.instance.tile_size/2);
-        return {x: x, y: y}
+    this.increaseKillCount = function() {
+        self.kills++;
+        self.iio.emit('score', self.data())
+
+        if(this.gameover()) {
+            self.iio.emit('gameover')
+            self.state = 'stopped';
+            setTimeout(self.newGame, WAIT_TIME)
+        }
     }
 
     this.full = function() {
@@ -77,12 +81,15 @@ var Instance = function(id) {
 
     this.newGame = function() {
         self.kills = 0;
+        self.state = 'running';
+
         for(var p = 0, plen = Object.keys(this.players).length; p < plen; p++) {
             var player = this.players[Object.keys(this.players)[p]];
             player.reset(player.id, player.name);
-            player.setPosition(self.randomSpawn())
+            player.setPosition(self.map.randomSpawn())
             player.respawn();
         }
+        self.iio.emit('new_game', self.data())
     }
 
     this.data = function() {
