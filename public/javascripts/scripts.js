@@ -141,6 +141,7 @@ function startGame(instance) {
         $('#meter-ammo, #meter-hp').remove();
     }
 
+    $("#total_score h2 span").html(instance.score)
     console.log('startGame')
     for(var p in instance.players) {
         players[instance.players[p].id] = new Player(instance.players[p])
