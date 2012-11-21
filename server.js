@@ -37,10 +37,10 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-var ratchet = require('ratchetio');
-app.configure('production', function(){
-  app.use(ratchet.errorHandler(config.ratchet_key));
-});
+// var ratchet = require('ratchetio');
+// app.configure('production', function(){
+//   app.use(ratchet.errorHandler(config.ratchet_key));
+// });
 
 app.io = require('socket.io').listen(app.listen(config.port));
 app.io.set('log level', 1);
