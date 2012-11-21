@@ -1,11 +1,8 @@
 {
-  "name": "nko3-challenger-io",
+  "name": "challenger.io",
   "version": "0.0.0-43",
   "description": "challenger.io",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
   "repository": {
     "type": "git",
     "url": "git@github.com:nko3/challenger-io.git"
@@ -18,14 +15,19 @@
   },
   "devDependencies": {
     "jitsu": "",
-    "supervisor": ""
+    "supervisor": "",
+    "mocha": "",
+    "should": ""
   },
   "engines": {
     "node": "0.8.x"
   },
-  "subdomain": "challenger-io.nko3",
   "domains": [
     "www.challenger.io",
     "challenger.io"
-  ]
+  ],
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --require should --recursive --reporter spec ./tests",
+    "start": "node server.js"
+  }
 }
