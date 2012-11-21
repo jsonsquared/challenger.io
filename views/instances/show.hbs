@@ -23,7 +23,15 @@
 <script src='/javascripts/light/lightingEngine.js'></script>
 <script src='/assets/map.js'></script>
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+{{#if testing}}
+    <script src='http://code.jquery.com/qunit/qunit-1.10.0.js'></script>
+    <link href='http://code.jquery.com/qunit/qunit-1.10.0.css' rel='stylesheet'>
+    <script src='/tests/helpers.js'></script>    
+    <script src='/tests/{{testing}}.js'></script>
+    <div id="qunit"></div>    
+{{/if}}
 <script>instance = '{{instance}}'</script>
+
 <div class="container" id='game-container'>
     <h1 class="page-header" style='margin-top:10px'><a href='/instance'>challenger.io</a> <small>{{instance}} </small></h1>
 

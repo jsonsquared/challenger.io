@@ -51,8 +51,10 @@ var instances = {
             res.redirect('/instance' + '?error=Server is full, please pick another');
         }
 
+        console.log(req.query)
         res.render('instances/show', {
-            instance:instance.id
+            instance:instance.id,
+            testing:req.param('test')
         });
     }
 };

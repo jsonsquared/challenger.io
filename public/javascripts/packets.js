@@ -3,6 +3,7 @@ function initPacketHandler(name) {
     socket = io.connect('http://' + window.location.host + window.location.pathname, {reconnect: false});
 
     socket.on('connect', function () {
+        $(document).trigger('connected')
         connected = true
         socket.emit('join', name)
         $('#me').text(name)

@@ -116,7 +116,7 @@ function checkName(name, callback) {
         $('#enter-container').remove();
         $('#game-container').show();
     } else {
-        $('#name').css({border:'2px solid red'});
+        $('#name').addClass('error')
     }
 }
 
@@ -161,6 +161,7 @@ function startGame(instance) {
         items[i] = new Item(i, instance.items[i])
     }
 
+    $(document).trigger('startGame')
 }
 
 window.tick = function() {
