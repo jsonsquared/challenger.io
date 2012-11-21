@@ -55,7 +55,7 @@ var Instance = function(id) {
         self.kills++;
         self.iio.emit('score', self.data())
 
-        if(this.gameover()) {
+        if(self.kills == KILL_TOTAL) {
             self.iio.emit('gameover')
             self.state = 'stopped';
             setTimeout(self.newGame, WAIT_TIME)
@@ -75,16 +75,12 @@ var Instance = function(id) {
         return playerNames;
     }
 
-    this.gameover = function() {
-        return this.kills == KILL_TOTAL;
-    }
-
     this.newGame = function() {
         self.kills = 0;
         self.state = 'running';
 
-        for(var p = 0, plen = Object.keys(this.players).length; p < plen; p++) {
-            var player = this.players[Object.keys(this.players)[p]];
+        for(var p = 0, plen = Object.keys(self.players).length; p < plen; p++) {
+            var player = self.players[Object.keys(self.players)[p]];
             player.reset(player.id, player.name);
             player.setPosition(self.map.randomSpawn())
             player.respawn();
