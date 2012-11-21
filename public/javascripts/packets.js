@@ -10,7 +10,6 @@ function initPacketHandler(name) {
     });
 
     socket.on('instance', function(data) {
-        console.log(data)
         join(data)
         new Message('GO GO GO!')
         updateLeaderboard();
@@ -29,7 +28,6 @@ function initPacketHandler(name) {
     })
 
     socket.on('addItem', function(data) {
-        console.log(data)
         items[data.id] = new Item(data.id, data)
     })
 
@@ -57,7 +55,6 @@ function initPacketHandler(name) {
             new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
             players[data.owner].muzzleFlash(data.gun)
         } else {
-            console.log(me.clipSize)
             me.updateClip(data.ownerClip, me.clipSize)
         }
     });
@@ -72,7 +69,6 @@ function initPacketHandler(name) {
     });
 
     socket.on('adjustAttributes', function(data) {
-        console.log('buff', data)
         for(var a in data) {
             me[a] = data[a]
         }

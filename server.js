@@ -11,13 +11,13 @@ global.TOTAL_HEALTH = 100;
 global.CLIP_SIZE = 32
 global.MOVE_SPEED = 200;
 global.MOVE_DISTANCE = 3;
-global.RESPAWN_TIME = 3000;
+// global.RESPAWN_TIME = 3000;
 global.RELOAD_TIME = 1000;
 global.WAIT_TIME = 5000;
 global.KILL_TOTAL = 2;
-global.REGEN_AMOUNT = 2;
-global.REGEN_WAIT = 5000;
-global.REGEN_INTERVAL = 100;
+// global.REGEN_AMOUNT = 2;
+// global.REGEN_WAIT = 5000;
+// global.REGEN_INTERVAL = 100;
 global.TYPE_PLAYER = 1;
 global.TYPE_ITEM = 2;
 

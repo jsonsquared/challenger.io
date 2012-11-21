@@ -1,5 +1,6 @@
 function Item(options) {
     var self = this;
+    this.id = options.id;
     this.item = options.item;
     this.x = options.x || 0;
     this.y = options.y || 0;

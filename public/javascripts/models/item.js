@@ -43,7 +43,6 @@ function Item(id, options) {
     }
 
     this.remove = function() {
-        console.log('remove this!!')
         stage_over.removeChild(this.sprite)
         delete this;
     }
