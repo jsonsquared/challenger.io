@@ -29,6 +29,17 @@ var Player = function(id, name) {
     self.respawning = false;
     self.clip = self.clipSize = config.instance.CLIP_SIZE;
 
+    self.emit = self.broadcast = function() { console.log('socket not linked')}
+
+    this.linkSocket = function(s) {
+        this.emit = function(packet, data) {
+            app.io.of('/instance/' + this.instance).sockets[this.id].emit(packet, data)
+        }
+        this.broadcast = function(packet, data) {
+            app.io.of('/instance/' + this.instance).emit(packet, data);
+        }
+    }
+
     this.move = function(data) {
         this.x = data.x || this.x;
         this.y = data.y || this.y;
@@ -102,6 +113,7 @@ var Player = function(id, name) {
         this.dead = true;
         this.x = -10000;
         this.y = -10000;
+        this.broadcast('died', this.data())
     }
 
     this.isEmpty = function() {
