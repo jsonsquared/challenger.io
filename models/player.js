@@ -4,6 +4,8 @@ var config = require('../config/application')
 
 var Player = function(id, name) {
 
+    this.attributes = ["id","name","team","x","y","rotation","moveDistance","lastHit","hitBy","killCount","killSpree","deathCount","currentItem","dead","health","respawning","clip"]
+
     var self = this;
 
     self.regenInterval = 0;
@@ -155,7 +157,7 @@ var Player = function(id, name) {
     }
 
     this.data = function() {
-        return util.packetSafe(this)
+        return util.dataFor(this)
     }
 }
 module.exports = Player;
