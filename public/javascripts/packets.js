@@ -77,7 +77,7 @@ function initPacketHandler(name) {
     })
 
     socket.on('died', function(data) {
-        players[data.id].deaths = data.deaths;
+        players[data.id].deathCount = data.deathCount;
         players[data.id].updatePosition(data.x, data.y, data.rotation)
         me.updateCounts();
     });

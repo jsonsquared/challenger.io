@@ -14,26 +14,6 @@ describe('Player', function() {
         player.should.be.an.instanceOf(Player);
     })
 
-    describe('.reset()', function() {
-        beforeEach(function(done) {
-            player.killedPlayer(foe)
-            player.x = 10;
-            player.y = 20;
-            player.reset(player.id, player.name);
-            done()
-        })
-
-        it('should not have any kills after being reset', function() {
-            player.killCount.should.equal(0);
-        })
-
-        it('should be at x:0, y:0 after being reset', function() {
-            player.x.should.equal(0);
-            player.y.should.equal(0);
-        })
-
-    })
-
     describe('.move()', function() {
         it('should move if given an object with one key (y)', function() {
             player.move({y:10})
@@ -200,7 +180,7 @@ describe('Player', function() {
     describe('.die()', function() {
         it('should add one to the players death count when dying', function() {
             player.die()
-            player.deaths.should.equal(1)
+            player.deathCount.should.equal(1)
         });
 
         it('should know who killed them when dying', function() {

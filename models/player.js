@@ -3,36 +3,29 @@ var map = require('../lib/mapUtils').parse()
 var config = require('../config/application')
 
 var Player = function(id, name) {
+
     var self = this;
 
-    this.regenInterval = 0;
-    this.regenTimeout = 0;
-
-    this.reset = function(id, name) {
-        self.id = id;
-        self.name = name;
-        self.team = 0;
-        self.x = 0;
-        self.y = 0;
-        self.rotation = 0;
-        self.moveDistance = config.instance.MOVE_DISTANCE
-
-        self.lastUpdate = 0;
-        self.lastHit = 0;
-        self.hitBy;
-
-        self.killCount = 0;
-        self.killSpree = 0;
-        self.deaths = 0;
-        self.currentItem = false;
-
-        self.dead = false;
-        self.health = config.instance.TOTAL_HEALTH;
-        self.respawning = false;
-
-        self.clip = self.clipSize = config.instance.CLIP_SIZE;
-    }
-    this.reset(id, name)
+    self.regenInterval = 0;
+    self.regenTimeout = 0;
+    self.id = id;
+    self.name = name;
+    self.team = 0;
+    self.x = 0;
+    self.y = 0;
+    self.rotation = 0;
+    self.moveDistance = config.instance.MOVE_DISTANCE
+    self.lastUpdate = 0;
+    self.lastHit = 0;
+    self.hitBy;
+    self.killCount = 0;
+    self.killSpree = 0;
+    self.deathCount = 0;
+    self.currentItem = false;
+    self.dead = false;
+    self.health = config.instance.TOTAL_HEALTH;
+    self.respawning = false;
+    self.clip = self.clipSize = config.instance.CLIP_SIZE;
 
     this.move = function(data) {
         this.x = data.x || this.x;
@@ -100,7 +93,7 @@ var Player = function(id, name) {
     this.die = function(killer) {
         clearInterval(this.regenInterval); // stop gaining health
         clearTimeout(this.regenTimeout)
-        this.deaths++;
+        this.deathCount++;
         this.hitBy = killer;
         this.killSpree = 0;
         this.health = 0;
@@ -121,12 +114,10 @@ var Player = function(id, name) {
         this.respawning = setTimeout(function() {
             self.setPosition(map.randomSpawn())
             self.respawning = false;
-            //self.respawn();
             console.log('respawned!')
             if(typeof callback == 'function') callback()
 
         }, config.instance.RESPAWN_TIME)
-
     }
 
     this.shotFired = function() {

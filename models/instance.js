@@ -81,9 +81,9 @@ var Instance = function(id) {
 
         for(var p = 0, plen = Object.keys(self.players).length; p < plen; p++) {
             var player = self.players[Object.keys(self.players)[p]];
-            player.reset(player.id, player.name);
-            player.setPosition(self.map.randomSpawn())
-            player.respawn();
+            player.setPosition(self.map.randomSpawn());
+            player.killCount = 0;
+            player.deathCount = 0;
         }
         self.iio.emit('new_game', self.data())
     }

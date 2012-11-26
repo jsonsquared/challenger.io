@@ -15,7 +15,7 @@ function Player(options) {
     this.light = {}; // blank - only used if the player is this user
     this.payload = {}
     this.killCount = options.killCount || 0;
-    this.deaths = options.deaths || 0;
+    this.deathCount = options.deathCount || 0;
     this.clip = this.clipSize = options.clip;
     this.reloading = false;
     this.recoil = 0;
@@ -137,7 +137,7 @@ function Player(options) {
 
     this.updateCounts = function() {
         $('#kills span').html(this.killCount);
-        $('#deaths span').html(this.deaths);
+        $('#deaths span').html(this.deathCount);
     }
 
     this.moved = function(skipmyLight) {
