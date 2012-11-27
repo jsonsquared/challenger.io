@@ -47,7 +47,7 @@ var Player = function(id, name) {
     this.join = function(name, instance) {
         self.name = name;
         self.instance = instance.id;
-        self.setPosition(map.randomSpawn())
+        self.move(map.randomSpawn())
         self.emit('instance', instance.data());
         self.broadcast('addPlayer', self.data());
     }
@@ -152,19 +152,22 @@ var Player = function(id, name) {
     this.respawn = function(timeout) {
         clearTimeout(this.respawning)
         self.respawning = setTimeout(function() {
-            self.setPosition(map.randomSpawn());
+            self.move(map.randomSpawn());
             self.health = config.instance.TOTAL_HEALTH;
             self.emit('respawn', self.data());
             self.respawning = false;
+            self.dead = false;
         }, timeout || config.instance.RESPAWN_TIME)
     }
 
     this.fire = function(bullet) {
         if(self.isEmpty()) {
             self.reloadStart();
+            return false;
         } else {
             self.clip--
             self.broadcast('fired', {bullet:bullet, ammo:self.clip})
+            return true
         }
     }
 
@@ -173,7 +176,8 @@ var Player = function(id, name) {
 
         self.emit('reload', self.data())
         self.reloading = true;
-        setTimeout(self.reloadComplete, RELOAD_TIME)
+        setTimeout(self.reloadComplete, config.instance.RELOAD_TIME)
+        return true;
     }
 
     this.reloadComplete = function() {
@@ -181,11 +185,6 @@ var Player = function(id, name) {
         self.clip = self.clipSize;
         self.emit('reloaded', self.data())
         self.reloading = false;
-    }
-
-    this.setPosition = function(obj) {
-        this.x = obj.x;
-        this.y = obj.y;
     }
 
     this.onKillingSpree = function() {

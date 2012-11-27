@@ -213,8 +213,101 @@ describe('Player', function() {
             player.x.should.be.equal(-10000)
             player.y.should.be.equal(-10000)
         });
+    });
 
+    describe('.isEmpty()', function() {
+        it('should return true if ammo is 0', function() {
+            player.clip = 0;
+            player.isEmpty().should.be.true
+        });
+
+        it('should return true if ammo is less than 0', function() {
+            player.clip = -10;
+            player.isEmpty().should.be.true
+        });
+    });
+
+    describe('.respawn()', function() {
+        it('should be flagged as respawning', function() {
+            player.respawn(10);
+            player.respawning.should.not.be.false
+        });
+
+        it('should not be flagged as respawning after respawning', function(done) {
+            player.respawn(10);
+            player.respawning.should.not.be.false
+            setTimeout(function() {
+                player.respawning.should.be.false
+                done()
+            },10)
+        });
+
+        it('should be moved to a random position after respawning', function(done) {
+            player.x=10;
+            player.respawn(10)
+            setTimeout(function() {
+                player.x.should.not.equal(10)
+                done()
+            },10)
+        });
+
+        it('should have 100% health after respawning', function(done) {
+            player.health=10;
+            player.respawn(10)
+            setTimeout(function() {
+                player.health.should.equal(100)
+                done()
+            },10)
+        });
 
     });
+
+    describe('.fire()', function() {
+        it('should return true if able to fire', function() {
+            player.fire().should.be.true
+        });
+
+        it('should return false if unable to fire', function() {
+            player.clip = -10;
+            player.fire().should.be.false
+        });
+
+        it('should use 1 round of ammunition when firing', function() {
+            player.clip = 5
+            player.fire()
+            player.clip.should.equal(4);
+        });
+    });
+
+    describe('.reloadStart(), .reloadComplete', function() {
+        config.instance.RELOAD_TIME = 10;
+
+        it('should be flagged as reloading', function() {
+            player.reloadStart();
+            player.reloading.should.be.true
+        });
+
+        it('should return false is already reloading', function() {
+            player.reloadStart();
+            player.reloadStart().should.be.false;
+        });
+
+        it('should increase ammo', function() {
+            player.clip = 2
+            player.reloadStart()
+            setTimeout(function() {
+                player.clip.should.be.above(2)
+            }, config.instance.RELOAD_TIME);
+        });
+
+    })
+
+    describe('.onKillingSpree()', function() {
+        it('should return true if kills is >= 2', function() {
+            player.killSpree = 2
+            player.onKillingSpree().should.be.true
+        });
+    })
+
 
 })

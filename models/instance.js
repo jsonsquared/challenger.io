@@ -84,7 +84,7 @@ var Instance = function(options) {
 
         for(var p = 0, plen = Object.keys(self.players).length; p < plen; p++) {
             var player = self.players[Object.keys(self.players)[p]];
-            player.setPosition(self.map.randomSpawn());
+            player.move(self.map.randomSpawn());
             player.killCount = 0;
             player.deathCount = 0;
         }

@@ -326,7 +326,8 @@ function Player(options) {
 
     this.respawn = function(data) {
         this.updatePosition(data.x, data.y, 0)
-        this.moved()
+        myLight.position.x = data.x
+        myLight.position.y = data.y
         socket.emit('move', me.payload)
         me.updateHealth(data.health)
 
