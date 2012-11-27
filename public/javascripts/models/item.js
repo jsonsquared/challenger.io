@@ -24,7 +24,7 @@ function Item(id, options) {
     this.sprite.graphics.beginFill(this.color).drawRect(0,0,16,16)
     stage_over.addChildAt(this.sprite, 1)
 
-    me.collisionManager.add(this)
+    if(me) me.collisionManager.add(this)
 
     this.updatePosition = function(x, y) {
         this.x = x || this.x;
@@ -44,6 +44,7 @@ function Item(id, options) {
 
     this.remove = function() {
         stage_over.removeChild(this.sprite)
+        delete items[this.id]
         delete this;
     }
 }

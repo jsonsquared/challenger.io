@@ -157,7 +157,9 @@ function startGame(instance) {
         updateLeaderboardHP(p)
     }
 
+    console.log(instance)
     for(var i in instance.items) {
+
         items[i] = new Item(i, instance.items[i])
     }
 

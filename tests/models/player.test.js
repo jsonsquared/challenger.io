@@ -14,6 +14,15 @@ describe('Player', function() {
         player.should.be.an.instanceOf(Player);
     })
 
+    describe('.join()', function() {
+        it('should join a game instance', function() {
+            player.join('test', {id:2, data:function(){}})
+
+            player.name.should.equal('test');
+            player.instance.should.equal(2)
+        })
+    })
+
     describe('.move()', function() {
         it('should move if given an object with one key (y)', function() {
             player.move({y:10})

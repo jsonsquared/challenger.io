@@ -1,22 +1,23 @@
 var config = require('../config/application')
 var Player = require('./player');
 var Item = require('./item');
+var InstanceItem = require('./instanceItem');
 var util = require('../lib/util');
-var initPacketHandler = require('../lib/packets.js');
-var initMainloop = require('../lib/mainloop.js');
+var PacketHandler = require('../lib/packets.js');
+var Mainloop = require('../lib/mainloop.js');
 
-var Instance = function(id) {
+var Instance = function(options) {
     var self = this;
 
-    this.id = id;
+    this.id = options.id;
     this.players = {};
     this.items = {};
     this.iio;
     this.kills = 0;
     this.map = require('../lib/mapUtils').parse()
     this.state = 'running';
-    this.iio = initPacketHandler(this)
-    this.mainloop = initMainloop(this)
+    this.iio = options.iio || new PacketHandler(this)
+    this.mainloop = options.mainloop || new Mainloop(this)
 
     this.addPlayer = function(id) {
         var player = new Player(id);
@@ -26,16 +27,18 @@ var Instance = function(id) {
 
     this.removePlayer = function(id) {
         this.kills = this.kills - this.players[id].killCount;
+        self.iio.emit('removePlayer', this.players[id].data());
         delete this.players[id]
     }
 
     this.addItem = function(options) {
-        var id = (new Date()).getTime() + '-' + util.range(1000,9999)
-        this.items[id] = new Item(options)
-        this.items[id].id = id;
-        self.iio.emit('addItem', util.packetSafe(this.items[id]))
-
-        return this.items[id]
+        var item = new InstanceItem(options)
+        item.id = util.uid();
+        item.instance = self.id;
+        item.linkSocket();
+        this.items[item.id] = item;
+        self.iio.emit('addItem', item.data())
+        return this.items[item.id]
     }
 
     this.useItem = function(id) {

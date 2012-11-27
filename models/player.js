@@ -4,7 +4,7 @@ var config = require('../config/application')
 
 var Player = function(id, name) {
 
-    this.attributes = ["id","name","team","x","y","rotation","moveDistance","lastHit","hitBy","killCount","killSpree","deathCount","currentItem","dead","health","respawning","clip"]
+    this.attributes = ["id","name","team","x","y","rotation","moveDistance","lastHit","hitBy","killCount","killSpree","deathCount","dead","health","respawning","clip"]
 
     var self = this;
 
@@ -29,45 +29,69 @@ var Player = function(id, name) {
     self.respawning = false;
     self.clip = self.clipSize = config.instance.CLIP_SIZE;
 
-    self.emit = self.broadcast = function() { console.log('socket not linked')}
+    self.emit = self.broadcast = self.volatile = function() { console.log('socket not linked')}
 
-    this.linkSocket = function(s) {
+    this.linkSocket = function() {
         this.emit = function(packet, data) {
-            app.io.of('/instance/' + this.instance).sockets[this.id].emit(packet, data)
+            var socket = app.io.of('/instance/' + this.instance).sockets[this.id]
+            if(socket) socket.emit(packet, data)
         }
         this.broadcast = function(packet, data) {
             app.io.of('/instance/' + this.instance).emit(packet, data);
         }
+        this.volatile = function(packet, data) {
+            app.io.of('/instance/' + this.instance).volatile.emit(packet, data);
+        }
+    }
+
+    this.join = function(name, instance) {
+        self.name = name;
+        self.instance = instance.id;
+        self.setPosition(map.randomSpawn())
+        self.emit('instance', instance.data());
+        self.broadcast('addPlayer', self.data());
     }
 
     this.move = function(data) {
-        this.x = data.x || this.x;
-        this.y = data.y || this.y;
-        this.rotation = data.rotation || this.rotation;
+        self.x = data.x || self.x;
+        self.y = data.y || self.y;
+        self.rotation = data.rotation || self.rotation;
+        self.volatile('moved', self.data())
     }
 
     this.dash = function(data) {
-        this.x = data.x || this.x;
-        this.y = data.y || this.y;
+        self.x = data.x || self.x;
+        self.y = data.y || self.y;
+        self.emit('dashed', {player:self.data(), best:data})
     }
 
     this.useItem = function(item) {
-        this.currentItem = item;
+        if(self.currentItem) self.currentItem.debuff(self)
+        item.buff(self)
+        self.emit('adjustAttributes', self.data())
+        self.currentItem = item;
+        setTimeout(function(item) {
+            item.debuff(self)
+            self.emit('adjustAttributes', self.data())
+        },item.duration, item);
+
     }
 
     this.takeDamage = function(damage, type, what, callback) {
         // todo: assign killer if its a TYPE_KILLER
-        this.health -= damage
+        self.health -= damage
+        self.emit('damage', self.data());
 
-        if(this.health<=0) {
-            this.health = 0;
+        if(self.health<=0) {
+            self.health = 0;
             return true
         } else {
+            self.regenHealth()
             return false;
         }
     }
 
-    this.regenHealth = function(step) {
+    this.regenHealth = function() {
         clearInterval(self.regenInterval); // stop gaining health
         clearTimeout(self.regenTimeout) // reset the time we wait to start regenerating health
 
@@ -79,7 +103,7 @@ var Player = function(id, name) {
                     clearInterval(self.regenInterval)
                     clearTimeout(self.regenTimeout)
                 }
-                if(typeof step == 'function') step(self.health)
+                self.emit('regen', self.health)
             },config.instance.REGEN_INTERVAL)
         }, config.instance.REGEN_WAIT)
     }
@@ -98,48 +122,65 @@ var Player = function(id, name) {
         return this.takeDamage(damage, config.instance.TYPE_ITEM, item)
     }
 
-    this.killedPlayer = function(callback) {
+    this.killedPlayer = function(killed) {
         this.killCount++;
         this.killSpree++;
+        self.broadcast('kill', {id: self.id, killCount: self.killCount, killee: killed})
+        if(self.onKillingSpree()) {
+            self.broadcast('said', {name: 'Server', text: self.killSpreeLevel()} )
+            self.broadcast('spree', self.killSpreeLevel())
+        }
     }
 
     this.die = function(killer) {
-        clearInterval(this.regenInterval); // stop gaining health
-        clearTimeout(this.regenTimeout)
-        this.deathCount++;
-        this.hitBy = killer;
-        this.killSpree = 0;
-        this.health = 0;
-        this.dead = true;
-        this.x = -10000;
-        this.y = -10000;
-        this.broadcast('died', this.data())
+        clearInterval(self.regenInterval); // stop gaining health
+        clearTimeout(self.regenTimeout)
+        self.deathCount++;
+        self.hitBy = killer;
+        self.killSpree = 0;
+        self.health = 0;
+        self.dead = true;
+        self.x = -10000;
+        self.y = -10000;
+        self.broadcast('died', self.data())
     }
 
     this.isEmpty = function() {
-        return this.clip <= 0;
+        return self.clip <= 0;
     }
 
-    this.respawn = function(callback) {
-        this.health = config.instance.TOTAL_HEALTH;
-        this.dead = false;
-        console.log('respawning soon')
+    this.respawn = function(timeout) {
         clearTimeout(this.respawning)
-        this.respawning = setTimeout(function() {
-            self.setPosition(map.randomSpawn())
+        self.respawning = setTimeout(function() {
+            self.setPosition(map.randomSpawn());
+            self.health = config.instance.TOTAL_HEALTH;
+            self.emit('respawn', self.data());
             self.respawning = false;
-            console.log('respawned!')
-            if(typeof callback == 'function') callback()
-
-        }, config.instance.RESPAWN_TIME)
+        }, timeout || config.instance.RESPAWN_TIME)
     }
 
-    this.shotFired = function() {
-        this.clip--;
+    this.fire = function(bullet) {
+        if(self.isEmpty()) {
+            self.reloadStart();
+        } else {
+            self.clip--
+            self.broadcast('fired', {bullet:bullet, ammo:self.clip})
+        }
     }
 
-    this.reload = function() {
-        this.clip = this.clipSize;
+    this.reloadStart = function() {
+        if(self.reloading || self.isEmpty()) return false;
+
+        self.emit('reload', self.data())
+        self.reloading = true;
+        setTimeout(self.reloadComplete, RELOAD_TIME)
+    }
+
+    this.reloadComplete = function() {
+        if(!self) return
+        self.clip = self.clipSize;
+        self.emit('reloaded', self.data())
+        self.reloading = false;
     }
 
     this.setPosition = function(obj) {
@@ -166,6 +207,10 @@ var Player = function(id, name) {
         } else if(this.killSpree > 6) {
             return this.name + ' is a killing machine';
         }
+    }
+
+    this.say = function(what) {
+        self.broadcast('said', {name: self.name, text: what.replace(/<[a-zA-Z\/][^>]*>/igm, '')});
     }
 
     this.data = function() {

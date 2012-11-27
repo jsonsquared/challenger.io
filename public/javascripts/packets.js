@@ -32,11 +32,11 @@ function initPacketHandler(name) {
     })
 
     socket.on('flickerItem', function(data) {
-        items[data].flicker();
+        if(items[data]) items[data].flicker();
     })
 
     socket.on('removeItem', function(data) {
-        items[data].remove();
+        if(items[data]) items[data].remove();
     })
 
     socket.on('moved', function(data) {
@@ -51,11 +51,11 @@ function initPacketHandler(name) {
 
 
     socket.on('fired', function(data) {
-        if(me.id != data.owner) {
-            new Bullet({x:data.startX, y:data.startY, endX:data.endX, endY:data.endY, owner:data.owner})
-            players[data.owner].muzzleFlash(data.gun)
+        if(me.id != data.bullet.owner) {
+            new Bullet({x:data.bullet.startX, y:data.bullet.startY, endX:data.bullet.endX, endY:data.bullet.endY, owner:data.bullet.owner})
+            players[data.bullet.owner].muzzleFlash(data.bullet.gun)
         } else {
-            me.updateClip(data.ownerClip, me.clipSize)
+            me.updateClip(data.ammo, me.clipSize)
         }
     });
 
@@ -134,4 +134,6 @@ function initPacketHandler(name) {
         startGame(data)
         new Message('GO GO GO!')
     });
+
+    return this;
 }
