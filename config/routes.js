@@ -7,4 +7,6 @@ exports.init = function(app) {
     app.post('/instance/player', instances.get_join);
     app.post('/instance/join', instances.post_join);
     app.get('/instance/:id', instances.show);
+
+    app.get('/test', instances.test);
 }
