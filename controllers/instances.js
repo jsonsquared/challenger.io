@@ -8,6 +8,10 @@ var instances = {
         return this;
     },
 
+    test:function(req, res) {
+        res.render('instances/test')
+    },
+
     index: function(req, res) {
         var instances = [];
         var totalPlayers = 0;
