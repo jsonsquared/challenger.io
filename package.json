@@ -26,6 +26,7 @@
     "www.challenger.io",
     "challenger.io"
   ],
+  "subdomain": "challenger-io",
   "scripts": {
     "test": "./node_modules/.bin/mocha --require should --recursive --reporter spec ./tests",
     "start": "node server.js"

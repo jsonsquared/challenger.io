@@ -58,7 +58,7 @@ var Instance = function(options) {
         self.kills++;
         self.iio.emit('score', self.data())
 
-        if(self.kills == KILL_TOTAL) {
+        if(self.kills == config.instance.KILL_TOTAL) {
             self.iio.emit('gameover')
             self.state = 'stopped';
             setTimeout(self.newGame, WAIT_TIME)

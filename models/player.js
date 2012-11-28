@@ -153,6 +153,7 @@ var Player = function(id, name) {
         clearTimeout(this.respawning)
         self.respawning = setTimeout(function() {
             self.move(map.randomSpawn());
+            // console.log('dead, move to', self.data())
             self.health = config.instance.TOTAL_HEALTH;
             self.emit('respawn', self.data());
             self.respawning = false;

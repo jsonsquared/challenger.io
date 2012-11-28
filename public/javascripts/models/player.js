@@ -328,9 +328,8 @@ function Player(options) {
         this.updatePosition(data.x, data.y, 0)
         myLight.position.x = data.x
         myLight.position.y = data.y
-        socket.emit('move', me.payload)
+        this.moved()
         me.updateHealth(data.health)
-
     }
 
     this.remove = function() {

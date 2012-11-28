@@ -3,6 +3,7 @@ module.exports = {
     instance: {
         tile_size: 16,
         player_limit: 2,
+        KILL_TOTAL:10,
         MOVE_DISTANCE: 3,
         TOTAL_HEALTH:100,
         CLIP_SIZE:32,
