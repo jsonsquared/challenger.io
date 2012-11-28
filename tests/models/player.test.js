@@ -131,9 +131,9 @@ describe('Player', function() {
             player.health = 100
 
             // speed tests up
-            config.instance.REGEN_INTERVAL
-            config.instance.REGEN_WAIT = 50;
-            config.instance.REGEN_AMOUNT = 50;
+            config.instance.REGEN_INTERVAL = 5;
+            config.instance.REGEN_WAIT = 5;
+            config.instance.REGEN_AMOUNT = 5;
 
         })
 
@@ -144,7 +144,7 @@ describe('Player', function() {
             setTimeout(function() {
                 player.health.should.be.above(50)
                 done()
-            },500)
+            },config.instance.REGEN_WAIT + config.instance.REGEN_INTERVAL * 2)
         });
 
     });
@@ -257,7 +257,7 @@ describe('Player', function() {
             setTimeout(function() {
                 player.health.should.equal(100)
                 done()
-            },10)
+            },15)
         });
 
     });
