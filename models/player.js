@@ -29,7 +29,7 @@ var Player = function(id, name) {
     self.respawning = false;
     self.clip = self.clipSize = config.instance.CLIP_SIZE;
 
-    self.emit = self.broadcast = self.volatile = function() { console.log('socket not linked')}
+    self.emit = self.broadcast = self.volatile = function() { }
 
     this.linkSocket = function() {
         this.emit = function(packet, data) {
@@ -153,7 +153,6 @@ var Player = function(id, name) {
         clearTimeout(this.respawning)
         self.respawning = setTimeout(function() {
             self.move(map.randomSpawn());
-            // console.log('dead, move to', self.data())
             self.health = config.instance.TOTAL_HEALTH;
             self.emit('respawn', self.data());
             self.respawning = false;
