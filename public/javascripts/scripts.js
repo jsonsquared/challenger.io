@@ -57,8 +57,8 @@ $(function() {
 
     $(window).bind('resize', fitScreen)
     canvas_main = document.getElementById("canvas-main");
-    canvas_lighting = document.getElementById("canvas-lighting");
-    canvas_crosshair = document.getElementById("canvas-crosshair");
+    canvas_lighting = document.createElement("canvas");
+    canvas_crosshair = document.createElement("canvas");
     stage_under = new createjs.Stage(canvas_main);
     stage_under.autoClear = false;
 
