@@ -6,10 +6,16 @@
 <script type="text/javascript" src="/javascripts/lib/physijs/physi.js"></script>
 
 <script src='/assets/map.js'></script>
+<style>
+    canvas {
+        opacity:.1;
+    }
+</style>
 
 <script>
 
-    var physics = false
+    var TILE_SIZE = 16;
+    var physics = true
 
 
     Physijs.scripts.worker = '/javascripts/lib/physijs/physijs_worker.js';
@@ -25,8 +31,10 @@
     var geometry, group;
     var x = 0, y = 0
     var mouseX = 0, mouseY = 0;
-    var windowHalfX = window.innerWidth / 2;
-    var windowHalfY = window.innerHeight / 2;
+    var windowWidth = window.innerWidth / 4;
+    var windowHeight = window.innerHeight / 4;
+    var windowHalfX = windowWidth / 2;
+    var windowHalfY = windowHeight / 2;
     var light;
 
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -50,86 +58,47 @@
           container = document.createElement( 'div' );
           document.body.appendChild( container );
 
-          camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
+          // create the camera
+          camera = new THREE.PerspectiveCamera( 60, windowWidth / windowHeight, 1, 10000 );
           camera.position.z = 300;
 
-          scene = physics ? new Physijs.Scene() : new THREE.Scene();
-          if(physics) scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
-
+          // create the scene
+          if(physics) {
+              scene = new Physijs.Scene();
+              scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+          } else {
+              scene = new THREE.Scene();
+          }
           scene.fog = new THREE.Fog( 0xffffff, 1, 10000 );
 
-          var geometry = new THREE.CubeGeometry( 16, 16, 16 );
-          var texture = THREE.ImageUtils.loadTexture( '/assets/images/rock.png' );
-          var material = new THREE.MeshLambertMaterial( { map: texture },.6,.3 );
+          // generate and add the map
+          scene.add(generateMap());
 
-          group = new THREE.Object3D();
-
-          for(var y=0;y<map.data.length;y++) {
-              var row = map.data[y].split('');
-              for(var x=0;x<map.data[0].length;x++) {
-
-                  var tile = map.data[y][x];
-
-                  if(tile=='0') {
-
-
-                        mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
-                        mesh.position.x = x * 16;
-                        mesh.position.y = y*-16;
-                        mesh.position.z = 10;
-
-                        mesh.matrixAutoUpdate = false;
-                        mesh.updateMatrix();
-
-                        group.add( mesh );
-
-                  }
-              }
-          }
-          scene.add(group);
-
-          group.castShadow = true
-          group.receiveShadow = true
-
-
+          // create a light
           light = new THREE.PointLight(0xffffff,1,-10);
           light.position.z = 300;
-
           scene.add( light );
 
-
-
+          // create the local players avatar
           me = new Player();
           me.position.x = 100
           me.position.y = -100
-
           scene.add(me)
 
+          // create the renderer
           renderer = new THREE.WebGLRenderer();
-          renderer.setSize( window.innerWidth, window.innerHeight );
+          renderer.setSize( windowWidth, windowHeight );
           renderer.sortObjects = false;
 
+          // append the renderer to the page
           container.appendChild( renderer.domElement );
 
+          // FPS stats
           stats = new Stats();
           stats.domElement.style.position = 'absolute';
           stats.domElement.style.top = '0px';
           stats.domElement.style.zIndex = 100;
           container.appendChild( stats.domElement );
-
-          window.addEventListener( 'resize', onWindowResize, false );
-
-    }
-
-    function onWindowResize() {
-
-      windowHalfX = window.innerWidth / 2;
-      windowHalfY = window.innerHeight / 2;
-
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize( window.innerWidth, window.innerHeight );
 
     }
 
@@ -170,14 +139,57 @@
       var deltaY = (input.mouse.y || 0) - windowHalfY
       me.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5//  Math.PI
 
-      // if(physics) scene.simulate( undefined, 1 );
+      if(physics) scene.simulate( undefined, 1 );
 
       renderer.render( scene, camera );
-
-
-
     }
 
+    var floor;
+    function generateMap() {
+        var group = new THREE.Object3D();
+
+        var geometry = new THREE.CubeGeometry( map.data[0].length * TILE_SIZE, map.data.length * TILE_SIZE, 1 );
+        var texture = THREE.ImageUtils.loadTexture( '/assets/images/rocks.jpg' );
+        var material = new THREE.MeshLambertMaterial( { map: texture });
+        floor = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
+        floor.position.x=map.data[0].length * TILE_SIZE / 2
+        floor.position.y=map.data.length * TILE_SIZE / 2 * -1
+        floor.position.z = 10;
+        floor.updateMatrix();
+        group.add( floor );
+
+        var geometry = new THREE.CubeGeometry( 16, 16, 16 );
+        var texture = THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' );
+        var material = new THREE.MeshLambertMaterial( { map: texture });
+
+
+        for(var y=0;y<map.data.length;y++) {
+            var row = map.data[y].split('');
+            for(var x=0;x<map.data[0].length;x++) {
+
+                var tile = map.data[y][x];
+
+                if(tile=='0') {
+                    // console.log(x, y)
+                      var mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
+                      mesh.position.x = x * 16;
+                      mesh.position.y = y*-16;
+                      mesh.position.z = 10;
+
+                      mesh.matrixAutoUpdate = false;
+                      mesh.updateMatrix();
+
+                      group.add( mesh );
+                }
+            }
+        }
+
+        group.castShadow = true
+        group.receiveShadow = true
+
+        return group
+
+    }
 
 
     function spawnBox(x,y,z) {
