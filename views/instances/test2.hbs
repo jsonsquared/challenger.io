@@ -1,0 +1,261 @@
+<script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
+<script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
+<script src="/javascripts/lib/illuminated.js" type="text/javascript"></script>
+<script src="/javascripts/lib/input.js" type="text/javascript"></script>
+<script src='/javascripts/mapUtils.js'></script>
+<script src='/assets/map.js'></script>
+<style>
+    #buffer {
+        display:none;
+        border:1px solid blue;
+    }
+    #lighting {
+        border:1px solid yellow;
+/*        background:white;*/
+        display:none;
+    }
+    #viewport {
+        border:1px solid purple;
+    }
+</style>
+
+<canvas id='buffer'></canvas>
+<canvas id='viewport'></canvas>
+<canvas id='lighting'></canvas>
+
+<script>
+    var TILE_SIZE = 8;
+    var TILES_WIDE = 100;
+    var TILES_HIGH = 100;
+    var CAMERA_WIDTH = 16;
+    var CAMERA_HEIGHT = 16;
+
+    var x = 8 * TILE_SIZE;
+    var y = 8 * TILE_SIZE;
+    var ready = false;
+    var mapData = {walls:[],halfWalls:[]}
+
+    var myLight;
+    var myLighting;
+    var darkmask;
+
+    var lighting = [];
+    var lights = [];
+    var objects = []
+    var mapInt = [];
+
+    function Tile(x,y,color) {
+        var shape = new createjs.Shape()
+        shape.graphics.beginFill(color).drawRect(0,0,TILE_SIZE,TILE_SIZE)
+        shape.x = x;
+        shape.y = y;
+        return shape;
+    }
+
+    function parse() {
+        for(var y=0;y<map.data.length;y++) {
+            var row = map.data[y].split('');
+            mapInt[y] = [];
+            for(var x=0;x<row.length;x++) {
+
+                var tile = map.data[y][x];
+                mapInt[y][x] = parseInt(tile);
+
+                if(tile=='0') {
+                    buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#333'))
+                    mapData.walls.push({x:x,y:y})
+                }
+
+                if(tile=='S') {
+                    buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#666'))
+                    mapData.halfWalls.push({x:x,y:y})
+                }
+
+                if(tile==' ') {
+                    buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#AAA'))
+                }
+
+            }
+        }
+        buffer_stage.update();
+    }
+
+    function render() {
+        viewport_ctx.clearRect(0,0,CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        viewport_ctx.drawImage(buffer_canvas,x - CAMERA_WIDTH * TILE_SIZE / 4,y-CAMERA_HEIGHT * TILE_SIZE / 4, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        processLights()
+    }
+
+    function hookupLights() {
+
+        myLight = new illuminated.Lamp({
+            position: new illuminated.Vec2(100, 250),
+            distance: 90,
+            radius: 45,
+            samples: 1,
+            angle:0
+        });
+
+        // for(var w = 0; w< mapData.walls.length; w++) {
+        //     objects[objects.length] = new illuminated.RectangleObject({
+        //         topleft: new illuminated.Vec2(mapData.walls[w].x * TILE_SIZE, mapData.walls[w].y * TILE_SIZE),
+        //         bottomright: new illuminated.Vec2(mapData.walls[w].x * TILE_SIZE + TILE_SIZE, mapData.walls[w].y * TILE_SIZE + TILE_SIZE)
+        //     });
+        // }
+
+        myLighting = new illuminated.Lighting({
+            light: myLight
+        });
+
+        // for(var l=0;l<map.lights.length;l++) {
+        //     lights.push(new illuminated.Lamp({position: new illuminated.Vec2(map.lights[l].x, map.lights[l].y),distance:map.lights[l].distance,radius: map.lights[l].distance/2,samples: 1,angle:0}));
+        //     lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
+        // }
+        //
+        // for(l = 0;l<lighting.length;l++) {
+        //     lighting[l].compute(lighting_canvas.width, lighting_canvas.height);
+        // }
+
+        lights.push(myLight)
+
+        darkmask = new illuminated.DarkMask({
+            lights: lights,
+            color: 'rgba(0,0,0,.9)'
+        });
+    }
+
+    function processLights() {
+        lighting_ctx.fillStyle = "rgba(0,0,0,.1)";
+        lighting_ctx.fillRect(0, 0, lighting_canvas.width, lighting_canvas.height);
+
+        lighting_ctx.globalCompositeOperation = "destination-out";
+        lighting_ctx.fillRect(0, 0, lighting_canvas.width, lighting_canvas.height);
+        myLighting.compute(lighting_canvas.width, lighting_canvas.height);
+        myLighting.render(lighting_ctx);
+
+        for(var l = 0; l < lighting.length; l++) {
+            lighting[l].render(lighting_ctx);
+        }
+
+        lighting_ctx.globalCompositeOperation = "source-over"
+
+        // darkmask.compute(lighting_canvas.width, lighting_canvas.height);
+        // darkmask.render(lighting_ctx);
+    }
+
+
+    INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
+    INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
+    INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
+    INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
+
+    $(function() {
+
+        buffer_canvas = document.createElement("canvas");
+        buffer_canvas.width = (TILES_WIDE + 2) * TILE_SIZE;
+        buffer_canvas.height = (TILES_HIGH + 2) * TILE_SIZE;
+        buffer_ctx = buffer_canvas.getContext('2d')
+        buffer_stage = new createjs.Stage(buffer_canvas);
+        buffer_stage.autoClear = false;
+
+        viewport_canvas = document.getElementById("viewport");
+        viewport_ctx = viewport_canvas.getContext('2d')
+
+        lighting_canvas = document.getElementById("lighting");
+        lighting_ctx = lighting_canvas.getContext('2d')
+        lighting_canvas.width = (TILES_WIDE + 2) * TILE_SIZE;
+        lighting_canvas.height = (TILES_HIGH + 2) * TILE_SIZE;
+
+        createjs.Ticker.addListener(window);
+        createjs.Ticker.setFPS(60);
+
+        parse();
+        hookupLights();
+
+        ready = true;
+
+        // buffer_ctx.fillStyle = "orange";
+        // setInterval(function() {
+        //     // renderBuffer();
+        //     render()
+        // },10)
+
+    });
+
+    window.tick = function() {
+        if(INPUT_U()) { y-=4 }
+        if(INPUT_L()) { x-=4 }
+        if(INPUT_D()) { y+=4 }
+        if(INPUT_R()) { x+=4 }
+
+        // if(x<CAMERA_WIDTH * TILE_SIZE/4) x = CAMERA_WIDTH * TILE_SIZE / 4
+        // if(x>buffer_canvas.width - CAMERA_WIDTH * TILE_SIZE) x = buffer_canvas.width - CAMERA_WIDTH * TILE_SIZE
+        // if(y<CAMERA_HEIGHT * TILE_SIZE/4) y = CAMERA_HEIGHT * TILE_SIZE / 4
+        // if(y>buffer_canvas.height - TILES_HIGH * TILE_SIZE) y = buffer_canvas.height - CAMERA_HEIGHT * TILE_SIZE
+
+        if(ready) {
+            myLight.position.x = (x + TILES_WIDE) * TILE_SIZE / 4;
+            myLight.position.y = (y + TILES_HIGH) * TILE_SIZE / 4;
+            render();
+            // processLights();
+        }
+
+    }
+
+    function renderBuffer() {
+
+        cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
+        cameraY = Math.floor(y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
+
+        buffer_ctx.clearRect(0,0,CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        for(var yy=0;yy<CAMERA_HEIGHT;yy++) {
+            for(var xx=0;xx<CAMERA_WIDTH;xx++) {
+
+                var tile = map.data[yy + cameraY][xx + cameraX];
+                if(tile=='0') {
+                    buffer_ctx.fillRect(xx* TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
+                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#333'))
+                    // mapData.walls.push({x:xx,y:yy})
+                }
+
+                if(tile=='S') {
+                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#666'))
+                    // mapData.halfWalls.push({x:xx,y:yy})
+                }
+
+                if(tile==' ') {
+                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#AAA'))
+                }
+
+            }
+        }
+        buffer_stage.update();
+
+
+
+
+
+    }
+
+
+
+    function findWallsInView() {
+        var found = [];
+        // for(var yy = y - 10; yy < y + 10; yy++) {
+        //     for(var xx = x - 10; xx < x + 10;  xx++) {
+        //
+        //         found[found.length] = new illuminated.RectangleObject({
+        //             topleft: new illuminated.Vec2(xx * TILE_SIZE, yy * TILE_SIZE),
+        //             bottomright: new illuminated.Vec2(xx * TILE_SIZE + TILE_SIZE, yy * TILE_SIZE + TILE_SIZE)
+        //         });
+        //
+        //     }
+        // }
+
+        found = [new illuminated.RectangleObject({
+            topleft: new illuminated.Vec2(120 * TILE_SIZE, 120 * TILE_SIZE),
+            bottomright: new illuminated.Vec2(120 * TILE_SIZE + TILE_SIZE, 120 * TILE_SIZE + TILE_SIZE)
+        })]
+        return found
+    }
+</script>
