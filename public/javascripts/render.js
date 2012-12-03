@@ -7,18 +7,6 @@ var lighting = [];
 function render() {
     if(!connected || !me) return
 
-    // if(players) {
-    //     for(var p in players) {
-    //         players[p].updatePosition()
-    //     }
-    // }
-
-    // if(items) {
-    //     for(var i in items) {
-    //         items[i].updatePosition()
-    //     }
-    // }
-
     stage_under.update();
     stage_over.update();
     processRaycasting();
