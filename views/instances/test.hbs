@@ -29,7 +29,7 @@
     var container, stats;
     var camera, scene, renderer;
     var geometry, group;
-    var x = 0, y = 0
+    var x = 100, y = 200
     var mouseX = 0, mouseY = 0;
     var windowWidth = window.innerWidth / 4;
     var windowHeight = window.innerHeight / 4;
@@ -42,13 +42,18 @@
     init();
     animate();
 
+    function range(from,to) {
+       return Math.floor(Math.random() * (to - from + 1) + from);
+    }
+
+
     function Player(x,y) {
 
         var geometry = new THREE.CubeGeometry( 16, 16, 16 );
         var texture = THREE.ImageUtils.loadTexture( '/assets/images/fed.png' );
         var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.6,0 );
 
-        var mesh = physics ? new Physijs.BoxMesh( geometry, material ) : new THREE.Mesh( geometry, material);
+        var mesh = physics ? new Physijs.BoxMesh( geometry, material,.5 ) : new THREE.Mesh( geometry, material);
         mesh.position.z = 11
         return mesh;
     }
@@ -60,7 +65,7 @@
 
           // create the camera
           camera = new THREE.PerspectiveCamera( 60, windowWidth / windowHeight, 1, 10000 );
-          camera.position.z = 300;
+          camera.position.z = 164;
 
           // create the scene
           if(physics) {
@@ -72,7 +77,8 @@
           scene.fog = new THREE.Fog( 0xffffff, 1, 10000 );
 
           // generate and add the map
-          scene.add(generateMap());
+          mapObject = generateMap()
+          scene.add(mapObject);
 
           // create a light
           light = new THREE.PointLight(0xffffff,1,-10);
@@ -84,6 +90,8 @@
           me.position.x = 100
           me.position.y = -100
           scene.add(me)
+
+
 
           // create the renderer
           renderer = new THREE.WebGLRenderer();
@@ -139,7 +147,7 @@
       var deltaY = (input.mouse.y || 0) - windowHalfY
       me.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5
 
-      if(physics) scene.simulate( undefined, 1 );
+      if(physics) scene.simulate( undefined, 5 );
 
       renderer.render( scene, camera );
     }
@@ -190,15 +198,15 @@
 
     }
 
-    function spawnBox(x,y,z) {
+    function spawnBall(x,y,z) {
         var box, material;
-        var box_geometry = new THREE.CubeGeometry( 16, 16, 16 )
+        var box_geometry = new THREE.SphereGeometry( 16, 32,32 );//THREE.CubeGeometry( 16, 16, 16 )
         var handleCollision = function() {}
-        material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' ) }), .6,.2);
+        material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' ) }), .6,.5);
         material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
         material.map.repeat.set( .5, .5 );
 
-        box = new Physijs.BoxMesh(box_geometry, material);
+        box = new Physijs.SphereMesh(box_geometry, material,.2);
         box.collisions = 0;
 
         box.position.set(
@@ -216,6 +224,14 @@
         box.castShadow = true;
         box.addEventListener( 'collision', handleCollision );
         scene.add( box );
+
+        scene.addEventListener('update',function() {
+            box.applyCentralImpulse(new THREE.Vector3(0, -.5, 0));
+        })
+
+        // setTimeout(function(b) {
+        //     scene.remove(b)
+        // },2000,box)
     }
 
 </script>
