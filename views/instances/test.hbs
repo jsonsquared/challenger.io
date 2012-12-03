@@ -8,7 +8,7 @@
 <script src='/assets/map.js'></script>
 <style>
     canvas {
-        opacity:.1;
+/*        opacity:.1;*/
     }
 </style>
 
@@ -46,10 +46,10 @@
 
         var geometry = new THREE.CubeGeometry( 16, 16, 16 );
         var texture = THREE.ImageUtils.loadTexture( '/assets/images/fed.png' );
-        var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.6,.3 );
+        var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.6,0 );
 
-        var mesh = physics ? new Physijs.BoxMesh( geometry, material,0 ) : new THREE.Mesh( geometry, material);
-
+        var mesh = physics ? new Physijs.BoxMesh( geometry, material ) : new THREE.Mesh( geometry, material);
+        mesh.position.z = 11
         return mesh;
     }
 
@@ -65,7 +65,7 @@
           // create the scene
           if(physics) {
               scene = new Physijs.Scene();
-              scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+              scene.setGravity(new THREE.Vector3( 0, 0, -300 ));
           } else {
               scene = new THREE.Scene();
           }
@@ -137,31 +137,34 @@
 
       var deltaX = (input.mouse.x || 0) - windowHalfX
       var deltaY = (input.mouse.y || 0) - windowHalfY
-      me.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5//  Math.PI
+      me.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5
 
       if(physics) scene.simulate( undefined, 1 );
 
       renderer.render( scene, camera );
     }
 
-    var floor;
     function generateMap() {
-        var group = new THREE.Object3D();
 
-        var geometry = new THREE.CubeGeometry( map.data[0].length * TILE_SIZE, map.data.length * TILE_SIZE, 1 );
+        // create a container
+        var geometry = new THREE.CubeGeometry(0,0,0);
+        var material = Physijs.createMaterial(new THREE.MeshLambertMaterial(),.8,.4);
+        var mapGroup = new Physijs.BoxMesh(geometry, material,0)
+
+        // add the floor
+        var geometry = new THREE.CubeGeometry( map.data[0].length * TILE_SIZE, map.data.length * TILE_SIZE, 16 );
         var texture = THREE.ImageUtils.loadTexture( '/assets/images/rocks.jpg' );
-        var material = new THREE.MeshLambertMaterial( { map: texture });
-        floor = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
+        var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
+        var floor = physics ? new Physijs.BoxMesh(geometry, material,0) : new THREE.Mesh( geometry, material );
         floor.position.x=map.data[0].length * TILE_SIZE / 2
         floor.position.y=map.data.length * TILE_SIZE / 2 * -1
-        floor.position.z = 10;
-        floor.updateMatrix();
-        group.add( floor );
+        floor.position.z = 9;
+        mapGroup.add( floor );
 
-        var geometry = new THREE.CubeGeometry( 16, 16, 16 );
+
+        var geometry = new THREE.CubeGeometry( 16, 16, 64 );
         var texture = THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' );
-        var material = new THREE.MeshLambertMaterial( { map: texture });
-
+        var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
 
         for(var y=0;y<map.data.length;y++) {
             var row = map.data[y].split('');
@@ -170,7 +173,6 @@
                 var tile = map.data[y][x];
 
                 if(tile=='0') {
-                    // console.log(x, y)
                       var mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
                       mesh.position.x = x * 16;
                       mesh.position.y = y*-16;
@@ -179,24 +181,20 @@
                       mesh.matrixAutoUpdate = false;
                       mesh.updateMatrix();
 
-                      group.add( mesh );
+                      mapGroup.add( mesh );
                 }
             }
         }
 
-        group.castShadow = true
-        group.receiveShadow = true
-
-        return group
+        return mapGroup
 
     }
-
 
     function spawnBox(x,y,z) {
         var box, material;
         var box_geometry = new THREE.CubeGeometry( 16, 16, 16 )
         var handleCollision = function() {}
-        material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' ) }), .6,.3);
+        material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ map: THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' ) }), .6,.2);
         material.map.wrapS = material.map.wrapT = THREE.RepeatWrapping;
         material.map.repeat.set( .5, .5 );
 
@@ -206,7 +204,7 @@
         box.position.set(
           x || 100,
           y || -100,
-          z || 0
+          z || 100
         );
 
         box.rotation.set(
@@ -217,7 +215,6 @@
 
         box.castShadow = true;
         box.addEventListener( 'collision', handleCollision );
-        // box.addEventListener( 'ready', spawnBox );
         scene.add( box );
     }
 
