@@ -12,7 +12,7 @@ function Player(options) {
     this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
     this.me = options.me || false;
-    this.light = {}; // blank - only used if the player is this user
+    // this.light = {}; // blank - only used if the player is this user
     this.payload = {}
     this.killCount = options.killCount || 0;
     this.deathCount = options.deathCount || 0;
@@ -20,50 +20,43 @@ function Player(options) {
     this.reloading = false;
     this.recoil = 0;
     this.singleClickFiring = false;
-
-    // easel object
-    this.container = new createjs.Container();
-    this.playerContainer = new createjs.Container();
     this.dualWield = true;
 
-    self.spriteSheet = new createjs.SpriteSheet({
-        images: [assets.fed.img],
-        frames: {width:32, height:32, regX:16, regY:16},
-        animations: {
-            alive:{frames:[0], frequency:5}
-            // dying:{frames:[2,3,4,5,6,7,8,9,10,11,12,13,14], frequency:5},
-        }
-    });
+    var geometry = new THREE.CubeGeometry( 16, 16, 16 );
+    var texture = THREE.ImageUtils.loadTexture( '/assets/images/fed.png' );
+    var material = new THREE.MeshLambertMaterial( { map: texture })
 
-    self.bitmap = new createjs.BitmapAnimation(self.spriteSheet);
-    self.bitmap.rotation = 270
-    self.bitmap.scaleX = self.bitmap.scaleY = .75
-    self.bitmap.gotoAndPlay('alive')
+    this.container = new THREE.Mesh( geometry, material,0)
+    this.container.position.z = 11
+    this.container.position.x = this.x;
+    this.container.position.y = this.y*-1;
 
-    self.playerContainer.addChild(self.bitmap)
+    scene.add(this.container)
 
-    this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
-    this.nameOutline.outline=true;
-    this.nameOutline.x = 0;
-    this.nameOutline.y = -25;
-    this.nameOutline.rotation = 0;
-    this.nameOutline.lineWidth = 300;
-    this.nameOutline.textAlign = 'center'
-    this.container.addChild(this.nameOutline);
+    // this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
+    // this.nameOutline.outline=true;
+    // this.nameOutline.x = 0;
+    // this.nameOutline.y = -25;
+    // this.nameOutline.rotation = 0;
+    // this.nameOutline.lineWidth = 300;
+    // this.nameOutline.textAlign = 'center'
+    // this.container.addChild(this.nameOutline);
+    //
+    // this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#fff")
+    // this.nameLabel.x = 0;
+    // this.nameLabel.y = -25;
+    // this.nameLabel.rotation = 0;
+    // this.nameLabel.lineWidth = 300;
+    // this.nameLabel.textAlign = 'center'
+    // this.container.addChild(this.nameLabel);
+    //
+    // this.container.x = this.x;
+    // this.container.y = this.y;
+    // this.playerContainer.rotation = this.rotation
+    //
+    // this.container.addChild(this.playerContainer)
+    // stage_under.addChildAt(this.container,1)
 
-    this.nameLabel = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#fff")
-    this.nameLabel.x = 0;
-    this.nameLabel.y = -25;
-    this.nameLabel.rotation = 0;
-    this.nameLabel.lineWidth = 300;
-    this.nameLabel.textAlign = 'center'
-    this.container.addChild(this.nameLabel);
-
-    this.container.x = this.x;
-    this.container.y = this.y;
-    this.playerContainer.rotation = this.rotation
-
-    this.container.addChild(this.playerContainer)
 
     this.floatingText = [];
     this.floatText = function(amount) {
@@ -99,33 +92,29 @@ function Player(options) {
 
     this.isMe = function() {
         this.me = true;
-        this.container.removeChild(this.nameOutline)
-        this.container.removeChild(this.nameLabel)
-        stage_over.addChild(this.container)
-        stage_under.removeChild(this.container)
-        this.light = {}
+        // this.container.removeChild(this.nameOutline)
+        // this.container.removeChild(this.nameLabel)
+        // stage_over.addChild(this.container)
+        // stage_under.removeChild(this.container)
+        // this.light = {}
         // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:40, flicker:0, strength:.1}))
-        myLight.position = new illuminated.Vec2(this.x,this.y);
+        // myLight.position = new illuminated.Vec2(this.x,this.y);
 
         this.healthMeter = new ProgressBar({id:'meter-hp', width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({id:'meter-ammo', width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
         this.collisionManager = new CollisionManager(this, TILE_SIZE);
     }
 
-    stage_under.addChildAt(this.container,1)
-
     this.updatePosition = function(x, y, rotation) {
         this.x = x || this.x;
         this.y = y || this.y;
-        this.rotation = rotation || this.rotation
-        this.playerContainer.rotation = this.rotation
-        this.container.x = this.light.x = this.x;
-        this.container.y = this.light.y = this.y;
+        this.container.position.x = this.x || this.container.position.x;
+        this.container.position.y = this.y*-1 || this.container.position.y;
     }
 
     this.updateHealth = function(health) {
         $("#health").html(health);
-        bloodEffect.update((100 - health) / 50)
+        // bloodEffect.update((100 - health) / 50)
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
 
@@ -141,27 +130,23 @@ function Player(options) {
     }
 
     this.moved = function(skipmyLight) {
-        var deltaX = crosshair.sprite.x - me.container.x
-        var deltaY = crosshair.sprite.y - me.container.y
 
-        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
-        this.payload = {x:this.x, y:this.y, rotation:this.rotation}
+        var deltaX = mouseX - windowHalfX
+        var deltaY = mouseY - windowHalfY
+        // me.container.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5
+
+        this.payload = {x:this.x, y:this.y, rotation:this.container.rotation.z}
 
         if (this==me) {
-
-            if(arguments.length==0) {
-                if(INPUT_L() || INPUT_R()) myLight.position.x = INPUT_L() ? this.x+1 : this.x-1
-                if(INPUT_U() || INPUT_D()) myLight.position.y = INPUT_U() ? this.y+1 : this.y-1
-            }
-
             me.updatePosition(this.x, this.y, this.rotation)
             me.collisionManager.check();
         }
     }
 
     this.dash = function(dir, best) {
+        console.log('dash')
 
-        if(this == me && this.stamina < STAMINA_TO_DASH || this.dashing) return
+        // if(this == me && this.stamina < STAMINA_TO_DASH || this.dashing) return
         this.dashing = true
         this.stamina -= STAMINA_TO_DASH
 
@@ -194,14 +179,16 @@ function Player(options) {
             socket.emit('dash', best)
         }
 
-        createjs.Tween.get(this).to(best,500,createjs.Ease.sineOut).call(function() {
+        best.y = best.y*-1||undefined
+        createjs.Tween.get(me.container.position).to(best,500,createjs.Ease.sineOut).call(function() {
             self.x = best.x;
             self.y = best.y;
             self.dashing = false;
-            self.moved(true)
+            // self.moved(true)
+            console.log('moved')
         });
 
-        if(this==me) createjs.Tween.get(myLight.position).to(best,500,createjs.Ease.sineOut)
+        // if(this==me) createjs.Tween.get(myLight.position).to(best,500,createjs.Ease.sineOut)
 
     }
 
@@ -229,16 +216,18 @@ function Player(options) {
 
         if(this.reloading) return false;
 
-        var gun = range(0,1);
-        var recoilFactor = gun == 0 ? -2: 2
-        recoilFactor = recoilFactor < 0 ? recoilFactor - this.recoil : recoilFactor + this.recoil
-        recoilFactor = this.dashing ? 0 : recoilFactor
+        var gun = 1;//range(0,1);
+        // var recoilFactor = gun == 0 ? -2: 2
+        // recoilFactor = recoilFactor < 0 ? recoilFactor - this.recoil : recoilFactor + this.recoil
+        // recoilFactor = this.dashing ? 0 : recoilFactor
+
+        recoilFactor = 0;
 
         var b = new Bullet({
             x:gun==1 ? me.x -8 : me.x+8,
             y:me.y,
-            endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
-            endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
+            endX: e.offsetX - me.x,// + range(recoilFactor*-1, recoilFactor),
+            endY: e.offsetY - me.y,// + range(recoilFactor*-1, recoilFactor),
             owner:me.id,
             gun:gun
         })
@@ -252,21 +241,21 @@ function Player(options) {
     }
 
     this.muzzleFlash = function(gun) {
-        var flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
-        flash.gotoAndPlay('fire')
-
-        flash.scaleX = flash.scaleY = range(.5,1)
-        flash.x = 20 * flash.scaleX
-        flash.y = (gun == 1 ? -16 : 1) * flash.scaleY
-        flash.alpha=.5
-
-        this.playerContainer.addChild(flash)
-
-
-        createjs.Tween.get(flash).to({alpha:0},1000,createjs.Ease.quintOut).call(function() {
-            self.playerContainer.removeChild(this)
-        });
-
+        // var flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
+        // flash.gotoAndPlay('fire')
+        //
+        // flash.scaleX = flash.scaleY = range(.5,1)
+        // flash.x = 20 * flash.scaleX
+        // flash.y = (gun == 1 ? -16 : 1) * flash.scaleY
+        // flash.alpha=.5
+        //
+        // this.playerContainer.addChild(flash)
+        //
+        //
+        // createjs.Tween.get(flash).to({alpha:0},1000,createjs.Ease.quintOut).call(function() {
+        //     self.playerContainer.removeChild(this)
+        // });
+        //
     }
 
     this.pickUp = function() {

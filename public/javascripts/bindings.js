@@ -1,7 +1,16 @@
 function initGameBindings() {
-    $(canvas_main).bind('mousemove', function(e) {
-        crosshair.sprite.x = e.offsetX - 10;
-        crosshair.sprite.y = e.offsetY - 10;
+    $('#viewport').live('mousemove', function(e) {
+        // crosshair.sprite.x = e.offsetX - 10;
+        // crosshair.sprite.y = e.offsetY - 10;
+
+        mouseX = e.offsetX;
+        mouseY = e.offsetY;
+        var deltaX = mouseX - windowHalfX
+        var deltaY = mouseY - windowHalfY
+
+        $('#crosshair').css({left:mouseX, top:mouseY})
+
+        me.container.rotation.z = Math.atan2(deltaY, deltaX*-1) - 1.5
 
         if(connected) me.moved()
     }).bind('mousedown',function(e) {

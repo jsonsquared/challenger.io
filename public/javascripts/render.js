@@ -1,80 +1,133 @@
-var lightLayer;         // easeljs stage for lights. shared between initLights, processRaycasting
-var darkmask;           // illumination.js canvas. shared between initLights, processRaycasting
-var myLight = {}      // illumination.js lightsource, position is updated through
-var lights = [];
-var myLighting
-var lighting = [];
+Physijs.scripts.worker = '/javascripts/lib/physijs/physijs_worker.js';
+Physijs.scripts.ammo = '/javascripts/lib/physijs/ammo.js';
+
+var TILE_SIZE = 16;
+var physics = true
+
+var container, stats;
+var camera, scene, renderer;
+var geometry, group;
+var x = 100, y = 200
+var mouseX = 0, mouseY = 0;
+var windowWidth = 1024;
+var windowHeight = 706;
+var windowHalfX = windowWidth / 2;
+var windowHalfY = windowHeight / 2;
+var light;
+
+$(function() {
+    init();
+    animate();
+});
+
+function animate() {
+
+  requestAnimationFrame( animate );
+
+  render();
+  stats.update();
+
+}
+
 function render() {
-    if(!connected || !me) return
+    if(!me) return false
 
-    stage_under.update();
-    stage_over.update();
-    processRaycasting();
-    lightLayer.draw(canvas_main_ctx)
-    crosshairLayer.draw(canvas_main_ctx)
+    camera.position.x = me.x
+    camera.position.y = me.y*-1
+
+    // me.container.position.x = me.x;
+    // me.container.position.y = me.y*-1
+
+    light.position.x = me.x;
+    light.position.y = me.y*-1;
+
+    scene.simulate( undefined, 5 );
+
+    renderer.render( scene, camera );
 }
 
-function initLights() {
-    var objects = []
-    myLight = new illuminated.Lamp({
-        position: new illuminated.Vec2(100, 250),
-        distance: 180,
-        radius: 90,
-        samples: 1,
-        angle:0
-    });
+function init() {
 
-    for(var w = 0; w< mapData.walls.length; w++) {
-        objects[objects.length] = new illuminated.RectangleObject({
-            topleft: new illuminated.Vec2(mapData.walls[w].x* TILE_SIZE, mapData.walls[w].y* TILE_SIZE),
-            bottomright: new illuminated.Vec2(mapData.walls[w].x*TILE_SIZE+TILE_SIZE, mapData.walls[w].y*TILE_SIZE + TILE_SIZE)
-        });
-    }
+      container = document.createElement( 'div' );
+      document.body.appendChild( container );
 
-    myLighting = new illuminated.Lighting({
-        light: myLight,
-        objects: objects
-    });
+      // create the camera
+      camera = new THREE.PerspectiveCamera( 60, windowWidth / windowHeight, 1, 10000 );
+      camera.position.z = 400;
 
-    for(var l=0;l<map.lights.length;l++) {
-        lights.push(new illuminated.Lamp({position: new illuminated.Vec2(map.lights[l].x, map.lights[l].y),distance:map.lights[l].distance,radius: map.lights[l].distance/2,samples: 1,angle:0}));
-        lighting.push(new illuminated.Lighting({light: lights[lights.length-1],objects:objects}))
-    }
+      // create the scene
 
-    for(l = 0;l<lighting.length;l++) {
-        lighting[l].compute(canvas_lighting.width, canvas_lighting.height);
-    }
+      scene = new Physijs.Scene();
+      scene.setGravity(new THREE.Vector3( 0, 0, -300 ));
+      scene.fog = new THREE.Fog( 0xffffff, 1, 10000 );
 
-    lights.push(myLight)
+      // generate and add the map
+      mapObject = generateMap()
+      scene.add(mapObject);
 
-    darkmask = new illuminated.DarkMask({
-        lights: lights,
-        color: 'rgba(0,0,0,.9)'
-    });
+      // create a light
+      light = new THREE.PointLight(0xffffff,1,-10);
+      light.position.z = 300;
+      scene.add( light );
 
-    lightLayer = new createjs.Bitmap(canvas_lighting)
-    stage_under.addChildAt(lightLayer,3)
-    crosshairLayer = new createjs.Bitmap(canvas_crosshair)
-    stage_under.addChildAt(crosshairLayer,4)
+      // create the renderer
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize( windowWidth, windowHeight );
+      renderer.sortObjects = false;
+
+      // append the renderer to the page
+      $('#viewport').append( renderer.domElement );
+
+      // FPS stats
+      stats = new Stats();
+      stats.domElement.style.position = 'absolute';
+      stats.domElement.style.top = '0px';
+      stats.domElement.style.zIndex = 100;
+      $('body').append( stats.domElement );
 
 }
 
-function processRaycasting () {
+function generateMap() {
 
-    canvas_lighting_ctx.fillStyle = "rgba(0,0,0,.6)";
-    canvas_lighting_ctx.fillRect(0, 0, canvas_lighting.width, canvas_lighting.height);
+      // create a container
+      var geometry = new THREE.CubeGeometry(0,0,0);
+      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial(),.8,.4);
+      var mapGroup = new Physijs.BoxMesh(geometry, material,0)
 
-    canvas_lighting_ctx.globalCompositeOperation = "destination-out";
-    canvas_lighting_ctx.fillRect(0, 0, canvas_lighting.width, canvas_lighting.height);
-    myLighting.compute(canvas_lighting.width, canvas_lighting.height);
-    myLighting.render(canvas_lighting_ctx);
+      // add the floor
+      var geometry = new THREE.CubeGeometry( map.data[0].length * TILE_SIZE, map.data.length * TILE_SIZE, 16 );
+      var texture = THREE.ImageUtils.loadTexture( '/assets/images/rocks.jpg' );
+      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
+      var floor = physics ? new Physijs.BoxMesh(geometry, material,0) : new THREE.Mesh( geometry, material );
+      floor.position.x=map.data[0].length * TILE_SIZE / 2
+      floor.position.y=map.data.length * TILE_SIZE / 2 * -1
+      floor.position.z = 9;
+      mapGroup.add( floor );
 
-    for(var l = 0; l < lighting.length; l++) {
-        lighting[l].render(canvas_lighting_ctx);
-    }
+      var geometry = new THREE.CubeGeometry( 16, 16, 64 );
+      var texture = THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' );
+      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
 
-    canvas_lighting_ctx.globalCompositeOperation = "source-over"
+      for(var y=0;y<map.data.length;y++) {
+          var row = map.data[y].split('');
+          for(var x=0;x<map.data[0].length;x++) {
 
-    darkmask.compute(canvas_lighting.width, canvas_lighting.height);
-    darkmask.render(canvas_lighting_ctx);
+              var tile = map.data[y][x];
+
+              if(tile=='0') {
+                    var mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
+                    mesh.position.x = x * 16;
+                    mesh.position.y = y*-16;
+                    mesh.position.z = 10;
+
+                    mesh.matrixAutoUpdate = false;
+                    mesh.updateMatrix();
+
+                    mapGroup.add( mesh );
+              }
+          }
+      }
+
+      return mapGroup
+
 }

@@ -18,6 +18,8 @@ var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
 var spriteSheets = {};
 var messages = [];
 
+var mouseX = 0;
+var mouseY = 0
 var mapData = {
     walls:[],
     halfWalls:[]
@@ -55,25 +57,25 @@ INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:fa
 
 $(function() {
 
-    $(window).bind('resize', fitScreen)
-    canvas_main = document.getElementById("canvas-main");
-    canvas_lighting = document.createElement("canvas");
-    canvas_crosshair = document.createElement("canvas");
-    stage_under = new createjs.Stage(canvas_main);
-    stage_under.autoClear = false;
-
-    stage_over = new createjs.Stage(canvas_crosshair)
-    stage_over.autoClear = true;
-
-    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map.data[0].length * TILE_SIZE
-    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.data.length * TILE_SIZE
-    canvas_main_ctx = canvas_main.getContext('2d')
-    canvas_lighting_ctx = canvas_lighting.getContext('2d')
-
-    createjs.Ticker.addListener(window);
-    createjs.Ticker.setFPS(30);
-
-    lightingEngine = new LightingEngine(canvas_lighting,canvas_main)
+    // $(window).bind('resize', fitScreen)
+    // canvas_main = document.getElementById("canvas-main");
+    // canvas_lighting = document.createElement("canvas");
+    // canvas_crosshair = document.createElement("canvas");
+    // stage_under = new createjs.Stage(canvas_main);
+    // stage_under.autoClear = false;
+    //
+    // stage_over = new createjs.Stage(canvas_crosshair)
+    // stage_over.autoClear = true;
+    //
+    // canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map.data[0].length * TILE_SIZE
+    // canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.data.length * TILE_SIZE
+    // canvas_main_ctx = canvas_main.getContext('2d')
+    // canvas_lighting_ctx = canvas_lighting.getContext('2d')
+    //
+    // createjs.Ticker.addListener(window);
+    // createjs.Ticker.setFPS(30);
+    //
+    // lightingEngine = new LightingEngine(canvas_lighting,canvas_main)
 
     $('#game-container').hide();
 
@@ -90,11 +92,11 @@ $(function() {
     preload(assets, function(files) {
         fitScreen();
         initMap()
-        initLights();
-        initSpriteSheets();
+        // initLights();
+        // initSpriteSheets();
         initSounds();
-        bloodEffect = new BloodEffect();
-        crosshair = new Crosshair();
+        // bloodEffect = new BloodEffect();
+        // crosshair = new Crosshair();
         $('#name').attr('maxlength', NAME_LENGTH)
     });
 
@@ -119,7 +121,6 @@ function checkName(name, callback) {
         $('#name').addClass('error')
     }
 }
-
 
 function range(from,to) {
    return Math.floor(Math.random() * (to - from + 1) + from);
@@ -148,7 +149,7 @@ function startGame(instance) {
     }
 
     updateLeaderboard()
-    bloodEffect.update(0)
+    // bloodEffect.update(0)
     for(var p in players) {
         if(players[p].id == socket.socket.sessionid) {
             players[p].isMe();

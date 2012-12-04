@@ -49,7 +49,6 @@ function initPacketHandler(name) {
         if(data.player.id!=me.id) players[data.player.id].dash('', {x:data.best.x, y:data.best.y})
     });
 
-
     socket.on('fired', function(data) {
         if(me.id != data.bullet.owner) {
             new Bullet({x:data.bullet.startX, y:data.bullet.startY, endX:data.bullet.endX, endY:data.bullet.endY, owner:data.bullet.owner})

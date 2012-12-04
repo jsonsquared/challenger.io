@@ -20,9 +20,9 @@ function Item(id, options) {
     // this.sprite = new createjs.BitmapAnimation(spriteSheet);
     // this.sprite.gotoAndPlay('alive')
 
-    this.sprite = new createjs.Shape()
-    this.sprite.graphics.beginFill(this.color).drawRect(0,0,16,16)
-    stage_under.addChildAt(this.sprite, 1)
+    // this.sprite = new createjs.Shape()
+    // this.sprite.graphics.beginFill(this.color).drawRect(0,0,16,16)
+    // stage_under.addChildAt(this.sprite, 1)
 
     if(me) me.collisionManager.add(this)
 
@@ -39,11 +39,11 @@ function Item(id, options) {
 
     this.flicker = function() {
         this.sprite
-        createjs.Tween.get(this.sprite, {loop:true}).to({alpha:0},100).to({alpha:1},100)
+        // createjs.Tween.get(this.sprite, {loop:true}).to({alpha:0},100).to({alpha:1},100)
     }
 
     this.remove = function() {
-        stage_under.removeChild(this.sprite)
+        // stage_under.removeChild(this.sprite)
         delete items[this.id]
         delete this;
     }
