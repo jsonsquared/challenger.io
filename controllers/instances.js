@@ -12,6 +12,10 @@ var instances = {
         res.render('instances/test')
     },
 
+    scrolling:function(req, res) {
+        res.render('instances/scrolling')
+    },
+
     index: function(req, res) {
         var instances = [];
         var totalPlayers = 0;

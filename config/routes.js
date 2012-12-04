@@ -9,4 +9,5 @@ exports.init = function(app) {
     app.get('/instance/:id', instances.show);
 
     app.get('/test', instances.test);
+    app.get('/scrolling', instances.scrolling)
 }
