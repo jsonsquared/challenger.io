@@ -8,7 +8,7 @@ set :node_file, "server.js"
 
 set :repository, "git@github.com:jsonsquared/challenger.io.git"
 set :branch, "master"
-set :deploy_to, "/var/www/#{application}"
+set :deploy_to, "/www/#{application}"
 
 set :keep_releases, 5
 set :scm, :git
