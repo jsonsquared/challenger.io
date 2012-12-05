@@ -21,7 +21,6 @@
     var y = 10 * TILE_SIZE;
     var lastViewportRender = {x:-1,y:-1};
     var lastBufferRender = {x:-1, y:-1};
-    var mapData = {walls:[],halfWalls:[]};
 
     var solids = [];
     var light;
@@ -65,15 +64,6 @@
         if(INPUT_L()) { x-=4 }
         if(INPUT_D()) { y+=4 }
         if(INPUT_R()) { x+=4 }
-    }
-
-    window.tick = function() {
-        handleInput();
-        var walls = renderBuffer();
-        if(walls) solids = processSolids(walls) || solids;
-        processLights(solids, x%TILE_SIZE, y%TILE_SIZE)
-
-        renderViewport()
     }
 
     function renderBuffer() {
@@ -149,6 +139,14 @@
 
         lighting.render(lighting_ctx);
 
+    }
+
+    window.tick = function() {
+        handleInput();
+        var walls = renderBuffer();
+        if(walls) solids = processSolids(walls) || solids;
+        processLights(solids, x%TILE_SIZE, y%TILE_SIZE)
+        renderViewport()
     }
 
 </script>
