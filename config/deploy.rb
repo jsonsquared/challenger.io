@@ -34,7 +34,7 @@ namespace :deploy do
   end
 
   task :setup_upstart, :roles => :app, :except => { :no_release => true } do
-      run "cp /www/#{application}/current/config/#{application}.conf /etc/init.d/"
+      run "cp /www/#{application}/current/config/#{application}.conf /etc/init/"
   end
 
   task :migrate do
