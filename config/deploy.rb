@@ -33,8 +33,8 @@ namespace :deploy do
     run "cd #{release_path} && npm install --production --quiet"
   end
 
-  task :setup_upstart, roles => :app, except => { :no_release => true } do
-      run "cp /www/#{application}/config/#{application}.conf /etc/init.d/"
+  task :setup_upstart, :roles => :app, :except => { :no_release => true } do
+      run "cp /www/#{application}/current/config/#{application}.conf /etc/init.d/"
   end
 
   task :migrate do
