@@ -9,39 +9,30 @@
         display:none;
         border:1px solid blue;
     }
-    #lighting {
-        border:1px solid yellow;
-/*        background:white;*/
-        display:none;
-    }
     #viewport {
         border:1px solid purple;
     }
 </style>
-<canvas id='demo1'></canvas>
 <canvas id='buffer'></canvas>
 <canvas id='viewport'></canvas>
-<canvas id='lighting'></canvas>
 
 <script>
     var TILE_SIZE = 16;
     var TILES_WIDE = 100;
     var TILES_HIGH = 100;
-    var CAMERA_WIDTH = 11;
+    var CAMERA_WIDTH = 21;
     var CAMERA_HEIGHT = 11;
 
-    var x = 8 * TILE_SIZE;
-    var y = 8 * TILE_SIZE;
+    var x = 10 * TILE_SIZE;
+    var y = 10 * TILE_SIZE;
     var lastViewportRender = {x:-1,y:-1}
     var lastBufferRender = {x:-1, y:-1}
     var ready = false;
     var mapData = {walls:[],halfWalls:[]}
 
     var solids = []
-
-    var myLight;
-    var myLighting;
-    var darkmask;
+    var light;
+    var lighting;
 
     var mapInt = [];
 
@@ -82,8 +73,8 @@
     $(function() {
 
         buffer_canvas = document.getElementById("buffer");
-        buffer_canvas.width = (TILES_WIDE + 2) * TILE_SIZE;
-        buffer_canvas.height = (TILES_HIGH + 2) * TILE_SIZE;
+        buffer_canvas.width = (TILES_WIDE + 1) * TILE_SIZE;
+        buffer_canvas.height = (TILES_HIGH + 1) * TILE_SIZE;
         buffer_ctx = buffer_canvas.getContext('2d')
         buffer_stage = new createjs.Stage(buffer_canvas);
         buffer_stage.autoClear = false;
@@ -93,84 +84,73 @@
         viewport_canvas.height = CAMERA_HEIGHT * TILE_SIZE
         viewport_ctx = viewport_canvas.getContext('2d')
 
-        lighting_canvas = document.getElementById("lighting");
+        lighting_canvas = document.createElement("canvas");
         lighting_ctx = lighting_canvas.getContext('2d')
-        lighting_canvas.width = (TILES_WIDE + 2) * TILE_SIZE;
-        lighting_canvas.height = (TILES_HIGH + 2) * TILE_SIZE;
+        lighting_canvas.width = (TILES_WIDE + 1) * TILE_SIZE;
+        lighting_canvas.height = (TILES_HIGH + 1) * TILE_SIZE;
 
         createjs.Ticker.addListener(window);
         createjs.Ticker.setFPS(40);
 
         parse();
-        // hookupLights();
-
         ready = true;
 
-        setInterval(function() {
-            if(INPUT_U()) { y-=4 }
-            if(INPUT_L()) { x-=4 }
-            if(INPUT_D()) { y+=4 }
-            if(INPUT_R()) { x+=4 }
+        light = new illuminated.Lamp({
+          position: new illuminated.Vec2(x, y),
+          distance: 200
+        });
 
-            var walls = renderBuffer();
-            if(walls) {
-                var objs = processSolids(walls);
+        lighting = new illuminated.Lighting({
+          light: light,
+          objects: solids
+        });
 
-                if(objs) solids = objs
-            }
-            processLights(solids, 100+ x%16, 100+ y%16)
+        // setInterval(handleInput,10)
 
-
-            renderViewport()
-
-        },10)
     });
 
-    window.tick = function() {
-        // // if(x<CAMERA_WIDTH * TILE_SIZE/4) x = CAMERA_WIDTH * TILE_SIZE / 4
-        // // if(x>buffer_canvas.width - CAMERA_WIDTH * TILE_SIZE) x = buffer_canvas.width - CAMERA_WIDTH * TILE_SIZE
-        // // if(y<CAMERA_HEIGHT * TILE_SIZE/4) y = CAMERA_HEIGHT * TILE_SIZE / 4
-        // // if(y>buffer_canvas.height - TILES_HIGH * TILE_SIZE) y = buffer_canvas.height - CAMERA_HEIGHT * TILE_SIZE
-        //
-        // if(ready) {
-        //     myLight.position.x = (x + TILES_WIDE) * TILE_SIZE / 4;
-        //     myLight.position.y = (y + TILES_HIGH) * TILE_SIZE / 4;
-        //     // processLights();
-        // }
+    function handleInput() {
+        if(INPUT_U()) { y-=4 }
+        if(INPUT_L()) { x-=4 }
+        if(INPUT_D()) { y+=4 }
+        if(INPUT_R()) { x+=4 }
+    }
 
+    window.tick = function() {
+        handleInput();
+        var walls = renderBuffer();
+        if(walls) {
+            var objs = processSolids(walls);
+            if(objs) solids = objs
+        }
+        processLights(solids, x%TILE_SIZE, y%TILE_SIZE)
+
+        renderViewport()
     }
 
     function renderBuffer() {
         cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
         cameraY = Math.floor(y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
 
-        if(cameraX==lastBufferRender.x && cameraY == lastBufferRender.y) return false;
+        // if(cameraX==lastBufferRender.x && cameraY == lastBufferRender.y) return false;
 
         var walls = [];
 
-        buffer_ctx.clearRect(0,0,(CAMERA_WIDTH+2) * TILE_SIZE, (CAMERA_HEIGHT+2) * TILE_SIZE)
-        for(var yy=0;yy<CAMERA_HEIGHT+2;yy++) {
-            for(var xx=0;xx<CAMERA_WIDTH+2;xx++) {
+        buffer_ctx.clearRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
+        for(var yy=0;yy<CAMERA_HEIGHT+1;yy++) {
+            for(var xx=0;xx<CAMERA_WIDTH+1;xx++) {
 
                 var tile = map.data[yy + cameraY][xx + cameraX];
                 if(tile=='0') {
                     buffer_ctx.fillStyle = '#333'
                     buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
                     walls[walls.length] = {x:xx, y:yy}
-                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#333'))
-                    // mapData.walls.push({x:xx,y:yy})
-                }
-
-                if(tile=='S') {
+                } else if(tile=='1') {
                     buffer_ctx.fillStyle = '#666'
                     buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
-
-                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#666'))
-                    // mapData.halfWalls.push({x:xx,y:yy})
-                }
-
-                if(tile==' ') {
-                    // buffer_stage.addChild(new Tile(xx*TILE_SIZE,yy*TILE_SIZE,'#AAA'))
+                } else {
+                    buffer_ctx.fillStyle = '#fff'
+                    buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
                 }
 
             }
@@ -185,9 +165,9 @@
     function renderViewport() {
         if(x == lastViewportRender.x && y == lastViewportRender.y) return false;
 
-        viewport_ctx.clearRect(0,0,CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
-        viewport_ctx.drawImage(buffer_canvas,x%16,y%16, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        viewport_ctx.drawImage(buffer_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
         lastViewportRender = {x:x,y:y}
+
         return true;
     }
 
@@ -204,20 +184,24 @@
 
     function processLights(solids,x,y) {
 
-         var light = new illuminated.Lamp({
-           position: new illuminated.Vec2(x, y),
-           distance: 100
-         });
+        light.position.x = (((CAMERA_WIDTH+1) * TILE_SIZE) / 2) + x
+        light.position.y = (((CAMERA_HEIGHT+1) * TILE_SIZE) / 2) + y
 
-         var lighting = new illuminated.Lighting({
-           light: light,
-           objects: solids
-         });
+        lighting.objects = solids;
 
-         lighting.compute(200, 200);
-         buffer_ctx.fillStyle = "black";
-         buffer_ctx.fillRect(0, 0, 200, 200);
-         lighting.render(buffer_ctx);
+        lighting.compute((CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE);
+
+        lighting_ctx.fillStyle = 'rgba(0,0,0,1)'
+        lighting_ctx.globalCompositeOperation = 'source-over'
+        lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
+
+        lighting_ctx.fillStyle="rgba(0,0,0,.1)";
+        lighting_ctx.globalCompositeOperation = 'destination-out'
+        lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
+
+        lighting.render(lighting_ctx);
+
+        buffer_ctx.drawImage(lighting_canvas,0,0, (CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE, 0, 0, (CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
     }
 
