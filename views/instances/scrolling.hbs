@@ -18,10 +18,11 @@
 
 <script>
     var TILE_SIZE = 16;
-    var TILES_WIDE = 100;
-    var TILES_HIGH = 100;
     var CAMERA_WIDTH = 21;
     var CAMERA_HEIGHT = 11;
+    var TILES_WIDE;
+    var TILES_HIGH;
+
 
     var x = 10 * TILE_SIZE;
     var y = 10 * TILE_SIZE;
@@ -35,31 +36,20 @@
     var lighting;
     var debug = false
 
-    // var mapInt = [];
-
     function parse() {
         for(var y=0;y<map.data.length;y++) {
             var row = map.data[y].split('');
-            // mapInt[y] = [];
             for(var x=0;x<row.length;x++) {
 
                 var tile = map.data[y][x];
-                // mapInt[y][x] = parseInt(tile);
 
                 if(tile=='0') {
-                    //buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#333'))
                     mapData.walls.push({x:x,y:y})
                 }
 
-                if(tile=='S') {
-                    //buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#666'))
+                if(tile=='1') {
                     mapData.halfWalls.push({x:x,y:y})
                 }
-
-                if(tile==' ') {
-                    //buffer_stage.addChild(new Tile(x*TILE_SIZE,y*TILE_SIZE,'#AAA'))
-                }
-
             }
         }
         buffer_stage.update();
@@ -105,8 +95,6 @@
           objects: solids
         });
 
-        // setInterval(handleInput,10)
-
     });
 
     function handleInput() {
@@ -126,14 +114,13 @@
     }
 
     function renderBuffer() {
-        cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
-        cameraY = Math.floor(y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
+        if(x==lastBufferRender.x && y==lastBufferRender.y) return;
 
-        // if(cameraX==lastBufferRender.x && cameraY == lastBufferRender.y) return false;
+        var cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
+        var cameraY = Math.floor(y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
 
         var walls = [];
 
-        buffer_ctx.clearRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
         for(var yy=0;yy<CAMERA_HEIGHT+1;yy++) {
             for(var xx=0;xx<CAMERA_WIDTH+1;xx++) {
 
@@ -153,7 +140,7 @@
             }
         }
 
-        lastBufferRender = {x:cameraX, y:cameraY}
+        lastBufferRender = {x:x, y:y}
 
         return walls;
 
