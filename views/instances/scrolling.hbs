@@ -1,6 +1,7 @@
 <script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/illuminated.js" type="text/javascript"></script>
+<script src='/javascripts/preload.js'></script>
 <script src="/javascripts/lib/input.js" type="text/javascript"></script>
 <script src='/javascripts/mapUtils.js'></script>
 <script src='/assets/map.js'></script>
@@ -12,61 +13,94 @@
     var debug = false;
 
     var TILE_SIZE = 16;
-    var CAMERA_WIDTH = 21;
-    var CAMERA_HEIGHT = 11;
+    var MOVE_DISTANCE = 4;
+    var CAMERA_WIDTH = 31;
+    var CAMERA_HEIGHT = 21;
     var TILES_WIDE;
     var TILES_HIGH;
 
-    var x = 10 * TILE_SIZE;
-    var y = 10 * TILE_SIZE;
+    var x = 30 * TILE_SIZE;
+    var y = 30 * TILE_SIZE;
     var lastViewportRender = {x:-1,y:-1};
     var lastBufferRender = {x:-1, y:-1};
 
     var solids = [];
     var light;
     var lighting;
+    var me;
 
     var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
     var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };
     var INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false };
     var INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false };
 
+    var tileset;
+    var assets = {
+        'tileset': '/assets/images/tileset.png',
+        'fed'   :  '/assets/images/fed.png',
+    }
+
     $(function() {
 
-        buffer_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
-        buffer_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
-        buffer_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
-        buffer_ctx = buffer_canvas.getContext('2d')
-        // buffer_stage = new createjs.Stage(buffer_canvas);
-        // buffer_stage.autoClear = false;
+        // terrain
+        base_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+        base_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
+        base_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
+        base_ctx = base_canvas.getContext('2d')
 
+        // lighting
         lighting_canvas = debug ? document.getElementById("lighting") : document.createElement("canvas");
         lighting_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
         lighting_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
         lighting_ctx = lighting_canvas.getContext('2d')
 
+        // viewport
         viewport_canvas = document.getElementById("viewport");
         viewport_canvas.width = CAMERA_WIDTH * TILE_SIZE
         viewport_canvas.height = CAMERA_HEIGHT * TILE_SIZE
         viewport_ctx = viewport_canvas.getContext('2d')
 
-        createjs.Ticker.addListener(window);
-        createjs.Ticker.setFPS(60);
+        // easeljs stage
+        stage_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+        stage_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
+        stage_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
+        stage_ctx = stage_canvas.getContext('2d')
+
+        stage_stage = new createjs.Stage(stage_canvas);
+        stage_stage.autoClear = true;
+
+        createjs.Ticker.setFPS(120);
 
         light = new illuminated.Lamp({ position: new illuminated.Vec2(x, y),distance: 200});
 
         lighting = new illuminated.Lighting({ light: light, objects: solids});
 
+        preload(assets,function() {
+            createjs.Ticker.addListener(window);
+
+            me = new Player()
+            stage_stage.addChild(me)
+            // stage_stage.addChild(new Player({x:20,y:20}))
+
+        });
+
+        $(viewport_canvas).bind('mousemove', function(e) {
+            var deltaX = (e.clientX) - viewport_canvas.width/2
+            var deltaY = (e.clientY) - viewport_canvas.height/2
+            me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180 - 90;
+            renderViewport(true)
+        })
     });
 
     function handleInput() {
-        if(INPUT_U()) { y-=4 }
-        if(INPUT_L()) { x-=4 }
-        if(INPUT_D()) { y+=4 }
-        if(INPUT_R()) { x+=4 }
+        if(INPUT_U()) { y-=MOVE_DISTANCE }
+        if(INPUT_L()) { x-=MOVE_DISTANCE }
+        if(INPUT_D()) { y+=MOVE_DISTANCE }
+        if(INPUT_R()) { x+=MOVE_DISTANCE }
     }
 
     function renderBuffer() {
+
         if(x==lastBufferRender.x && y==lastBufferRender.y) return;
 
         var cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
@@ -79,15 +113,12 @@
 
                 var tile = map.data[yy + cameraY][xx + cameraX];
                 if(tile=='0') {
-                    buffer_ctx.fillStyle = '#333'
-                    buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
+                    base_ctx.drawImage(assets.tileset.img,TILE_SIZE*1,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
                     walls[walls.length] = {x:xx, y:yy}
                 } else if(tile=='1') {
-                    buffer_ctx.fillStyle = '#666'
-                    buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
+                    base_ctx.drawImage(assets.tileset.img,TILE_SIZE*2,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
                 } else {
-                    buffer_ctx.fillStyle = '#fff'
-                    buffer_ctx.fillRect(xx * TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
+                    base_ctx.drawImage(assets.tileset.img,0,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
                 }
 
             }
@@ -99,13 +130,22 @@
 
     }
 
-    function renderViewport() {
-        if(x == lastViewportRender.x && y == lastViewportRender.y) return false;
+    function renderViewport(force) {
+        var force = force || false
+        if(x == lastViewportRender.x && y == lastViewportRender.y && !force) return false;
 
-        buffer_ctx.drawImage(lighting_canvas,0,0, (CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE, 0, 0, (CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
-        viewport_ctx.drawImage(buffer_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        // move everything over by the MOD offset
+        $.each(stage_stage.children, function() {
+            this.x = this.baseX + x%TILE_SIZE
+            this.y = this.baseY + y%TILE_SIZE
+        });
+        stage_stage.update()
+
+        viewport_ctx.drawImage(base_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        viewport_ctx.drawImage(stage_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+        viewport_ctx.drawImage(lighting_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
+
         lastViewportRender = {x:x,y:y}
-
         return true;
     }
 
@@ -138,6 +178,28 @@
         lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
         lighting.render(lighting_ctx);
+
+    }
+
+    function Player(options) {
+        var options = options || {}
+        var spriteSheet = new createjs.SpriteSheet({
+            images: [assets.fed.img],
+            frames: {width:32, height:32, regX:16, regY:16},
+            animations: {
+                alive:{frames:[0], frequency:5}
+            }
+        });
+
+        bitmap = new createjs.BitmapAnimation(spriteSheet);
+        bitmap.gotoAndPlay('alive')
+        bitmap.scaleX = .75
+        bitmap.scaleY = .75
+        bitmap.baseX = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
+        bitmap.baseY = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
+        bitmap.x = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
+        bitmap.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
+        return bitmap
 
     }
 
