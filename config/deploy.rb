@@ -33,7 +33,7 @@ namespace :deploy do
     run "cd #{release_path} && npm install --production --quiet"
   end
 
-  task :init_forever, :roles => :app, :except => { :no_release => true } do
+  task :init_forever, :roles => :app do
     run "cd #{release_path} && chmod +x ./start.sh"
   end
 
@@ -47,4 +47,5 @@ namespace :deploy do
 end
 
 after 'deploy:update_code', 'deploy:install_dependent_packages'
+after 'deploy:update_code', 'deploy:init_forever'
 after 'deploy', 'deploy:cleanup'
