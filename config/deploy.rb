@@ -30,8 +30,8 @@ namespace :deploy do
 #  end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "./stop.sh || false"
-    run "./start.sh || false"
+    # run "./stop.sh || false"
+    # run "./start.sh || false"
   end
 
   task :install_dependent_packages, :roles => :app do
