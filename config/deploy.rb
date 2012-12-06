@@ -25,8 +25,12 @@ namespace :deploy do
     run "service #{application} stop"
   end
 
+#  task :restart, :roles => :app, :except => { :no_release => true } do
+#    run "service #{application} restart || service #{application} start"
+#  end
+
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "service #{application} restart || service #{application} start"
+    run "./stop.sh && ./start.sh"
   end
 
   task :install_dependent_packages, :roles => :app do
@@ -35,11 +39,7 @@ namespace :deploy do
 
   task :init_forever, :roles => :app do
     run "cd #{release_path} && chmod +x ./start.sh"
-  end
-
-  task :setup_upstart, :roles => :app, :except => { :no_release => true } do
-      run "cp /www/#{application}/current/config/#{application}.conf /etc/init/"
-      run "chmod u+x /etc/init/#{application}.conf"
+    run "cd #{release_path} && chmod +x ./stop.sh"
   end
 
   task :migrate do
