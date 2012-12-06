@@ -38,8 +38,7 @@ namespace :deploy do
   end
 
   task :init_forever, :roles => :app do
-    run "cd #{release_path} && chmod +x ./start.sh"
-    run "cd #{release_path} && chmod +x ./stop.sh"
+    run "cd #{release_path} && chmod +x ./start.sh && chmod +x ./stop.sh"
   end
 
   task :migrate do
