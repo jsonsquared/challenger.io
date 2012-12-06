@@ -4,7 +4,6 @@
 <script src='/javascripts/preload.js'></script>
 <script src="/javascripts/lib/input.js" type="text/javascript"></script>
 <script src='/javascripts/mapUtils.js'></script>
-<script src='/assets/map.js'></script>
 <canvas id='viewport'></canvas>
 <canvas id='buffer'></canvas>
 <canvas id='lighting'></canvas>
@@ -29,6 +28,9 @@
     var light;
     var lighting;
     var me;
+
+    var map = {}
+    var tilesThatBlockView = [2]
 
     var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
     var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };
@@ -76,14 +78,18 @@
 
         lighting = new illuminated.Lighting({ light: light, objects: solids});
 
-        preload(assets,function() {
-            createjs.Ticker.addListener(window);
+        loadMap('level1', function(arr) {
 
-            me = new Player()
-            stage_stage.addChild(me)
-            // stage_stage.addChild(new Player({x:20,y:20}))
+            map.data = arr;
+            preload(assets,function() {
+                createjs.Ticker.addListener(window);
 
-        });
+                me = new Player()
+                stage_stage.addChild(me)
+                // stage_stage.addChild(new Player({x:20,y:20}))
+
+            });
+        })
 
         $(viewport_canvas).bind('mousemove', function(e) {
             var deltaX = (e.clientX) - viewport_canvas.width/2
@@ -93,6 +99,19 @@
         });
 
     });
+
+    function loadMap(map, callback) {
+        $.get('/assets/maps/' + map + '.json', function(data) {
+            var arr = [];
+            for(var y = 0;y < data.height; y++) {
+                arr[y] = []
+                for(var x = 0; x< data.width; x++) {
+                    arr[y][x] = data.layers[0].data[y * data.height + x]
+                }
+            }
+            callback(arr)
+        })
+    }
 
     function handleInput() {
         if(INPUT_U()) { y-=MOVE_DISTANCE }
@@ -114,14 +133,9 @@
             for(var xx=0;xx<CAMERA_WIDTH+1;xx++) {
 
                 var tile = map.data[yy + cameraY][xx + cameraX];
-                if(tile=='0') {
-                    base_ctx.drawImage(assets.tileset.img,TILE_SIZE*1,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
-                    walls[walls.length] = {x:xx, y:yy}
-                } else if(tile=='1') {
-                    base_ctx.drawImage(assets.tileset.img,TILE_SIZE*2,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
-                } else {
-                    base_ctx.drawImage(assets.tileset.img,0,0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
-                }
+                base_ctx.drawImage(assets.tileset.img,TILE_SIZE*(tile-1),0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
+
+                if($.inArray(tile, tilesThatBlockView) >-1) walls[walls.length] = {x:xx, y:yy}
 
             }
         }
