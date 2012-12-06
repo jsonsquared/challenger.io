@@ -12,10 +12,11 @@
 <script>
     var debug = false;
 
+    var FPS = 60
     var TILE_SIZE = 16;
     var MOVE_DISTANCE = 4;
     var CAMERA_WIDTH = 31;
-    var CAMERA_HEIGHT = 21;
+    var CAMERA_HEIGHT = 31;
     var TILES_WIDE;
     var TILES_HIGH;
 
@@ -69,7 +70,7 @@
         stage_stage = new createjs.Stage(stage_canvas);
         stage_stage.autoClear = true;
 
-        createjs.Ticker.setFPS(120);
+        createjs.Ticker.setFPS(FPS);
 
         light = new illuminated.Lamp({ position: new illuminated.Vec2(x, y),distance: 200});
 
@@ -89,7 +90,14 @@
             var deltaY = (e.clientY) - viewport_canvas.height/2
             me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180 - 90;
             renderViewport(true)
-        })
+        });
+
+        // $(viewport_canvas).bind('touchmove', function(e) {
+        //     if(e.originalEvent.touches[0].pageY < CAMERA_HEIGHT * TILE_SIZE / 3) y-=MOVE_DISTANCE
+        //     if(e.originalEvent.touches[0].pageY > CAMERA_HEIGHT * TILE_SIZE / 3) y+=MOVE_DISTANCE
+        //     if(e.originalEvent.touches[0].pageX < CAMERA_WIDTH * TILE_SIZE / 3) x-=MOVE_DISTANCE
+        //     if(e.originalEvent.touches[0].pageX > CAMERA_WIDTH * TILE_SIZE / 3) x+=MOVE_DISTANCE
+        // })
     });
 
     function handleInput() {
@@ -173,7 +181,7 @@
         lighting_ctx.globalCompositeOperation = 'source-over'
         lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
-        lighting_ctx.fillStyle="rgba(0,0,0,.1)";
+        lighting_ctx.fillStyle="rgba(0,0,0,.3)";
         lighting_ctx.globalCompositeOperation = 'destination-out'
         lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
