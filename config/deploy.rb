@@ -18,11 +18,11 @@ set :normalize_asset_timestamps, false
 
 namespace :deploy do
   task :start, :roles => :app, :except => { :no_release => true } do
-    run "service #{application} start"
+    run "cd #{release_path} &&./start.sh"
   end
 
   task :stop, :roles => :app, :except => { :no_release => true } do
-    run "service #{application} stop"
+    run "cd #{release_path} &&./stop.sh"
   end
 
 #  task :restart, :roles => :app, :except => { :no_release => true } do
