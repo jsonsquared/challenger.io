@@ -18,11 +18,11 @@ set :normalize_asset_timestamps, false
 
 namespace :deploy do
   task :start, :roles => :app, :except => { :no_release => true } do
-    run "cd #{release_path} &&./start.sh"
+    run "cd /www/#{application}/current &&./start.sh"
   end
 
   task :stop, :roles => :app, :except => { :no_release => true } do
-    run "cd #{release_path} &&./stop.sh"
+    run "cd /www/#{application}/current &&./stop.sh"
   end
 
 #  task :restart, :roles => :app, :except => { :no_release => true } do
@@ -30,16 +30,17 @@ namespace :deploy do
 #  end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    # run "./stop.sh || false"
-    # run "./start.sh || false"
+    run "cd /www/#{application}/current/ && ./stop.sh || false"
+    run "cd /www/#{aaplication}/current/ && ./start.sh || false"
+  end
+
+  task :init_forever, :roles => :app, :except => { :no_release => true } do
+    run "chmod +x /www/#{application}/current/start.sh"
+    run "chmod +x /www/#{application}/current/stop.sh"
   end
 
   task :install_dependent_packages, :roles => :app do
     run "cd #{release_path} && npm install --production --quiet"
-  end
-
-  task :init_forever, :roles => :app, :except => { :no_release => true } do
-    run "cd #{release_path} && chmod +x ./start.sh && chmod +x ./stop.sh"
   end
 
   task :migrate do
