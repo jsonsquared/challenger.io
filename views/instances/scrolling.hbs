@@ -16,6 +16,7 @@
     var MOVE_DISTANCE = 4;
     var CAMERA_WIDTH = 31;
     var CAMERA_HEIGHT = 31;
+    var VIEW_DISTANCE = 150;
     var TILES_WIDE;
     var TILES_HIGH;
 
@@ -23,6 +24,7 @@
     var y = 30 * TILE_SIZE;
     var lastViewportRender = {x:-1,y:-1};
     var lastBufferRender = {x:-1, y:-1};
+    var lastLightRender = {x:-1, y:-1}
 
     var solids = [];
     var light;
@@ -74,7 +76,7 @@
 
         createjs.Ticker.setFPS(FPS);
 
-        light = new illuminated.Lamp({ position: new illuminated.Vec2(x, y),distance: 200});
+        light = new illuminated.Lamp({ position: new illuminated.Vec2(x, y),distance: VIEW_DISTANCE});
 
         lighting = new illuminated.Lighting({ light: light, objects: solids});
 
@@ -86,7 +88,7 @@
 
                 me = new Player()
                 stage_stage.addChild(me)
-                // stage_stage.addChild(new Player({x:20,y:20}))
+                // stage_stage.addChild(new Player({x:200,y:200}))
 
             });
         })
@@ -178,22 +180,35 @@
 
     function processLights(solids,x,y) {
 
+        if(lastLightRender.x == x && lastLightRender.y ==y) return false;
+
         light.position.x = (CAMERA_WIDTH+1) * TILE_SIZE / 2 + x
         light.position.y = (CAMERA_HEIGHT+1) * TILE_SIZE / 2 + y
 
         lighting.objects = solids;
 
-        lighting.compute((CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE);
+        var touching = lighting.compute((CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE);
 
         lighting_ctx.fillStyle = 'rgba(0,0,0,1)'
         lighting_ctx.globalCompositeOperation = 'source-over'
         lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
-        lighting_ctx.fillStyle="rgba(0,0,0,.3)";
+        lighting_ctx.fillStyle="rgba(0,0,0,.1)";
         lighting_ctx.globalCompositeOperation = 'destination-out'
         lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
 
         lighting.render(lighting_ctx);
+        lighting.render(lighting_ctx);
+
+        lastLightRender = {x:x,y:y}
+
+        lighting_ctx.globalCompositeOperation = 'lighter'
+        $.each(solids,function() {
+            lighting_ctx.clearRect(this.topleft.x, this.topleft.y,16,16)
+            var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%16}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
+            lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
+            lighting_ctx.fillRect(this.topleft.x, this.topleft.y,16,16)
+        });
 
     }
 
@@ -217,6 +232,10 @@
         bitmap.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
         return bitmap
 
+    }
+
+    function distance(a,b) {
+        return Math.sqrt(Math.pow(a.x-b.x,2) + Math.pow(a.y-b.y,2));
     }
 
     window.tick = function() {

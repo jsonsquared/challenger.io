@@ -5,7 +5,7 @@
  </tileset>
  <layer name="level1" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt2DEKgDAQRcGN9z+0nZ2ygkvWZIrpVPA/kOCIiAEAAAAAAMDlKDb7/f7mabPsnnfX6TGnR9X9O9Kjly82873SY1Vvz0LOV/U9OjyD3JaZrfXQY1V69KJHL3r04r8hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAmk4ePCdr
+   eJzt1zESgyAQQFH0/odOZ6UmLItEeMUrMnHIuF80bqWUDQAAAAAAgMPe2ejze5u7mf06z6vjoj1W7p7RI7p21nz1GL/2ij1a19Bjzh7f7mez9ai5Z2c9Z2u+q/38Zj33R0tXPeKzjvaIHqtHvx72R58e0Xe4s/XP5r3S87y1R/bvex9sO9fo/rj6D7Z6jwxPXiMz9/hHo68HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg5gNuzifh
   </data>
  </layer>
 </map>
