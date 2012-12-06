@@ -31,7 +31,7 @@ namespace :deploy do
 
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "chmod +x /www/#{application}/current/stop.sh && cd /www/#{application}/current/ && ./stop.sh || false"
-    run "chmod +x /www/#{application}/current/start.sh && cd /www/#{aaplication}/current/ && ./start.sh || false"
+    run "chmod +x /www/#{application}/current/start.sh && cd /www/#{application}/current/ && ./start.sh || false"
   end
 
   # task :init_forever, :roles => :app, :except => { :no_release => true } do
