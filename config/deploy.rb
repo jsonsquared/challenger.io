@@ -34,7 +34,7 @@ namespace :deploy do
   end
 
   task :init_forever, :roles => :app, :except => { :no_release => true } do
-    run "chmod +x ./start.sh"
+    run "cd #{release_path} && chmod +x ./start.sh"
   end
 
   task :setup_upstart, :roles => :app, :except => { :no_release => true } do
