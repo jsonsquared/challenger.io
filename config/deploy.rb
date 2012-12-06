@@ -30,14 +30,14 @@ namespace :deploy do
 #  end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd /www/#{application}/current/ && ./stop.sh || false"
-    run "cd /www/#{aaplication}/current/ && ./start.sh || false"
+    run "chmod +x /www/#{application}/current/start.sh && cd /www/#{application}/current/ && ./stop.sh || false"
+    run "chmod +x /www/#{application}/current/stop.sh && cd /www/#{aaplication}/current/ && ./start.sh || false"
   end
 
-  task :init_forever, :roles => :app, :except => { :no_release => true } do
-    run "chmod +x /www/#{application}/current/start.sh"
-    run "chmod +x /www/#{application}/current/stop.sh"
-  end
+  # task :init_forever, :roles => :app, :except => { :no_release => true } do
+  #   run "chmod +x /www/#{application}/current/start.sh"
+  #   run "chmod +x /www/#{application}/current/stop.sh"
+  # end
 
   task :install_dependent_packages, :roles => :app do
     run "cd #{release_path} && npm install --production --quiet"
@@ -48,5 +48,5 @@ namespace :deploy do
 end
 
 after 'deploy:update_code', 'deploy:install_dependent_packages'
-after 'deploy:update_code', 'deploy:init_forever'
+# after 'deploy:update_code', 'deploy:init_forever'
 after 'deploy', 'deploy:cleanup'
