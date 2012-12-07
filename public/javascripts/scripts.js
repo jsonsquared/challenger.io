@@ -34,7 +34,8 @@ var settings = {
 }
 
 var assets = {
-    'map'   :  '/assets/images/map.jpg',
+    'tileset': '/assets/images/tileset.png',
+    // 'map'   :  '/assets/images/map.jpg',
     'bloodborder'   :  '/assets/images/bloodborder.png',
     'fed'   :  '/assets/images/fed.png',
     'bullet':  '/assets/images/bullet.png',
@@ -48,32 +49,100 @@ sounds = {
     'singleshot': '/assets/sounds/singleshot.mp3'
 }
 
-INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false }
-INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false}
-INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false }
-INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false }
+var debug = false;
+
+var FPS = 60
+var TILE_SIZE = 16;
+var MOVE_DISTANCE = 4;
+var CAMERA_WIDTH = 31;
+var CAMERA_HEIGHT = 31;
+var VIEW_DISTANCE = 150;
+var TILES_WIDE;
+var TILES_HIGH;
+
+var lastViewportRender = {x:-1,y:-1};
+var lastBufferRender = {x:-1, y:-1};
+var lastLightRender = {x:-1, y:-1}
+
+var solids = [];
+var light;
+var lighting;
+var stage = false;
+
+var bloodEffect = false;
+
+var camera = {x:0,y:0}
+
+function StageManager(options) {
+    this.stage = options.stage;
+    this.elements = []
+    this.add = function(what, index) {
+        this.elements.push(what)
+        if(arguments.length==2) {
+            this.stage.addChildAt(what.container, index)
+        } else {
+            this.stage.addChild(what.container)
+        }
+    }
+}
+
+var map = {}
+var tilesThatBlockView = [2]
+
+var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
+var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };
+var INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false };
+var INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false };
+
+var tileset;
 
 $(function() {
 
+    // terrain
+    base_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+    base_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
+    base_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
+    base_ctx = base_canvas.getContext('2d')
+
+    // lighting
+    lighting_canvas = debug ? document.getElementById("lighting") : document.createElement("canvas");
+    lighting_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
+    lighting_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
+    lighting_ctx = lighting_canvas.getContext('2d')
+
+    // viewport
+    viewport_canvas = document.getElementById("viewport");
+    viewport_canvas.width = CAMERA_WIDTH * TILE_SIZE
+    viewport_canvas.height = CAMERA_HEIGHT * TILE_SIZE
+    viewport_ctx = viewport_canvas.getContext('2d')
+
+    // easeljs stage
+    stage_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+    stage_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
+    stage_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
+    stage_ctx = stage_canvas.getContext('2d')
+
+    stage_stage = new createjs.Stage(stage_canvas);
+    stage_stage.autoClear = true;
+    stage = new StageManager({stage:stage_stage})
+
+    createjs.Ticker.setFPS(FPS);
+
+    light = new illuminated.Lamp({ position: new illuminated.Vec2(0, 0),distance: VIEW_DISTANCE});
+    lighting = new illuminated.Lighting({ light: light, objects: []});
+
+    loadMap('level1', function(arr) {
+
+        map.data = arr;
+        preload(assets,function() {
+            createjs.Ticker.addListener(window);
+        });
+    })
+
+    fitScreen();
+
+    // jquery bindings
     $(window).bind('resize', fitScreen)
-    canvas_main = document.getElementById("canvas-main");
-    canvas_lighting = document.createElement("canvas");
-    canvas_crosshair = document.createElement("canvas");
-    stage_under = new createjs.Stage(canvas_main);
-    stage_under.autoClear = false;
-
-    stage_over = new createjs.Stage(canvas_crosshair)
-    stage_over.autoClear = true;
-
-    canvas_main.width = canvas_lighting.width = canvas_crosshair.width = map.data[0].length * TILE_SIZE
-    canvas_main.height = canvas_lighting.height = canvas_crosshair.height = map.data.length * TILE_SIZE
-    canvas_main_ctx = canvas_main.getContext('2d')
-    canvas_lighting_ctx = canvas_lighting.getContext('2d')
-
-    createjs.Ticker.addListener(window);
-    createjs.Ticker.setFPS(30);
-
-    lightingEngine = new LightingEngine(canvas_lighting,canvas_main)
 
     $('#game-container').hide();
 
@@ -87,16 +156,17 @@ $(function() {
         $(canvas_main).focus()
     });
 
-    preload(assets, function(files) {
-        fitScreen();
-        initMap()
-        initLights();
-        initSpriteSheets();
-        initSounds();
-        bloodEffect = new BloodEffect();
-        crosshair = new Crosshair();
-        $('#name').attr('maxlength', NAME_LENGTH)
-    });
+    // bootstrap
+    // preload(assets, function(files) {
+    //     fitScreen();
+    //     initMap()
+    //     initLights();
+    //     initSpriteSheets();
+    //     initSounds();
+    //     bloodEffect = new BloodEffect();
+    //     crosshair = new Crosshair();
+    //     $('#name').attr('maxlength', NAME_LENGTH)
+    // });
 
 });
 
@@ -121,67 +191,37 @@ function checkName(name, callback) {
 }
 
 
-function range(from,to) {
-   return Math.floor(Math.random() * (to - from + 1) + from);
-}
-
 function join(instance) {
     startGame(instance)
     initIntervals();
 }
 
-function startGame(instance) {
-    // if players is not empty, we must be restarting
-    if(Object.keys(players).length!==0) {
-        for(var p in players) {
-            players[p].remove();
-        }
-        players = {};
-        items = [];
-        $('#meter-ammo, #meter-hp').remove();
-    }
-
-    $("#total_score h2 span").html(instance.score)
-    console.log('startGame')
-    for(var p in instance.players) {
-        players[instance.players[p].id] = new Player(instance.players[p])
-    }
-
-    updateLeaderboard()
-    bloodEffect.update(0)
-    for(var p in players) {
-        if(players[p].id == socket.socket.sessionid) {
-            players[p].isMe();
-            me = players[p]
-        }
-        updateLeaderboardHP(p)
-    }
-
-    console.log(instance)
-    for(var i in instance.items) {
-
-        items[i] = new Item(i, instance.items[i])
-    }
-
-    $(document).trigger('startGame')
-}
-
 window.tick = function() {
     $(document).trigger('tick')
 
-    if(me) {
-        me.stamina = me.stamina < 100 ? me.stamina+1 : 100
-        document.title = me.stamina
-    }
-
-    render()
-
-
-    // garbage collection
-    garbage.map(function(el, i, ary) {
-        delete garbage.pop();
-    })
+    if(!me) return
+    // handleInput();
+    var walls = renderBuffer(me.x, me.y);
+    if(walls) solids = processSolids(walls) || solids;
+    processLights(solids, me.x%TILE_SIZE, me.y%TILE_SIZE)
+    renderViewport(me.x, me.y)
 }
+
+// window.tick = function() {
+//     $(document).trigger('tick')
+//
+//     if(me) {
+//         me.stamina = me.stamina < 100 ? me.stamina+1 : 100
+//         document.title = me.stamina
+//     }
+//
+//     render()
+//
+//     // garbage collection
+//     garbage.map(function(el, i, ary) {
+//         delete garbage.pop();
+//     })
+// }
 
 function initSpriteSheets() {
     spriteSheets['muzzle'] = new createjs.SpriteSheet({

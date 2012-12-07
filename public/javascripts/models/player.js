@@ -1,5 +1,5 @@
 function Player(options) {
-
+    var options = options || {}
     var self = this;
     this.dashing = false;
     this.stamina = 100;
@@ -65,6 +65,24 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
+    // var spriteSheet = new createjs.SpriteSheet({
+    //     images: [assets.fed.img],
+    //     frames: {width:32, height:32, regX:16, regY:16},
+    //     animations: {
+    //         alive:{frames:[0], frequency:5}
+    //     }
+    // });
+
+    // this.bitmap = new createjs.BitmapAnimation(spriteSheet);
+    // this.bitmap.gotoAndPlay('alive')
+    // this.bitmap.scaleX = .75
+    // this.bitmap.scaleY = .75
+    // this.bitmap.alpha = options.alpha || 1;
+    // this.x = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
+    // this.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
+    //
+    stage_stage.addChild(this.container)
+
     this.floatingText = [];
     this.floatText = function(amount) {
 
@@ -101,31 +119,27 @@ function Player(options) {
         this.me = true;
         this.container.removeChild(this.nameOutline)
         this.container.removeChild(this.nameLabel)
-        stage_over.addChild(this.container)
-        stage_under.removeChild(this.container)
-        this.light = {}
-        // this.light = lightingEngine.addLight(new Light(canvas_lighting, {intensity:40, flicker:0, strength:.1}))
-        myLight.position = new illuminated.Vec2(this.x,this.y);
+        stage_stage.addChild(this.container)
 
         this.healthMeter = new ProgressBar({id:'meter-hp', width:200, value:this.health, text:'HP: ' + this.health + '%'});
         this.ammoMeter = new ProgressBar({id:'meter-ammo', width:200, value:(this.clip/25)*100, text:'Ammo: ' + this.clip + ' / 32'})
         this.collisionManager = new CollisionManager(this, TILE_SIZE);
     }
 
-    stage_under.addChildAt(this.container,1)
+    stage_stage.addChildAt(this.container,1)
 
     this.updatePosition = function(x, y, rotation) {
         this.x = x || this.x;
         this.y = y || this.y;
         this.rotation = rotation || this.rotation
-        this.playerContainer.rotation = this.rotation
+        this.container.rotation = this.rotation
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
     }
 
     this.updateHealth = function(health) {
         $("#health").html(health);
-        bloodEffect.update((100 - health) / 50)
+        if(bloodEffect) bloodEffect.update((100 - health) / 50)
         this.healthMeter.update({value:health, text: 'HP: ' + health + '%'})
     }
 
@@ -141,25 +155,30 @@ function Player(options) {
     }
 
     this.moved = function(skipmyLight) {
-        var deltaX = crosshair.sprite.x - me.container.x
-        var deltaY = crosshair.sprite.y - me.container.y
 
-        me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+        // var deltaX = crosshair.sprite.x - me.container.x
+        // var deltaY = crosshair.sprite.y - me.container.y
         this.payload = {x:this.x, y:this.y, rotation:this.rotation}
 
         if (this==me) {
 
-            if(arguments.length==0) {
-                if(INPUT_L() || INPUT_R()) myLight.position.x = INPUT_L() ? this.x+1 : this.x-1
-                if(INPUT_U() || INPUT_D()) myLight.position.y = INPUT_U() ? this.y+1 : this.y-1
-            }
+            // if(arguments.length==0) {
+            //     if(INPUT_L() || INPUT_R()) myLight.position.x = INPUT_L() ? this.x+1 : this.x-1
+            //     if(INPUT_U() || INPUT_D()) myLight.position.y = INPUT_U() ? this.y+1 : this.y-1
+            // }
 
             me.updatePosition(this.x, this.y, this.rotation)
             me.collisionManager.check();
+
+            camera.x = me.x-CAMERA_WIDTH * TILE_SIZE/2;
+            camera.y = me.y-CAMERA_HEIGHT * TILE_SIZE/2;
         }
     }
 
     this.dash = function(dir, best) {
+
+        console.warn('dash is unimplemented')
+        return false;
 
         if(this == me && this.stamina < STAMINA_TO_DASH || this.dashing) return
         this.dashing = true
@@ -201,7 +220,7 @@ function Player(options) {
             self.moved(true)
         });
 
-        if(this==me) createjs.Tween.get(myLight.position).to(best,500,createjs.Ease.sineOut)
+        // if(this==me) createjs.Tween.get(myLight.position).to(best,500,createjs.Ease.sineOut)
 
     }
 
@@ -211,17 +230,20 @@ function Player(options) {
              x:move.x || this.x,
              y:move.y || this.y
          };
-         if(!blocked(final.x, final.y,2) && !halfBlocked(final.x, final.y,2)) {
-             this.x = final.x
-             this.y = final.y;
-             this.moved();
-         } else if(move.x && !blocked(move.x, this.y,2) && !halfBlocked(move.x, this.y,2)) {
-             this.x = move.x
-             this.moved();
-         } else if(move.y && !blocked(this.x, move.y,2) && !halfBlocked(this.x, move.y,2)) {
-             this.y = move.y;
-             this.moved();
-         }
+         // if(!blocked(final.x, final.y,2) && !halfBlocked(final.x, final.y,2)) {
+         //     this.x = final.x
+         //     this.y = final.y;
+         //     this.moved();
+         // } else if(move.x && !blocked(move.x, this.y,2) && !halfBlocked(move.x, this.y,2)) {
+         //     this.x = move.x
+         //     this.moved();
+         // } else if(move.y && !blocked(this.x, move.y,2) && !halfBlocked(this.x, move.y,2)) {
+         //     this.y = move.y;
+         //     this.moved();
+         // }
+         this.x = final.x
+         this.y = final.y;
+         this.moved()
 
     }
 
@@ -235,10 +257,10 @@ function Player(options) {
         recoilFactor = this.dashing ? 0 : recoilFactor
 
         var b = new Bullet({
-            x:gun==1 ? me.x -8 : me.x+8,
+            x:me.x,
             y:me.y,
-            endX: e.offsetX + range(recoilFactor*-1, recoilFactor),
-            endY: e.offsetY + range(recoilFactor*-1, recoilFactor),
+            endX: me.x + e.offsetX - (CAMERA_WIDTH * TILE_SIZE / 2),
+            endY: me.y + e.offsetY - (CAMERA_HEIGHT * TILE_SIZE / 2),
             owner:me.id,
             gun:gun
         })
@@ -252,20 +274,20 @@ function Player(options) {
     }
 
     this.muzzleFlash = function(gun) {
-        var flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
-        flash.gotoAndPlay('fire')
-
-        flash.scaleX = flash.scaleY = range(.5,1)
-        flash.x = 20 * flash.scaleX
-        flash.y = (gun == 1 ? -16 : 1) * flash.scaleY
-        flash.alpha=.5
-
-        this.playerContainer.addChild(flash)
-
-
-        createjs.Tween.get(flash).to({alpha:0},1000,createjs.Ease.quintOut).call(function() {
-            self.playerContainer.removeChild(this)
-        });
+        // var flash = new createjs.BitmapAnimation(spriteSheets.muzzle);
+        // flash.gotoAndPlay('fire')
+        //
+        // flash.scaleX = flash.scaleY = range(.5,1)
+        // flash.x = 20 * flash.scaleX
+        // flash.y = (gun == 1 ? -16 : 1) * flash.scaleY
+        // flash.alpha=.5
+        //
+        // this.playerContainer.addChild(flash)
+        //
+        //
+        // createjs.Tween.get(flash).to({alpha:0},1000,createjs.Ease.quintOut).call(function() {
+        //     self.playerContainer.removeChild(this)
+        // });
 
     }
 
@@ -333,11 +355,7 @@ function Player(options) {
     }
 
     this.remove = function() {
-        if(this == me) {
-            stage_over.removeChild(this.container)
-        } else {
-            stage_under.removeChild(this.container)
-        }
+        stage_stage.removeChild(this.container)
         delete players[this];
         delete this;
     }

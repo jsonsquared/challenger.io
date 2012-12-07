@@ -1,3 +1,16 @@
+function loadMap(map, callback) {
+    $.get('/assets/maps/' + map + '.json', function(data) {
+        var arr = [];
+        for(var y = 0;y < data.height; y++) {
+            arr[y] = []
+            for(var x = 0; x< data.width; x++) {
+                arr[y][x] = data.layers[0].data[y * data.height + x]
+            }
+        }
+        callback(arr)
+    })
+}
+
 function initMap() {
 
     var bitmap = new createjs.Shape()

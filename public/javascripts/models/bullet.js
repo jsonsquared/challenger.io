@@ -1,19 +1,21 @@
 function Bullet(options) {
     var self = this;
     options = options || {}
+    this.x = options.x || 0;
+    this.y = options.y || 0;
 
     this.speed = options.speed || 16;
     this.delta = 1;
     this.gun = options.gun || 0;
     this.sound = false;
-
+    this.removed = false;
     this.trajectoryX = options.endX - options.x;
     this.trajectoryY = options.endY - options.y;
-
     this.length = Math.sqrt(Math.pow(this.trajectoryX,2) + (Math.pow(this.trajectoryY,2)))
-
     this.owner = options.owner;
     this.spawnTime = new Date();
+
+    this.container = new createjs.Container();
 
     this.spriteSheet = new createjs.SpriteSheet({
         images: [assets.bullet.img],
@@ -27,12 +29,13 @@ function Bullet(options) {
     this.sprite.scaleX = this.sprite.scaleY = .75
     this.sprite.gotoAndPlay('alive')
 
-    this.sprite.rotation = players[this.owner].rotation - 90
-    this.sprite.x = options.x;
-    this.sprite.y = options.y;
+    this.container.addChild(this.sprite)
+    this.container.rotation = players[this.owner].rotation - 90
+    this.container.x = options.x;
+    this.container.y = options.y;
 
-    stage_under.addChildAt(this.sprite,1)
-    this.removed = false;
+
+    stage.add(this,1)
 
 
     var playerHit = function(bullet) {
@@ -47,31 +50,31 @@ function Bullet(options) {
     }
 
     if(settings.sounds) {
-        this.sound = sounds.singleshot.play(range(1,2)/2)
+        // this.sound = sounds.singleshot.play(range(1,2)/2)
     }
 
     $(document).bind('tick', function() {
-        if(!self.removed) {
+        // if(!self.removed) {
 
             self.delta = self.speed / self.length
             var x = self.delta * self.trajectoryX
             var y = self.delta * self.trajectoryY
 
-            if(blocked(self.sprite.x, self.sprite.y, 2)) {
-                self.remove();
-            } else if(hitPlayer = playerHit(self)) {
-                if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.sprite.x, y:self.sprite.y})                
-                self.remove();
-            } else {
-                self.sprite.x += x
-                self.sprite.y += y
-            }
+            // if(blocked(self.container.x, self.container.y, 2)) {
+            //     self.remove();
+            // } else if(hitPlayer = playerHit(self)) {
+            //     if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.container.x, y:self.container.y})
+            //     self.remove();
+            // } else {
+                self.x += x
+                self.y += y
+            // }
+            //
+            // if(self.container.x < TILE_SIZE || self.container.y < TILE_SIZE || self.container.x > canvas_main.width - TILE_SIZE || self.container.y > canvas_main.height - TILE_SIZE) {
+            //     self.remove();
+            // }
 
-            if(self.sprite.x < TILE_SIZE || self.sprite.y < TILE_SIZE || self.sprite.x > canvas_main.width - TILE_SIZE || self.sprite.y > canvas_main.height - TILE_SIZE) {
-                self.remove();
-            }
-
-        }
+        // }
     });
 
     this.remove = function() {
@@ -83,7 +86,7 @@ function Bullet(options) {
             delete this.sound;
         }
 
-        stage_under.removeChild(this.sprite)
+        stage_stage.removeChild(this.sprite)
         this.removed = true;
 
         var spriteSheet = new createjs.SpriteSheet({
@@ -99,10 +102,10 @@ function Bullet(options) {
         this.sprite.x = x;
         this.sprite.y = y;
         this.sprite.rotation = r - 90 + 30
-        stage_under.addChildAt(this.sprite,1)
+        stage_stage.addChildAt(this.sprite,1)
 
         createjs.Tween.get(this.sprite).to({alpha:0},500,createjs.Ease.quintOut).call(function() {
-            stage_under.removeChild(self.sprite)
+            stage_stage.removeChild(self.sprite)
             delete self
         })
     }

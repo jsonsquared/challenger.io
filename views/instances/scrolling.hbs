@@ -1,9 +1,37 @@
-<script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
+<!-- <script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
 <script src="/javascripts/lib/illuminated.js" type="text/javascript"></script>
 <script src='/javascripts/preload.js'></script>
 <script src="/javascripts/lib/input.js" type="text/javascript"></script>
+<script src='/javascripts/mapUtils.js'></script> -->
+
+<script src="/javascripts/lib/easeljs.min.js" type="text/javascript"></script>
+<script src="/javascripts/lib/tweenjs.min.js" type="text/javascript"></script>
+<script src="/javascripts/lib/illuminated.js" type="text/javascript"></script>
+<script src="/javascripts/lib/input.js" type="text/javascript"></script>
+<script src='/javascripts/lib/jsonHelpers.js'></script>
+<script src='/javascripts/preload.js'></script>
+<script src='/javascripts/bindings.js'></script>
+<!-- <script src='/javascripts/scripts.js'></script> -->
+<script src='/javascripts/intervals.js'></script>
+<script src='/javascripts/render.js'></script>
 <script src='/javascripts/mapUtils.js'></script>
+<script src='/javascripts/packets.js'></script>
+<script src='/javascripts/leaderboard.js'></script>
+<script src='/javascripts/models/bullet.js'></script>
+<script src='/javascripts/models/crosshair.js'></script>
+<script src='/javascripts/models/bloodEffect.js'></script>
+<script src='/javascripts/models/progressbar.js'></script>
+<script src='/javascripts/models/messages.js'></script>
+<script src='/javascripts/models/collisionManager.js'></script>
+<script src='/javascripts/models/item.js'></script>
+<script src='/javascripts/models/player.js'></script>
+<script src='/javascripts/util.js'></script>
+<script src='/javascripts/light/light.js'></script>
+<script src='/javascripts/light/lightingEngine.js'></script>
+<!-- <script src='/assets/map.js'></script> -->
+<script src="/socket.io/socket.io.js" type="text/javascript"></script>
+
 <canvas id='viewport'></canvas>
 <canvas id='buffer'></canvas>
 <canvas id='lighting'></canvas>
@@ -51,13 +79,13 @@
     $(function() {
 
         // terrain
-        base_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+        base_canvas = document.createElement("canvas");
         base_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
         base_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
         base_ctx = base_canvas.getContext('2d')
 
         // lighting
-        lighting_canvas = debug ? document.getElementById("lighting") : document.createElement("canvas");
+        lighting_canvas = document.createElement("canvas");
         lighting_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
         lighting_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
         lighting_ctx = lighting_canvas.getContext('2d')
@@ -69,7 +97,7 @@
         viewport_ctx = viewport_canvas.getContext('2d')
 
         // easeljs stage
-        stage_canvas = debug ? document.getElementById("buffer") : document.createElement("canvas");
+        stage_canvas = document.createElement("canvas");
         stage_canvas.width = (CAMERA_WIDTH+1) * TILE_SIZE
         stage_canvas.height = (CAMERA_HEIGHT+1) * TILE_SIZE
         stage_ctx = stage_canvas.getContext('2d')
@@ -259,9 +287,7 @@
 
     }
 
-    function distance(a,b) {
-        return Math.sqrt(Math.pow(a.x-b.x,2) + Math.pow(a.y-b.y,2));
-    }
+
 
     window.tick = function() {
         if(!me) return

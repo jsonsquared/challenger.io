@@ -22,7 +22,7 @@ function Item(id, options) {
 
     this.sprite = new createjs.Shape()
     this.sprite.graphics.beginFill(this.color).drawRect(0,0,16,16)
-    stage_under.addChildAt(this.sprite, 1)
+    stage_stage.addChildAt(this.sprite, 1)
 
     if(me) me.collisionManager.add(this)
 
@@ -43,7 +43,7 @@ function Item(id, options) {
     }
 
     this.remove = function() {
-        stage_under.removeChild(this.sprite)
+        stage_stage.removeChild(this.sprite)
         delete items[this.id]
         delete this;
     }
