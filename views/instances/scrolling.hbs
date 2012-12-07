@@ -20,8 +20,6 @@
     var TILES_WIDE;
     var TILES_HIGH;
 
-    var x = 30 * TILE_SIZE;
-    var y = 30 * TILE_SIZE;
     var lastViewportRender = {x:-1,y:-1};
     var lastBufferRender = {x:-1, y:-1};
     var lastLightRender = {x:-1, y:-1}
@@ -29,7 +27,12 @@
     var solids = [];
     var light;
     var lighting;
+
     var me;
+    var otherPlayer;
+    var players = [];
+
+    var camera = {x:0,y:0}
 
     var map = {}
     var tilesThatBlockView = [2]
@@ -76,9 +79,8 @@
 
         createjs.Ticker.setFPS(FPS);
 
-        light = new illuminated.Lamp({ position: new illuminated.Vec2(x, y),distance: VIEW_DISTANCE});
-
-        lighting = new illuminated.Lighting({ light: light, objects: solids});
+        light = new illuminated.Lamp({ position: new illuminated.Vec2(0, 0),distance: VIEW_DISTANCE});
+        lighting = new illuminated.Lighting({ light: light, objects: []});
 
         loadMap('level1', function(arr) {
 
@@ -87,8 +89,14 @@
                 createjs.Ticker.addListener(window);
 
                 me = new Player()
-                stage_stage.addChild(me)
-                // stage_stage.addChild(new Player({x:200,y:200}))
+                me.x = 300;
+                me.y = 300;
+
+                otherPlayer = new Player({x:350,y:300, alpha:.5})
+                players = [me, otherPlayer]
+
+                stage_stage.addChild(me.bitmap)
+                stage_stage.addChild(otherPlayer.bitmap)
 
             });
         })
@@ -96,8 +104,8 @@
         $(viewport_canvas).bind('mousemove', function(e) {
             var deltaX = (e.clientX) - viewport_canvas.width/2
             var deltaY = (e.clientY) - viewport_canvas.height/2
-            me.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180 - 90;
-            renderViewport(true)
+            me.bitmap.rotation = Math.atan2(deltaY, deltaX) / Math.PI * 180 - 90;
+            renderViewport(me.x, me.y, true)
         });
 
     });
@@ -116,13 +124,15 @@
     }
 
     function handleInput() {
-        if(INPUT_U()) { y-=MOVE_DISTANCE }
-        if(INPUT_L()) { x-=MOVE_DISTANCE }
-        if(INPUT_D()) { y+=MOVE_DISTANCE }
-        if(INPUT_R()) { x+=MOVE_DISTANCE }
+        if(INPUT_U()) { me.move(me.x, me.y - MOVE_DISTANCE) }
+        if(INPUT_L()) { me.move(me.x - MOVE_DISTANCE, me.y) }
+        if(INPUT_D()) { me.move(me.x, me.y + MOVE_DISTANCE) }
+        if(INPUT_R()) { me.move(me.x + MOVE_DISTANCE, me.y) }
+        camera.x = me.x-CAMERA_WIDTH * TILE_SIZE/2;
+        camera.y = me.y-CAMERA_HEIGHT * TILE_SIZE/2;
     }
 
-    function renderBuffer() {
+    function renderBuffer(x,y) {
 
         if(x==lastBufferRender.x && y==lastBufferRender.y) return;
 
@@ -148,15 +158,21 @@
 
     }
 
-    function renderViewport(force) {
+    function renderViewport(x,y,force) {
         var force = force || false
         if(x == lastViewportRender.x && y == lastViewportRender.y && !force) return false;
 
-        // move everything over by the MOD offset
-        $.each(stage_stage.children, function() {
-            this.x = this.baseX + x%TILE_SIZE
-            this.y = this.baseY + y%TILE_SIZE
+        // move me to account for offset
+        me.bitmap.x = x%TILE_SIZE + (TILE_SIZE * CAMERA_WIDTH / 2)
+        me.bitmap.y = y%TILE_SIZE + (TILE_SIZE * CAMERA_HEIGHT / 2)
+
+        // move other players based to account for the camera and mod offsets
+        $.each(players, function() {
+            if(this==me) return
+            this.bitmap.x = this.x + x%TILE_SIZE - camera.x;
+            this.bitmap.y = this.y + y%TILE_SIZE - camera.y;
         });
+
         stage_stage.update()
 
         viewport_ctx.drawImage(base_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
@@ -179,6 +195,7 @@
     }
 
     function processLights(solids,x,y) {
+        if(!me) return
 
         if(lastLightRender.x == x && lastLightRender.y ==y) return false;
 
@@ -201,7 +218,6 @@
         lighting.render(lighting_ctx);
 
         lastLightRender = {x:x,y:y}
-
         lighting_ctx.globalCompositeOperation = 'lighter'
         $.each(solids,function() {
             lighting_ctx.clearRect(this.topleft.x, this.topleft.y,16,16)
@@ -222,15 +238,24 @@
             }
         });
 
-        bitmap = new createjs.BitmapAnimation(spriteSheet);
-        bitmap.gotoAndPlay('alive')
-        bitmap.scaleX = .75
-        bitmap.scaleY = .75
-        bitmap.baseX = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
-        bitmap.baseY = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
-        bitmap.x = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
-        bitmap.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
-        return bitmap
+        this.bitmap = new createjs.BitmapAnimation(spriteSheet);
+        this.bitmap.gotoAndPlay('alive')
+        this.bitmap.scaleX = .75
+        this.bitmap.scaleY = .75
+        this.bitmap.alpha = options.alpha || 1;
+        this.x = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
+        this.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
+
+        this.move = function(x, y) {
+            this.x = x;
+            this.y = y;
+            // this.bitmap.x = this.bitmap.baseX = x;
+            // this.bitmap.y = this.bitmap.baseY = y;
+            // this.light.position = x
+            // this.light.position = y;
+        }
+
+        return this;
 
     }
 
@@ -239,11 +264,12 @@
     }
 
     window.tick = function() {
+        if(!me) return
         handleInput();
-        var walls = renderBuffer();
+        var walls = renderBuffer(me.x, me.y);
         if(walls) solids = processSolids(walls) || solids;
-        processLights(solids, x%TILE_SIZE, y%TILE_SIZE)
-        renderViewport()
+        processLights(solids, me.x%TILE_SIZE, me.y%TILE_SIZE)
+        renderViewport(me.x, me.y)
     }
 
 </script>
