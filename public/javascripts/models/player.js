@@ -8,6 +8,7 @@ function Player(options) {
     this.name = options.name || 'Unnamed Player';
     this.x = options.x || 100;
     this.y = options.y || 200;
+    this.was = {x:this.x, y:this.y}
     this.health = options.health;
     this.rotation = options.rotation || 0;
     this.color = options.color || '#F00';
@@ -31,15 +32,14 @@ function Player(options) {
         frames: {width:32, height:32, regX:16, regY:16},
         animations: {
             alive:{frames:[0], frequency:5}
-            // dying:{frames:[2,3,4,5,6,7,8,9,10,11,12,13,14], frequency:5},
         }
     });
+    // this.playerContainer.x = -16;
 
     self.bitmap = new createjs.BitmapAnimation(self.spriteSheet);
     self.bitmap.rotation = 270
     self.bitmap.scaleX = self.bitmap.scaleY = .75
     self.bitmap.gotoAndPlay('alive')
-
     self.playerContainer.addChild(self.bitmap)
 
     this.nameOutline = new createjs.Text(this.name.toUpperCase(), "bold 10px arial", "#000")
@@ -61,26 +61,12 @@ function Player(options) {
 
     this.container.x = this.x;
     this.container.y = this.y;
+    this.playerContainer.x = -8;
+    this.playerContainer.y = -8
     this.playerContainer.rotation = this.rotation
 
     this.container.addChild(this.playerContainer)
 
-    // var spriteSheet = new createjs.SpriteSheet({
-    //     images: [assets.fed.img],
-    //     frames: {width:32, height:32, regX:16, regY:16},
-    //     animations: {
-    //         alive:{frames:[0], frequency:5}
-    //     }
-    // });
-
-    // this.bitmap = new createjs.BitmapAnimation(spriteSheet);
-    // this.bitmap.gotoAndPlay('alive')
-    // this.bitmap.scaleX = .75
-    // this.bitmap.scaleY = .75
-    // this.bitmap.alpha = options.alpha || 1;
-    // this.x = options.x || CAMERA_WIDTH*TILE_SIZE/2 + TILE_SIZE /2;
-    // this.y = options.y || CAMERA_HEIGHT*TILE_SIZE/2 + TILE_SIZE /2;
-    //
     stage_stage.addChild(this.container)
 
     this.floatingText = [];
@@ -132,7 +118,7 @@ function Player(options) {
         this.x = x || this.x;
         this.y = y || this.y;
         this.rotation = rotation || this.rotation
-        this.container.rotation = this.rotation
+        this.playerContainer.rotation = this.rotation
         this.container.x = this.light.x = this.x;
         this.container.y = this.light.y = this.y;
     }
@@ -162,17 +148,14 @@ function Player(options) {
 
         if (this==me) {
 
-            // if(arguments.length==0) {
-            //     if(INPUT_L() || INPUT_R()) myLight.position.x = INPUT_L() ? this.x+1 : this.x-1
-            //     if(INPUT_U() || INPUT_D()) myLight.position.y = INPUT_U() ? this.y+1 : this.y-1
-            // }
-
             me.updatePosition(this.x, this.y, this.rotation)
             me.collisionManager.check();
 
             camera.x = me.x-CAMERA_WIDTH * TILE_SIZE/2;
             camera.y = me.y-CAMERA_HEIGHT * TILE_SIZE/2;
         }
+
+
     }
 
     this.dash = function(dir, best) {
@@ -225,25 +208,37 @@ function Player(options) {
     }
 
     this.move = function(move) {
-        var was = {x:this.x, y:this.y}
+
         var final = {
-             x:move.x || this.x,
-             y:move.y || this.y
-         };
-         // if(!blocked(final.x, final.y,2) && !halfBlocked(final.x, final.y,2)) {
-         //     this.x = final.x
-         //     this.y = final.y;
-         //     this.moved();
-         // } else if(move.x && !blocked(move.x, this.y,2) && !halfBlocked(move.x, this.y,2)) {
-         //     this.x = move.x
-         //     this.moved();
-         // } else if(move.y && !blocked(this.x, move.y,2) && !halfBlocked(this.x, move.y,2)) {
-         //     this.y = move.y;
-         //     this.moved();
-         // }
-         this.x = final.x
-         this.y = final.y;
-         this.moved()
+            x:move.x || this.x,
+            y:move.y || this.y
+        };
+        if(!blocked(final.x, final.y,this.y, this.y)) {
+            this.was.x = this.x;
+            this.was.y = this.y;
+
+            this.x = final.x
+            this.y = final.y;
+            this.moved();
+        } else if(move.x && !blocked(move.x, this.y, this.y)) {
+            this.was.x = this.x;
+            this.x = move.x
+            this.moved();
+        } else if(move.y && !blocked(this.x, move.y, this.y)) {
+            this.was.y = this.y;
+            this.y = move.y;
+            this.moved();
+        }
+
+        // if(was.x < this.x) var lx = this.x + 1
+        // if(was.x > this.x) var lx = this.x - 1
+        // if(was.y < this.y) var ly = this.y + 1
+        // if(was.y > this.y) var ly = this.y - 1
+
+        // light.position.x = (me.x > light.position.x ? -1 : 1) + (CAMERA_WIDTH+1) * TILE_SIZE / 2 + x;
+        // light.position.y = (me.y > light.position.y ? -1 : 1) + (CAMERA_HEIGHT+1) * TILE_SIZE / 2 + y;
+
+
 
     }
 

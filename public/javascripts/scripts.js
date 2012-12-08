@@ -76,6 +76,7 @@ var camera = {x:0,y:0}
 function StageManager(options) {
     this.stage = options.stage;
     this.elements = []
+
     this.add = function(what, index) {
         this.elements.push(what)
         if(arguments.length==2) {
@@ -84,10 +85,18 @@ function StageManager(options) {
             this.stage.addChild(what.container)
         }
     }
+
+    this.remove = function(what) {
+        this.stage.removeChild(what.container)
+        $.each(this.elements, function() {
+            if(this==what) delete this;
+        })
+    }
 }
 
 var map = {}
 var tilesThatBlockView = [2]
+var tilesThatBlockMovement = [2]
 
 var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
 var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };

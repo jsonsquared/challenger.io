@@ -34,9 +34,7 @@ function Bullet(options) {
     this.container.x = options.x;
     this.container.y = options.y;
 
-
     stage.add(this,1)
-
 
     var playerHit = function(bullet) {
         for(var i = 0, len = Object.keys(players).length; i < len; i++) {
@@ -53,31 +51,34 @@ function Bullet(options) {
         // this.sound = sounds.singleshot.play(range(1,2)/2)
     }
 
-    $(document).bind('tick', function() {
-        // if(!self.removed) {
+    this.flight = setInterval(function() {
 
-            self.delta = self.speed / self.length
-            var x = self.delta * self.trajectoryX
-            var y = self.delta * self.trajectoryY
+        self.delta = self.speed / self.length
+        var x = self.delta * self.trajectoryX
+        var y = self.delta * self.trajectoryY
 
-            // if(blocked(self.container.x, self.container.y, 2)) {
-            //     self.remove();
-            // } else if(hitPlayer = playerHit(self)) {
-            //     if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.container.x, y:self.container.y})
-            //     self.remove();
-            // } else {
-                self.x += x
-                self.y += y
-            // }
-            //
-            // if(self.container.x < TILE_SIZE || self.container.y < TILE_SIZE || self.container.x > canvas_main.width - TILE_SIZE || self.container.y > canvas_main.height - TILE_SIZE) {
-            //     self.remove();
-            // }
-
+        // if(blocked(self.container.x, self.container.y, 2)) {
+        //     self.remove();
+        // } else if(hitPlayer = playerHit(self)) {
+        //     if(self.owner == me.id) socket.emit('hit', {bullet: self.data(), hitPlayer: hitPlayer.data(), x: self.container.x, y:self.container.y})
+        //     self.remove();
+        // } else {
+            self.x += x
+            self.y += y
         // }
-    });
+        //
+        MAP_WIDTH = 1000;
+        MAP_HEIGHT = 1000;
+        if(self.x < 0 || self.y < 0 || self.x > MAP_WIDTH || self.y > MAP_HEIGHT) {
+            self.remove();
+        }
+
+    },1000 / FPS);
 
     this.remove = function() {
+        console.log('removing')
+        this.removed = true;
+
         var x = this.sprite.x
         var y = this.sprite.y
         var r = this.sprite.rotation;
@@ -86,8 +87,7 @@ function Bullet(options) {
             delete this.sound;
         }
 
-        stage_stage.removeChild(this.sprite)
-        this.removed = true;
+        stage.remove(this)
 
         var spriteSheet = new createjs.SpriteSheet({
             images: [assets.ricochet.img],
@@ -108,6 +108,9 @@ function Bullet(options) {
             stage_stage.removeChild(self.sprite)
             delete self
         })
+
+        clearInterval(this.flight)
+        delete this;
     }
 
     this.data = function() {
