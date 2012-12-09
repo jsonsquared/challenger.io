@@ -4,7 +4,7 @@ module.exports = {
         tile_size: 16,
         player_limit: 2,
         KILL_TOTAL:10,
-        MOVE_DISTANCE: 3,
+        MOVE_DISTANCE: 6,
         TOTAL_HEALTH:100,
         CLIP_SIZE:32,
         RELOAD_TIME:1000,

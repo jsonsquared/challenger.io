@@ -33,16 +33,16 @@ module.exports =  [
             p.health = Math.min(p.health+50,100)
         }
     },
-    {
-        name: 'Sprint',
-        color:'white',
-        buff:function(p) {
-            p.moveDistance = MOVE_DISTANCE * 1.15
-        },
-        debuff:function(p){
-            p.moveDistance = MOVE_DISTANCE
-        }
-    },
+    // {
+    //     name: 'Sprint',
+    //     color:'white',
+    //     buff:function(p) {
+    //         p.moveDistance = MOVE_DISTANCE * 2
+    //     },
+    //     debuff:function(p){
+    //         p.moveDistance = MOVE_DISTANCE
+    //     }
+    // },
     {
         name: 'Bomb',
         color:'red',

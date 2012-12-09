@@ -53,7 +53,7 @@ var debug = false;
 
 var FPS = 60
 var TILE_SIZE = 16;
-var MOVE_DISTANCE = 4;
+var MOVE_DISTANCE = 6;
 var CAMERA_WIDTH = 31;
 var CAMERA_HEIGHT = 31;
 var VIEW_DISTANCE = 150;

@@ -67,6 +67,7 @@ function Player(options) {
 
     this.container.addChild(this.playerContainer)
 
+    this.container.snapToPixel = true
     stage_stage.addChild(this.container)
 
     this.floatingText = [];
