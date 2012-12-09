@@ -1,5 +1,5 @@
 var TILE_SIZE = 16;
-var MOVE_DISTANCE = 3;
+
 var SLIDE_FACTOR = 24;
 var STAMINA_TO_DASH = 40;
 var NAME_LENGTH = 16;
@@ -53,10 +53,10 @@ var debug = false;
 
 var FPS = 60
 var TILE_SIZE = 16;
-var MOVE_DISTANCE = 6;
+var MOVE_DISTANCE = 4;
 var CAMERA_WIDTH = 31;
 var CAMERA_HEIGHT = 31;
-var VIEW_DISTANCE = 150;
+var VIEW_DISTANCE = 250;//150;
 var TILES_WIDE;
 var TILES_HIGH;
 
@@ -137,7 +137,7 @@ $(function() {
 
     createjs.Ticker.setFPS(FPS);
 
-    light = new illuminated.Lamp({ position: new illuminated.Vec2(0, 0),distance: VIEW_DISTANCE});
+    light = new illuminated.Lamp({ position: new illuminated.Vec2(0, 0),samples:1, distance: VIEW_DISTANCE});
     lighting = new illuminated.Lighting({ light: light, objects: []});
 
     loadMap('level1', function(arr) {

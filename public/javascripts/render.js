@@ -56,11 +56,18 @@ function renderBuffer(x,y) {
 function processSolids(solids) {
     var objects = []
     for(var w = 0; w< solids.length; w++) {
-        var x = solids[w].x
-        var y = solids[w].y
+        // var modX = me.x % 16;
+        // var modY = me.y % 16
+
+        var offX = Math.max(5,solids[w].x - (CAMERA_WIDTH / 2))
+        var offY = Math.max(5,solids[w].y - (CAMERA_HEIGHT / 2))
+
+        var x = TILE_SIZE * solids[w].x - offX;//(solids[w].x > (CAMERA_WIDTH / 2) ? offX:offX)
+        var y = TILE_SIZE * solids[w].y - offY;//(solids[w].y > (CAMERA_HEIGHT / 2) ? offY:offY)
+        // console.log(solids[w].y,~~(CAMERA_HEIGHT/2))
         objects[objects.length] = new illuminated.RectangleObject({
-            topleft: new illuminated.Vec2(x * TILE_SIZE, y * TILE_SIZE),
-            bottomright: new illuminated.Vec2(x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE)
+            topleft: new illuminated.Vec2(x, y),
+            bottomright: new illuminated.Vec2(x + TILE_SIZE, y + TILE_SIZE)
         });
     }
     return objects;
@@ -90,12 +97,12 @@ function processLights(solids,x,y) {
     lighting.render(lighting_ctx);
 
     lastLightRender = {x:x,y:y}
-    lighting_ctx.globalCompositeOperation = 'lighter'
-    $.each(solids,function() {
-        lighting_ctx.clearRect(this.topleft.x, this.topleft.y,16,16)
-        var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%16}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
-        lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
-        lighting_ctx.fillRect(this.topleft.x, this.topleft.y,16,16)
-    });
+    // lighting_ctx.globalCompositeOperation = 'lighter'
+    // $.each(solids,function() {
+    //     lighting_ctx.clearRect(this.topleft.x, this.topleft.y,16,16)
+    //     var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%16}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
+    //     lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
+    //     lighting_ctx.fillRect(this.topleft.x, this.topleft.y,16,16)
+    // });
 
 }
