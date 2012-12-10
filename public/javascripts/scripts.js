@@ -14,10 +14,11 @@ var canvas_main, canvas_lighting, canvas_main_ctx, canvas_lighting_ctx;
 var crosshair; // easeljs Bitmap
 var me; // alias for which player I am in the players object
 var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about our position
-var hijackRightClick = window.location.hash.indexOf('#dev') == -1;
+var hijackRightClick = false//window.location.hash.indexOf('#dev') == -1;
 var spriteSheets = {};
 var messages = [];
 
+var level = 'level2';
 var mapData = {
     walls:[],
     halfWalls:[]
@@ -95,8 +96,6 @@ function StageManager(options) {
 }
 
 var map = {}
-var tilesThatBlockView = [2]
-var tilesThatBlockMovement = [2]
 
 var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
 var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };
@@ -140,7 +139,7 @@ $(function() {
     light = new illuminated.Lamp({ position: new illuminated.Vec2(0, 0),samples:1, distance: VIEW_DISTANCE});
     lighting = new illuminated.Lighting({ light: light, objects: []});
 
-    loadMap('level1', function(arr) {
+    loadMap(level, function(arr) {
 
         map.data = arr;
         preload(assets,function() {

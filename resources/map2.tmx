@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="terrain" tilewidth="16" tileheight="16">
+  <image source="../public/assets/images/terrain.png" trans="ff00ff" width="144" height="128"/>
+  <tile id="0">
+   <properties>
+    <property name="blocksMovement" value="1"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="blocksMovement" value="1"/>
+    <property name="blocksView" value="1"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt17EOgjAUhlGIm77/++rgQEgQalruDznDSTB18PZLrc7TNM0AAAAAAMDlvD6eO6o/453t7b0u12ihiR531qOFHnk9dMlroUdeD31yW+iR10OT/1o8vtbPe2t6jOux9frXmh79W7TusR7n93A+6los74WlI2t6jOkxUvXcqZyPHK13tPsjq0ev9+rR3mLk+aiePdHRHiP+n1fPnqjlu6W36tkTtZyP3r+vqmdP5P7IpkeeM3pUz3glW/fH+nlvTY8xPXqrnu+K9MikRxY98uiRR4989jyLHgAAAAAAAAAAAAAAAAAAAAAAAACkegPRhkIT
+  </data>
+ </layer>
+</map>
