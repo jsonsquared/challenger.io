@@ -11,8 +11,7 @@ function loadMap(map, callback) {
 
     $.get('/assets/maps/' + map + '.json', function(data) {
 
-        console.log(data.tilesets[0].tileproperties)
-
+        // extract tile properties
         $.each(data.tilesets[0].tileproperties, function(key) {
 
             if(this.hasOwnProperty('blocksView')) {
