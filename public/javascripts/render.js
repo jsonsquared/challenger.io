@@ -32,8 +32,8 @@ function animate() {
 function render() {
     if(!me) return false
 
-    camera.position.x = me.x
-    camera.position.y = me.y*-1
+    camera.position.x = me.x - windowHalfX
+    camera.position.y = (me.y - windowHalfY) * -1
 
     // me.container.position.x = me.x;
     // me.container.position.y = me.y*-1
@@ -52,7 +52,8 @@ function init() {
       document.body.appendChild( container );
 
       // create the camera
-      camera = new THREE.PerspectiveCamera( 60, windowWidth / windowHeight, 1, 10000 );
+      // camera = new THREE.PerspectiveCamera( 60, windowWidth / windowHeight, 1, 10000 );
+      camera = new THREE.OrthographicCamera( 0, windowWidth ,0, windowHeight*-1, 1, 10000 );
       camera.position.z = 400;
 
       // create the scene
