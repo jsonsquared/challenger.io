@@ -59,13 +59,13 @@ function processSolids(solids) {
     var objects = []
     for(var w = 0; w< solids.length; w++) {
 
-        var x = TILE_SIZE * solids[w].x;
-        var y = TILE_SIZE * solids[w].y;
+        var x = solids[w].x
+        var y = solids[w].y
 
 
         objects[objects.length] = new illuminated.RectangleObject({
-            topleft: new illuminated.Vec2(x, y),
-            bottomright: new illuminated.Vec2(x + 16, y + 16)
+            topleft: new illuminated.Vec2(x*TILE_SIZE, y*TILE_SIZE),
+            bottomright: new illuminated.Vec2(x*TILE_SIZE+TILE_SIZE, y*TILE_SIZE + TILE_SIZE)
         });
     }
     return objects;
@@ -76,12 +76,12 @@ function processLights(solids,x,y) {
 
     if(lastLightRender.x == x && lastLightRender.y ==y) return false;
 
-    light.position.x = ~~(CAMERA_WIDTH+1) * TILE_SIZE / 2 + x-15;
-    light.position.y = ~~(CAMERA_HEIGHT+1) * TILE_SIZE / 2 + y-15;
+    light.position.x = ~~(CAMERA_WIDTH+1) * TILE_SIZE / 2 + x-(TILE_SIZE-1);
+    light.position.y = ~~(CAMERA_HEIGHT+1) * TILE_SIZE / 2 + y-(TILE_SIZE-1);
 
     lighting.objects = solids;
 
-    var touching = lighting.compute((CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE);
+    touching = lighting.compute((CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE);
 
     lighting_ctx.fillStyle = 'rgba(0,0,0,1)'
     lighting_ctx.globalCompositeOperation = 'source-over'
@@ -96,11 +96,12 @@ function processLights(solids,x,y) {
 
     lastLightRender = {x:x,y:y}
     lighting_ctx.globalCompositeOperation = 'lighter'
-    $.each(solids,function() {
-        lighting_ctx.clearRect(this.topleft.x, this.topleft.y,16,16)
-        var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%16}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
+
+    $.each(touching,function() {
+        lighting_ctx.clearRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
+        var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%TILE_SIZE}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
         lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
-        lighting_ctx.fillRect(this.topleft.x, this.topleft.y,16,16)
+        lighting_ctx.fillRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
     });
 
 }

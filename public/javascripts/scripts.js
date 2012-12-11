@@ -1,5 +1,4 @@
 var TILE_SIZE = 16;
-
 var SLIDE_FACTOR = 24;
 var STAMINA_TO_DASH = 40;
 var NAME_LENGTH = 16;
@@ -17,6 +16,32 @@ var lastPush = {x:-1, y:-1, rotation:-1}; // payload we sent to the server about
 var hijackRightClick = false//window.location.hash.indexOf('#dev') == -1;
 var spriteSheets = {};
 var messages = [];
+var debug = false;
+
+var FPS = 60
+var MOVE_DISTANCE = 2;
+var CAMERA_WIDTH = 31;
+var CAMERA_CENTER_X = ~~(CAMERA_WIDTH / 2)
+var CAMERA_CENTER_Y = ~~(CAMERA_HEIGHT / 2)
+var CAMERA_HEIGHT = 31;
+var VIEW_DISTANCE = 250;
+var TILES_WIDE;
+var TILES_HIGH;
+
+var lastViewportRender = {x:-1,y:-1};
+var lastBufferRender = {x:-1, y:-1};
+var lastLightRender = {x:-1, y:-1}
+
+var solids = [];
+var light;
+var lighting;
+var stage = false;
+var map = {}
+var bloodEffect = false;
+
+var camera = {x:0,y:0}
+
+
 
 var level = 'level2';
 var mapData = {
@@ -26,7 +51,7 @@ var mapData = {
 
 var intervals = {
     push:   {rate:50},
-    move:   {rate:20},
+    move:   {rate:40},
     fire:   {rate:130}
 }
 
@@ -36,7 +61,6 @@ var settings = {
 
 var assets = {
     'tileset': '/assets/images/tileset.png',
-    // 'map'   :  '/assets/images/map.jpg',
     'bloodborder'   :  '/assets/images/bloodborder.png',
     'fed'   :  '/assets/images/fed.png',
     'bullet':  '/assets/images/bullet.png',
@@ -50,29 +74,6 @@ sounds = {
     'singleshot': '/assets/sounds/singleshot.mp3'
 }
 
-var debug = false;
-
-var FPS = 60
-var TILE_SIZE = 16;
-var MOVE_DISTANCE = 4;
-var CAMERA_WIDTH = 31;
-var CAMERA_HEIGHT = 31;
-var VIEW_DISTANCE = 250;//150;
-var TILES_WIDE;
-var TILES_HIGH;
-
-var lastViewportRender = {x:-1,y:-1};
-var lastBufferRender = {x:-1, y:-1};
-var lastLightRender = {x:-1, y:-1}
-
-var solids = [];
-var light;
-var lighting;
-var stage = false;
-
-var bloodEffect = false;
-
-var camera = {x:0,y:0}
 
 function StageManager(options) {
     this.stage = options.stage;
@@ -94,8 +95,6 @@ function StageManager(options) {
         })
     }
 }
-
-var map = {}
 
 var INPUT_U = function() { return input.keyboard[87] || input.keyboard[38] ? true:false };
 var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? true:false };
@@ -198,38 +197,32 @@ function checkName(name, callback) {
     }
 }
 
-
 function join(instance) {
     startGame(instance)
     initIntervals();
 }
 
+
 window.tick = function() {
+
     $(document).trigger('tick')
 
     if(!me) return
+
+    var move = {};
+    if($('input:focus').length==0) {
+        if(INPUT_U()) { move.y = me.y - me.moveDistance }
+        if(INPUT_L()) { move.x = me.x - me.moveDistance }
+        if(INPUT_D()) { move.y = me.y + me.moveDistance }
+        if(INPUT_R()) { move.x = me.x + me.moveDistance }
+        if(move.x || move.y) me.move(move)
+    }
     // handleInput();
     var walls = renderBuffer(me.x, me.y);
     if(walls) solids = processSolids(walls) || solids;
     processLights(solids, me.x%TILE_SIZE, me.y%TILE_SIZE)
     renderViewport(me.x, me.y)
 }
-
-// window.tick = function() {
-//     $(document).trigger('tick')
-//
-//     if(me) {
-//         me.stamina = me.stamina < 100 ? me.stamina+1 : 100
-//         document.title = me.stamina
-//     }
-//
-//     render()
-//
-//     // garbage collection
-//     garbage.map(function(el, i, ary) {
-//         delete garbage.pop();
-//     })
-// }
 
 function initSpriteSheets() {
     spriteSheets['muzzle'] = new createjs.SpriteSheet({

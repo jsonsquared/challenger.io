@@ -352,11 +352,11 @@
     for (var p=0; p<this.points.length; ++p, a=b) {
       b = this.points[p];
       if (a.inBound(bounds.topleft, bounds.bottomright)) {
-          touching = true
          var originToA = a.sub(origin);
          var originToB = b.sub(origin);
          var aToB = b.sub(a);
          var normal = new cp.Vec2(aToB.y, -aToB.x);
+             touching = true
          if (normal.dot(originToA) < 0) {
            f(a, b, originToA, originToB, aToB);
          }
@@ -448,7 +448,7 @@
     objects.forEach(function(object) {
       var diffuse = object.diffuse===undefined ? 0.8 : object.diffuse;
       diffuse *= light.diffuse;
-      ctx.fillStyle = "rgba(0,0,0,"+(1-diffuse)+")";
+      ctx.fillStyle = "rgb(0,0,0),"+(1-diffuse)+")";
       ctx.beginPath();
       object.path(ctx);
       ctx.fill();

@@ -6,16 +6,16 @@ function initIntervals() {
         }
     },intervals.push.rate)
 
-    intervals.move.interval = setInterval(function() {
-        var move = {};
-        if($('input:focus').length==0) {
-            if(INPUT_U()) { move.y = me.y - me.moveDistance }
-            if(INPUT_L()) { move.x = me.x - me.moveDistance }
-            if(INPUT_D()) { move.y = me.y + me.moveDistance }
-            if(INPUT_R()) { move.x = me.x + me.moveDistance }
-            if(move.x || move.y) me.move(move)
-        }
-    },intervals.move.rate)
+    // intervals.move.interval = setInterval(function() {
+    //     var move = {};
+    //     if($('input:focus').length==0) {
+    //         if(INPUT_U()) { move.y = me.y - me.moveDistance }
+    //         if(INPUT_L()) { move.x = me.x - me.moveDistance }
+    //         if(INPUT_D()) { move.y = me.y + me.moveDistance }
+    //         if(INPUT_R()) { move.x = me.x + me.moveDistance }
+    //         if(move.x || move.y) me.move(move)
+    //     }
+    // },intervals.move.rate)
 
     // intervals.fire.interval = setInterval(function() {
     //     if(me.singleClickFiring) return
