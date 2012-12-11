@@ -31,21 +31,13 @@ function renderBuffer(x,y) {
 
     if(x==lastBufferRender.x && y==lastBufferRender.y) return;
 
-    var cameraX = Math.floor(x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
-    var cameraY = Math.floor(y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
-
     var walls = [];
 
     for(var yy=0;yy<CAMERA_HEIGHT+1;yy++) {
         for(var xx=0;xx<CAMERA_WIDTH+1;xx++) {
-
             var tile = map.data[yy + cameraY][xx + cameraX];
-
             renderTile(base_ctx, tile-1, xx*TILE_SIZE,yy*TILE_SIZE)
-            //base_ctx.drawImage(assets.tileset.img,TILE_SIZE*(tile-1),0,TILE_SIZE,TILE_SIZE,xx*TILE_SIZE,yy*TILE_SIZE,TILE_SIZE,TILE_SIZE)
-
             if($.inArray(tile, tilesThatBlockView) >-1) walls[walls.length] = {x:xx, y:yy}
-
         }
     }
 
@@ -61,7 +53,6 @@ function processSolids(solids) {
 
         var x = solids[w].x
         var y = solids[w].y
-
 
         objects[objects.length] = new illuminated.RectangleObject({
             topleft: new illuminated.Vec2(x*TILE_SIZE, y*TILE_SIZE),
@@ -86,7 +77,7 @@ function processLights(solids,x,y) {
     lighting_ctx.fillStyle = 'rgba(0,0,0,1)'
     lighting_ctx.globalCompositeOperation = 'source-over'
     lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
-
+    //
     lighting_ctx.fillStyle="rgba(0,0,0,.1)";
     lighting_ctx.globalCompositeOperation = 'destination-out'
     lighting_ctx.fillRect(0,0,(CAMERA_WIDTH+1) * TILE_SIZE, (CAMERA_HEIGHT+1) * TILE_SIZE)
@@ -98,10 +89,12 @@ function processLights(solids,x,y) {
     lighting_ctx.globalCompositeOperation = 'lighter'
 
     $.each(touching,function() {
+
         lighting_ctx.clearRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
         var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%TILE_SIZE}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
         lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
         lighting_ctx.fillRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
+
     });
 
 }

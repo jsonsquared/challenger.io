@@ -43,6 +43,10 @@ function loadMap(map, callback) {
     });
 }
 
+function tileBlocksView(tile) {
+    return $.inArray(tile, tilesThatBlockView) >-1
+}
+
 function raycast (x1,y1,x2,y2) {
     var coordinatesArray = new Array();
     // Define differences and error check

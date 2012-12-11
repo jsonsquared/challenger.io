@@ -30,7 +30,7 @@ var TILES_HIGH;
 
 var lastViewportRender = {x:-1,y:-1};
 var lastBufferRender = {x:-1, y:-1};
-var lastLightRender = {x:-1, y:-1}
+var lastLightRender = {x:-1, y:-1};
 
 var solids = [];
 var light;
@@ -40,9 +40,6 @@ var map = {}
 var bloodEffect = false;
 
 var camera = {x:0,y:0}
-
-
-
 var level = 'level2';
 var mapData = {
     walls:[],
@@ -101,7 +98,7 @@ var INPUT_L = function() { return input.keyboard[65] || input.keyboard[37] ? tru
 var INPUT_D = function() { return input.keyboard[83] || input.keyboard[40] ? true:false };
 var INPUT_R = function() { return input.keyboard[68] || input.keyboard[39] ? true:false };
 
-var tileset;
+// var tileset;
 
 $(function() {
 
@@ -202,7 +199,6 @@ function join(instance) {
     initIntervals();
 }
 
-
 window.tick = function() {
 
     $(document).trigger('tick')
@@ -218,6 +214,9 @@ window.tick = function() {
         if(move.x || move.y) me.move(move)
     }
     // handleInput();
+    cameraX = Math.floor(me.x/TILE_SIZE) - Math.floor((CAMERA_WIDTH)/2);
+    cameraY = Math.floor(me.y/TILE_SIZE) - Math.floor((CAMERA_HEIGHT)/2);
+
     var walls = renderBuffer(me.x, me.y);
     if(walls) solids = processSolids(walls) || solids;
     processLights(solids, me.x%TILE_SIZE, me.y%TILE_SIZE)
