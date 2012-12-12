@@ -46,6 +46,53 @@ function render() {
     renderer.render( scene, camera );
 }
 
+var cameraX = 10;
+var cameraY = 10;
+var cameraWidth = 10;
+var cameraHeight = 10;
+
+function renderViewport() {
+
+    cameraX = ~~(me.x / 16)
+    cameraY = ~~(me.y / 16)
+
+    var obj, i;
+    for ( i = mapGroup.children.length - 1; i >= 0 ; i -- ) {
+        obj = mapGroup.children[ i ];
+        mapGroup.remove(obj);
+    }
+
+    // for(var y=0;y<16;y++) {
+    //     for(var x=0;x<16;x++) {
+
+    for(var y=0;y<16;y++) {
+        for(var x=0;x<16;x++) {
+
+            var tile = map.data[y+cameraY][x+cameraX];
+
+            var geometry = new THREE.CubeGeometry( 16, 16, 64 );
+            //texture = THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' );
+            // texture = tileset.tiles[tile-1]
+            texture = new THREE.Texture(spriteFromTileset(tile-1))
+            texture.needsUpdate = true
+
+            var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
+
+            var mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
+            mesh.position.x = x * 16;
+            mesh.position.y = y*-16;
+            mesh.position.z = 10;
+
+            mesh.matrixAutoUpdate = false;
+            mesh.updateMatrix();
+
+            mapGroup.add( mesh );
+
+        }
+    }
+    mapGroup.needsUpdate = true
+}
+
 function init() {
 
       container = document.createElement( 'div' );
@@ -63,8 +110,8 @@ function init() {
       scene.fog = new THREE.Fog( 0xffffff, 1, 10000 );
 
       // generate and add the map
-      mapObject = generateMap()
-      scene.add(mapObject);
+      //mapObject = generateMap()
+      // scene.add(mapObject);
 
       // create a light
       light = new THREE.PointLight(0xffffff,1,-10);
@@ -85,50 +132,5 @@ function init() {
       stats.domElement.style.top = '0px';
       stats.domElement.style.zIndex = 100;
       $('body').append( stats.domElement );
-
-}
-
-function generateMap() {
-
-      // create a container
-      var geometry = new THREE.CubeGeometry(0,0,0);
-      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial(),.8,.4);
-      var mapGroup = new Physijs.BoxMesh(geometry, material,0)
-
-      // add the floor
-      var geometry = new THREE.CubeGeometry( map.data[0].length * TILE_SIZE, map.data.length * TILE_SIZE, 16 );
-      var texture = THREE.ImageUtils.loadTexture( '/assets/images/rocks.jpg' );
-      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
-      var floor = physics ? new Physijs.BoxMesh(geometry, material,0) : new THREE.Mesh( geometry, material );
-      floor.position.x=map.data[0].length * TILE_SIZE / 2
-      floor.position.y=map.data.length * TILE_SIZE / 2 * -1
-      floor.position.z = 9;
-      mapGroup.add( floor );
-
-      var geometry = new THREE.CubeGeometry( 16, 16, 64 );
-      var texture = THREE.ImageUtils.loadTexture( '/assets/images/plywood.jpg' );
-      var material = Physijs.createMaterial(new THREE.MeshLambertMaterial( { map: texture }),.8,.4);
-
-      for(var y=0;y<map.data.length;y++) {
-          var row = map.data[y].split('');
-          for(var x=0;x<map.data[0].length;x++) {
-
-              var tile = map.data[y][x];
-
-              if(tile=='0') {
-                    var mesh = physics ? new Physijs.BoxMesh(geometry, material) : new THREE.Mesh( geometry, material );
-                    mesh.position.x = x * 16;
-                    mesh.position.y = y*-16;
-                    mesh.position.z = 10;
-
-                    mesh.matrixAutoUpdate = false;
-                    mesh.updateMatrix();
-
-                    mapGroup.add( mesh );
-              }
-          }
-      }
-
-      return mapGroup
 
 }
