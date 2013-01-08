@@ -47,6 +47,6 @@ namespace :deploy do
   end
 end
 
-# after 'deploy:update_code', 'deploy:install_dependent_packages'
+after 'deploy:update_code', 'deploy:install_dependent_packages'
 # after 'deploy:update_code', 'deploy:init_forever'
 after 'deploy', 'deploy:cleanup'
