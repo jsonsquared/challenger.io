@@ -1,6 +1,6 @@
 var RELOAD_TIME = 1000;
 var WAIT_TIME = 5000;
-var KILL_TOTAL = 1;
+var KILL_TOTAL = 20;
 
 var config = require('../config/application');
 var gameConfig = require('../config/game.config');
