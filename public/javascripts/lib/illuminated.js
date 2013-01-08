@@ -428,20 +428,25 @@
     var bounds = light.bounds();
     var objects = this.objects;
     var touching = [];
+
+    var lightX = this.light.position.x
+    var lightY = this.light.position.y
+
     light.forEachSample(function (position) {
       var sampleInObject = false;
-      for (var o=0; o<objects.length; ++o) {
+      //for (var o=0; o<objects.length; ++o) {
 
-        if (objects[o].contains(position)) {
-          ctx.fillRect(bounds.topleft.x, bounds.topleft.y, bounds.bottomright.x-bounds.topleft.x, bounds.bottomright.y-bounds.topleft.y);
-          return;
-        }
-      }
+        // if (objects[o].contains(position)) {
+        //   // ctx.fillRect(bounds.topleft.x, bounds.topleft.y, bounds.bottomright.x-bounds.topleft.x, bounds.bottomright.y-bounds.topleft.y);
+        //   return;
+        // }
+      //}
 
       objects.forEach(function(object) {
-        if(object.cast(ctx, position, bounds)) {
-            touching.push(object)
-        }
+
+          if(object.cast(ctx, position, bounds)) {
+              touching.push(object)
+          }
       });
     });
     // Draw objects diffuse - the intensity of the light penetration in objects

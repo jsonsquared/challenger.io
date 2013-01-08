@@ -23,11 +23,88 @@ function renderViewport(x,y,force) {
     viewport_ctx.drawImage(stage_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
     viewport_ctx.drawImage(lighting_canvas,x%TILE_SIZE,y%TILE_SIZE, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE, 0, 0, CAMERA_WIDTH * TILE_SIZE, CAMERA_HEIGHT * TILE_SIZE)
 
+    viewport_ctx.fillStyle = 'rgba(200,200,200,.5)'
+    // floodFill(~~(me.x/16),~~(me.y/16))
+
+
     lastViewportRender = {x:x,y:y}
     return true;
 }
 
+function floodFill(startX, startY) {
+
+    var newPos,
+        x,
+        y,
+        pixelPos,
+        reachLeft,
+        reachRight,
+        drawingBoundLeft = 0,
+        drawingBoundTop = 0,
+        drawingBoundRight = CAMERA_WIDTH - 1,
+        drawingBoundBottom = CAMERA_HEIGHT - 1,
+        canvasWidth = map.data.length;
+        canvasHeight = map.data[0].length;
+        pixelStack = [[startX, startY]];
+
+    while (pixelStack.length) {
+
+        newPos = pixelStack.pop();
+        x = newPos[0];
+        y = newPos[1];
+        // console.log(x,y,map.data[y][x])
+        // Get current pixel position
+        //pixelPos = (y * canvasWidth + x) * 4;
+        // Go up as long as the color matches and are inside the canvas
+        while (y >= drawingBoundTop && !tileBlocksView(map.data[y-1][x])) {
+            y -= 1;
+            //pixelPos -= canvasWidth * 4;
+        }
+
+        //pixelPos += canvasWidth * 4;
+        y += 1;
+        reachLeft = false;
+        reachRight = false;
+
+        // Go down as long as the color matches and in inside the canvas
+        while (y <= drawingBoundBottom && !tileBlocksView(map.data[y+1][x])) {
+            y += 1;
+
+            //colorPixel(pixelPos, curColor.r, curColor.g, curColor.b);
+            viewport_ctx.fillRect(x,y,16,16)
+            // draw light
+
+            if (x > drawingBoundLeft) {
+                if (!tileBlocksView(map.data[y][x-1])) {
+                    if (!reachLeft) {
+                        // Add pixel to stack
+                        pixelStack.push([x - 1, y]);
+                        reachLeft = true;
+                    }
+                } else if (reachLeft) {
+                    reachLeft = false;
+                }
+            }
+
+            if (x < drawingBoundRight) {
+                if (!tileBlocksView(map.data[y][x+1])) {
+                    if (!reachRight) {
+                        // Add pixel to stack
+                        pixelStack.push([x + 1, y]);
+                        reachRight = true;
+                    }
+                } else if (reachRight) {
+                    reachRight = false;
+                }
+            }
+
+            //pixelPos += canvasWidth * 4;
+        }
+    }
+}
+
 function renderBuffer(x,y) {
+
 
     if(x==lastBufferRender.x && y==lastBufferRender.y) return;
 
@@ -88,13 +165,14 @@ function processLights(solids,x,y) {
     lastLightRender = {x:x,y:y}
     lighting_ctx.globalCompositeOperation = 'lighter'
 
-    $.each(touching,function() {
+    // $.each(touching,function() {
+    //
+    //     lighting_ctx.clearRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
+    //     var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%TILE_SIZE}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
+    //     lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
+    //     lighting_ctx.fillRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
+    //
+    // });
 
-        lighting_ctx.clearRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
-        var dist = distance({x:this.topleft.x-x%16, y:this.topleft.y-y%TILE_SIZE}, {x:CAMERA_WIDTH * TILE_SIZE / 2,y:CAMERA_HEIGHT * TILE_SIZE / 2}) / VIEW_DISTANCE
-        lighting_ctx.fillStyle="rgba(0,0,0," + Math.min(.9,dist) + ")";
-        lighting_ctx.fillRect(this.topleft.x, this.topleft.y,TILE_SIZE,TILE_SIZE)
-
-    });
 
 }
