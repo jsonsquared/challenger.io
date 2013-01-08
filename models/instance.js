@@ -59,7 +59,7 @@ var Instance = function(id) {
         for(var p = 0, plen = Object.keys(this.players).length; p < plen; p++) {
             var player = this.players[Object.keys(this.players)[p]];
             player.reset(player.id, player.name);
-            player.setPosition(self.randomSpawn())
+            player.setPosition(self.map.randomSpawn())
             player.respawn();
         }
     }
